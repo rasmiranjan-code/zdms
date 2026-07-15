@@ -1,0 +1,753 @@
+/* static/css/base.css */
+
+@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=Inter:wght@400;500;600&display=swap');
+
+:root {
+    --ink: #23241f;
+    --paper: #f7f3ea;
+    --paper-2: #efe9d8;
+    --line: #ddd6c4;
+    --field: #3b5d42;
+    --field-dark: #263f2b;
+    --field-light: #5c7f5f;
+    --amber: #b6812f;
+    --muted: #726d5e;
+    --shadow: 0 1px 2px rgba(35,36,31,0.05), 0 6px 18px rgba(35,36,31,0.05);
+    --shadow-hover: 0 4px 10px rgba(35,36,31,0.08), 0 18px 34px rgba(35,36,31,0.10);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background:
+        radial-gradient(900px 460px at 12% -8%, rgba(59,93,66,0.08), transparent 60%),
+        radial-gradient(800px 460px at 100% 0%, rgba(182,129,47,0.07), transparent 55%),
+        var(--paper);
+    color: var(--ink);
+    line-height: 1.55;
+    min-height: 100vh;
+}
+
+/* faint specimen-label texture */
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background-image: radial-gradient(rgba(35,36,31,0.035) 1px, transparent 1px);
+    background-size: 3px 3px;
+    opacity: 0.5;
+    z-index: 0;
+}
+
+header, main, footer { position: relative; z-index: 1; }
+
+/* ---------- header ---------- */
+
+.site-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 22px 48px;
+    border-bottom: 1px solid var(--line);
+    opacity: 0;
+    animation: dropIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes dropIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.brand-mark {
+    width: 34px;
+    height: 34px;
+    display: block;
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+.brand-name {
+    font-family: 'Source Serif 4', serif;
+    font-weight: 600;
+    font-size: 15.5px;
+    letter-spacing: 0.01em;
+}
+
+.site-nav {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+}
+
+.nav-link {
+    text-decoration: none;
+    color: var(--muted);
+    font-size: 14px;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.nav-link:hover {
+    color: var(--field);
+}
+
+.nav-login {
+    position: relative;
+    text-decoration: none;
+    color: var(--ink);
+    font-size: 14px;
+    font-weight: 500;
+    padding: 9px 20px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: #fff;
+    transition: color 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.nav-login::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(120deg, var(--field), var(--field-light));
+    transform: translateX(-101%);
+    transition: transform 0.4s cubic-bezier(0.65, 0, 0.35, 1);
+    z-index: -1;
+}
+
+.nav-login:hover {
+    color: #fff;
+    border-color: var(--field-dark);
+    box-shadow: 0 6px 16px rgba(59,93,66,0.25);
+}
+
+.nav-login:hover::before { transform: translateX(0); }
+
+/* ---------- hero ---------- */
+
+.hero {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 96px 32px 60px;
+    text-align: center;
+}
+
+.eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--field);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    opacity: 0;
+    animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards;
+}
+
+.eyebrow::before {
+    content: '';
+    width: 16px;
+    height: 1px;
+    background: var(--amber);
+}
+
+.hero h1 {
+    font-family: 'Source Serif 4', serif;
+    font-size: 40px;
+    font-weight: 600;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+    opacity: 0;
+    animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.22s forwards;
+}
+
+.hero-sub {
+    margin-top: 18px;
+    font-size: 16px;
+    color: var(--muted);
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
+    opacity: 0;
+    animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.34s forwards;
+}
+
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------- portal cards ---------- */
+
+.portal-select {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 32px 100px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+.portal-card {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    padding: 30px 24px 26px;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    text-decoration: none;
+    color: var(--ink);
+    box-shadow: var(--shadow);
+    transition: color 0.35s ease, border-color 0.3s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    opacity: 0;
+    animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.portal-card:nth-child(1) { animation-delay: 0.44s; }
+.portal-card:nth-child(2) { animation-delay: 0.55s; }
+.portal-card:nth-child(3) { animation-delay: 0.66s; }
+
+/* color fill that slides in on hover, same idea as .nav-login */
+.portal-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, var(--field), var(--field-dark));
+    transform: translateX(-101%);
+    transition: transform 0.4s cubic-bezier(0.65, 0, 0.35, 1);
+    z-index: -1;
+}
+
+/* specimen-label top rule */
+.portal-card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--field), var(--amber));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s cubic-bezier(0.65, 0, 0.35, 1);
+    z-index: 2;
+}
+
+.portal-card:hover {
+    color: #fff;
+    border-color: transparent;
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-hover);
+}
+
+.portal-card:hover::before { transform: translateX(0); }
+.portal-card:hover::after { transform: scaleX(1); }
+
+.portal-card:hover .portal-desc {
+    color: rgba(255,255,255,0.82);
+}
+
+/* small monogram badge before each label, styled like a museum specimen tag */
+.portal-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Source Serif 4', serif;
+    font-weight: 600;
+    font-size: 16.5px;
+}
+
+.portal-label::before {
+    content: '';
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    border-radius: 7px;
+    background: var(--paper-2);
+    border: 1px solid var(--line);
+    transition: background 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
+}
+
+.portal-card:nth-child(1) .portal-label::before { content: 'S'; }
+.portal-card:nth-child(2) .portal-label::before { content: 'F'; }
+.portal-card:nth-child(3) .portal-label::before { content: 'H'; }
+
+.portal-label::before {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--field);
+}
+
+.portal-card:hover .portal-label::before {
+    background: #fff;
+    border-color: #fff;
+    color: var(--field-dark);
+    transform: scale(1.06);
+}
+
+.portal-desc {
+    font-size: 13.5px;
+    color: var(--muted);
+    line-height: 1.5;
+    padding-left: 38px;
+}
+
+.portal-arrow {
+    position: absolute;
+    top: 28px;
+    right: 22px;
+    color: var(--field);
+    font-size: 15px;
+    opacity: 0;
+    transform: translateX(-5px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.portal-card:hover .portal-arrow {
+    opacity: 1;
+    transform: translateX(0);
+    color: #fff;
+}
+
+/* ---------- stats strip ---------- */
+
+.stats-strip {
+    max-width: 900px;
+    margin: 0 auto 100px;
+    padding: 0 32px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+}
+
+.stat {
+    text-align: center;
+    padding: 22px 12px;
+    border-left: 1px solid var(--line);
+}
+
+.stat:first-child {
+    border-left: none;
+}
+
+.stat-num {
+    display: block;
+    font-family: 'Source Serif 4', serif;
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--field);
+}
+
+.stat-label {
+    display: block;
+    margin-top: 4px;
+    font-size: 12.5px;
+    color: var(--muted);
+}
+
+/* ---------- section eyebrow (shared by about + alumni) ---------- */
+
+.section-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--field);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+}
+
+.section-eyebrow::before {
+    content: '';
+    width: 16px;
+    height: 1px;
+    background: var(--amber);
+}
+
+.text-link {
+    display: inline-block;
+    margin-top: 20px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--field);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s ease;
+}
+
+.text-link:hover {
+    border-color: var(--field);
+}
+
+/* ---------- about section ---------- */
+
+.about-section {
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: 0 32px 110px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 56px;
+    align-items: start;
+}
+
+.about-text h2 {
+    font-family: 'Source Serif 4', serif;
+    font-size: 28px;
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+}
+
+.about-desc {
+    margin-top: 16px;
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.65;
+}
+
+.about-list {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.about-item {
+    display: flex;
+    gap: 16px;
+    padding: 20px 0;
+    border-top: 1px solid var(--line);
+}
+
+.about-item-mark {
+    font-family: 'Source Serif 4', serif;
+    font-size: 14px;
+    color: var(--amber);
+    font-weight: 600;
+    flex-shrink: 0;
+    padding-top: 2px;
+}
+
+.about-item h3 {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.about-item p {
+    font-size: 13.5px;
+    color: var(--muted);
+    line-height: 1.5;
+}
+
+/* ---------- alumni section ---------- */
+
+.alumni-section {
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: 0 32px 110px;
+}
+
+.alumni-section h2 {
+    font-family: 'Source Serif 4', serif;
+    font-size: 28px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
+
+.alumni-sub {
+    margin-top: 12px;
+    font-size: 15px;
+    color: var(--muted);
+    max-width: 520px;
+    line-height: 1.6;
+}
+
+.alumni-grid {
+    margin-top: 40px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+}
+
+.alumni-card {
+    display: flex;
+    gap: 14px;
+    padding: 24px;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+}
+
+.alumni-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-hover);
+}
+
+.alumni-initial {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: var(--paper-2);
+    color: var(--field);
+    font-family: 'Source Serif 4', serif;
+    font-weight: 600;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.alumni-card h3 {
+    font-size: 14.5px;
+    font-weight: 600;
+}
+
+.alumni-batch {
+    margin-top: 3px;
+    font-size: 12.5px;
+    color: var(--amber);
+}
+
+.alumni-role {
+    margin-top: 6px;
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.45;
+}
+
+/* ---------- faculty section ---------- */
+
+.faculty-section {
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: 0 32px 110px;
+    
+}
+
+.faculty-section h2 {
+    font-family: 'Source Serif 4', serif;
+    font-size: 28px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
+
+.faculty-sub {
+    margin-top: 12px;
+    font-size: 15px;
+    color: var(--muted);
+    max-width: 520px;
+    line-height: 1.6;
+}
+
+.faculty-grid {
+    margin-top: 40px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+}
+
+.faculty-card {
+    display: flex;
+    gap: 14px;
+    padding: 24px;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+}
+
+.faculty-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-hover);
+}
+
+.faculty-initial {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: var(--paper-2);
+    color: var(--field);
+    font-family: 'Source Serif 4', serif;
+    font-weight: 600;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.faculty-card h3 {
+    font-size: 14.5px;
+    font-weight: 600;
+}
+
+.faculty-role {
+    margin-top: 3px;
+    font-size: 12.5px;
+    color: var(--amber);
+}
+
+.faculty-specialization {
+    margin-top: 6px;
+    font-size: 13px;
+    color: var(--muted);
+    line-height：
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.footer-grid {
+    max-width: 1040px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1.6fr 1fr 1fr 1fr;
+    gap: 32px;
+    padding-bottom: 40px;
+}
+
+.footer-brand .brand {
+    margin-bottom: 14px;
+}
+
+.footer-about {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.6;
+    max-width: 260px;
+}
+
+.footer-col h4 {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 14px;
+}
+
+.footer-col a {
+    display: block;
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 13.5px;
+    margin-bottom: 10px;
+    transition: color 0.2s ease;
+}
+
+.footer-col a:hover {
+    color: var(--field);
+}
+
+.footer-address {
+    font-size: 13.5px;
+    margin-top: 2px;
+}
+
+.footer-bottom {
+    max-width: 1040px;
+    margin: 0 auto;
+    padding-top: 22px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12.5px;
+}
+
+.footer-bottom-links {
+    display: flex;
+    gap: 18px;
+}
+
+.footer-bottom-links a {
+    color: var(--muted);
+    text-decoration: none;
+}
+
+.footer-bottom-links a:hover {
+    color: var(--field);
+}
+
+/* ---------- responsive ---------- */
+
+@media (max-width: 900px) {
+    .about-section {
+        grid-template-columns: 1fr;
+        gap: 36px;
+    }
+    .alumni-grid {
+        grid-template-columns: 1fr;
+    }
+    .footer-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 32px 24px;
+    }
+}
+
+@media (max-width: 720px) {
+    .portal-select {
+        grid-template-columns: 1fr;
+    }
+    .stats-strip {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px 0;
+    }
+    .stat {
+        border-left: none;
+        border-top: 1px solid var(--line);
+        padding-top: 18px;
+    }
+    .stat:nth-child(1),
+    .stat:nth-child(2) {
+        border-top: none;
+    }
+    .hero h1 {
+        font-size: 30px;
+    }
+    .site-header {
+        padding: 18px 24px;
+        flex-wrap: wrap;
+        gap: 14px;
+    }
+    .footer-grid {
+        grid-template-columns: 1fr;
+    }
+    .footer-bottom {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; opacity: 1 !important; }
+}

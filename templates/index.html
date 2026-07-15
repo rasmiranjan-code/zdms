@@ -1,0 +1,268 @@
+<!-- templates/index.html -->
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zoology Department Management System</title>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="icon" href="{% static 'images/logo/zdms.png' %}" type="image/png">
+</head>
+<body>
+    <header class="site-header">
+        <div class="brand">
+            <img src="{% static 'images/logo/zdms.png' %}" alt="Department of Zoology logo" class="brand-mark">
+            <span class="brand-name">Department of Zoology</span>
+        </div>
+        <nav class="site-nav">
+            <a href="#about" class="nav-link">About</a>
+            <a href="#alumni" class="nav-link">Alumni</a>
+            <a href="{% url 'accounts:login' %}" class="nav-login">Sign in</a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <p class="eyebrow">Zoology Department &middot; Management System</p>
+            <h1>One system for the department's academic work.</h1>
+            <p class="hero-sub">Attendance, results, coursework and department records, organized by batch and semester.</p>
+        </section>
+
+        <section class="portal-select">
+            <a href="{% url 'accounts:login' %}" class="portal-card">
+                <span class="portal-label">Student</span>
+                <span class="portal-desc">Attendance, results, coursework and notices</span>
+                <span class="portal-arrow">&rarr;</span>
+            </a>
+            <a href="{% url 'accounts:login' %}" class="portal-card">
+                <span class="portal-label">Faculty</span>
+                <span class="portal-desc">Attendance, marks entry and assignments</span>
+                <span class="portal-arrow">&rarr;</span>
+            </a>
+            <a href="{% url 'accounts:login' %}" class="portal-card">
+                <span class="portal-label">HOD</span>
+                <span class="portal-desc">Department-wide records and approvals</span>
+                <span class="portal-arrow">&rarr;</span>
+            </a>
+        </section>
+
+        <section class="stats-strip">
+            <div class="stat">
+                <span class="stat-num">32</span>
+                <span class="stat-label">Years of teaching</span>
+            </div>
+            <div class="stat">
+                <span class="stat-num">640+</span>
+                <span class="stat-label">Enrolled students</span>
+            </div>
+            <div class="stat">
+                <span class="stat-num">18</span>
+                <span class="stat-label">Faculty members</span>
+            </div>
+            <div class="stat">
+                <span class="stat-num">1,200+</span>
+                <span class="stat-label">Alumni on record</span>
+            </div>
+        </section>
+
+        <section class="about-section" id="about">
+            <div class="about-text">
+                <p class="section-eyebrow">About the department</p>
+                <h2>Field research, laboratory training, and academic records in one place.</h2>
+                <p class="about-desc">
+                    Established to advance the study of animal biology, the Department of Zoology
+                    runs undergraduate and postgraduate programmes covering taxonomy, physiology,
+                    ecology, and conservation. This system supports day-to-day academic
+                    administration, from batch-wise attendance to semester results and
+                    departmental approvals.
+                </p>
+                <a href="#" class="text-link">Read the department handbook &rarr;</a>
+            </div>
+            <div class="about-list">
+                <div class="about-item">
+                    <span class="about-item-mark">01</span>
+                    <div>
+                        <h3>Undergraduate programme</h3>
+                        <p>B.Sc. Zoology, six semesters, with lab-based practical coursework.</p>
+                    </div>
+                </div>
+                <div class="about-item">
+                    <span class="about-item-mark">02</span>
+                    <div>
+                        <h3>Postgraduate programme</h3>
+                        <p>M.Sc. Zoology with specialisation tracks in ecology and physiology.</p>
+                    </div>
+                </div>
+                <div class="about-item">
+                    <span class="about-item-mark">03</span>
+                    <div>
+                        <h3>Research &amp; field studies</h3>
+                        <p>Ongoing field research supervised by faculty across active study sites.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="alumni-section" id="alumni">
+            <p class="section-eyebrow">Alumni records</p>
+            <h2>Where our graduates went next.</h2>
+            <p class="alumni-sub">A small sample of the department's alumni, maintained as part of departmental records.</p>
+
+            <div class="alumni-grid">
+                <div class="alumni-card">
+                    <span class="alumni-initial">A</span>
+                    <div>
+                        <h3>Ananya Mishra</h3>
+                        <p class="alumni-batch">Batch of 2019 &middot; M.Sc. Zoology</p>
+                        <p class="alumni-role">Wildlife Research Officer, State Forest Department</p>
+                    </div>
+                </div>
+                <div class="alumni-card">
+                    <span class="alumni-initial">R</span>
+                    <div>
+                        <h3>Rohit Sahoo</h3>
+                        <p class="alumni-batch">Batch of 2017 &middot; B.Sc. Zoology</p>
+                        <p class="alumni-role">PhD Scholar, Marine Biology</p>
+                    </div>
+                </div>
+                <div class="alumni-card">
+                    <span class="alumni-initial">P</span>
+                    <div>
+                        <h3>Priya Nayak</h3>
+                        <p class="alumni-batch">Batch of 2021 &middot; M.Sc. Zoology</p>
+                        <p class="alumni-role">Lecturer, Government Autonomous College</p>
+                    </div>
+                </div>
+            </div>
+            <a href="#" class="text-link">View full alumni directory &rarr;</a>
+        </section>
+    </main>
+
+<!-- Faculty Section -->
+<section class="faculty-section" id="faculty">
+    <p class="section-eyebrow">Faculty directory</p>
+    <h2>Meet the department's faculty.</h2>
+
+    <p class="faculty-sub">
+        A small sample of the department's faculty, maintained as part of departmental records.
+    </p>
+
+    <div class="faculty-grid">
+
+        <div class="faculty-card">
+            <span class="faculty-initial">B</span>
+            <div>
+                <h3>Bijaynee Padhiyary</h3>
+                <p class="faculty-role">Professor &amp; Head of Department</p>
+                <p class="faculty-specialization">
+                    Specialization: Animal Physiology
+                </p>
+            </div>
+        </div>
+
+        <div class="faculty-card">
+            <span class="faculty-initial">S</span>
+            <div>
+                <h3>Sarojini Sahu</h3>
+                <p class="faculty-role">Associate Professor</p>
+                <p class="faculty-specialization">
+                    Specialization: Ecology and Conservation
+                </p>
+            </div>
+        </div>
+
+        <div class="faculty-card">
+            <span class="faculty-initial">D</span>
+            <div>
+                <h3>Debasish Das</h3>
+                <p class="faculty-role">Assistant Professor</p>
+                <p class="faculty-specialization">
+                    Specialization: Genetics &amp; Molecular Biology
+                </p>
+            </div>
+        </div>
+
+        <div class="faculty-card">
+            <span class="faculty-initial">M</span>
+            <div>
+                <h3>Madhusmita Rout</h3>
+                <p class="faculty-role">Assistant Professor</p>
+                <p class="faculty-specialization">
+                    Specialization: Entomology
+                </p>
+            </div>
+        </div>
+
+        <div class="faculty-card">
+            <span class="faculty-initial">A</span>
+            <div>
+                <h3>Anita Mohanty</h3>
+                <p class="faculty-role">Guest Faculty</p>
+                <p class="faculty-specialization">
+                    Specialization: Environmental Biology
+                </p>
+            </div>
+        </div>
+
+        <div class="faculty-card">
+            <span class="faculty-initial">R</span>
+            <div>
+                <h3>Rakesh Kumar</h3>
+                <p class="faculty-role">Lab Demonstrator</p>
+                <p class="faculty-specialization">
+                    Specialization: Practical Zoology
+                </p>
+            </div>
+        </div>
+
+    </div>
+
+    <a href="#" class="text-link">View complete faculty directory &rarr;</a>
+</section>
+
+    
+
+    <footer class="site-footer">
+        <div class="footer-grid">
+            <div class="footer-col footer-brand">
+                <div class="brand">
+                    <img src="{% static 'images/logo/zdms.png' %}" alt="Department of Zoology logo" class="brand-mark">
+                    <span class="brand-name">Department of Zoology</span>
+                </div>
+                <p class="footer-about">
+                    Academic and administrative records for the Department of Zoology,
+                    covering students, faculty, and alumni.
+                </p>
+            </div>
+            <div class="footer-col">
+                <h4>Department</h4>
+                <a href="#about">About us</a>
+                <a href="#alumni">Alumni</a>
+                <a href="#">Faculty directory</a>
+                <a href="#">Academic calendar</a>
+            </div>
+            <div class="footer-col">
+                <h4>Portals</h4>
+                <a href="{% url 'accounts:login' %}">Student login</a>
+                <a href="{% url 'accounts:login' %}">Faculty login</a>
+                <a href="{% url 'accounts:login' %}">HOD login</a>
+            </div>
+            <div class="footer-col">
+                <h4>Contact</h4>
+                <a href="mailto:zoology@university.edu">zoology@university.edu</a>
+                <a href="tel:+911234567890">+91 12345 67890</a>
+                <p class="footer-address">Department of Zoology, Main Campus</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>&copy; 2026 Department of Zoology</span>
+            <span class="footer-bottom-links">
+                <a href="#">Privacy</a>
+                <a href="#">Terms</a>
+            </span>
+        </div>
+    </footer>
+</body>
+</html>
