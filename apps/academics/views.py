@@ -67,3 +67,13 @@ def get_semesters_for_batch(request):
     batch_id = request.GET.get('batch_id')
     semesters = Semester.objects.filter(batch_id=batch_id).order_by('number')
     return JsonResponse(list(semesters.values('id', 'number')), safe=False)
+
+
+def get_batches_for_subject(request):
+    subject_id = request.GET.get('subject_id')
+    # Find all batches that are assigned to the faculty for this subject
+    batches = Batch.objects.filter(
+        faculty_mappings__subject_id=subject_id,
+        faculty_mappings__faculty=request.user
+    ).distinct().select_related('academic_session')
+    return JsonResponse([{'id': batch.id, 'name': str(batch.academic_session)} for batch in batches], safe=False)

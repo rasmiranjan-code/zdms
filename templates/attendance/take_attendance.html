@@ -8,6 +8,9 @@
     .data-table th, .data-table td { border: 1px solid var(--line); padding: 12px 15px; text-align: left; font-size: 14px; }
     .data-table th { background-color: var(--paper-2); font-weight: 600; }
     .form-check-input { width: 18px; height: 18px; }
+    .message { padding: 15px; margin-bottom: 20px; border-radius: 8px; }
+    .message.info { background-color: #e7f3fe; color: #31708f; border: 1px solid #bce8f1; }
+    .message.success { background-color: #dff0d8; color: #3c763d; border: 1px solid #d6e9c6; }
 </style>
 
 <div class="container" style="max-width: 800px; margin: 40px auto; padding: 0 32px;">
@@ -18,8 +21,15 @@
         </p>
     </div>
 
-    <form method="post">
-        {% csrf_token %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="message {{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    {% if mode == 'take' or mode == 'edit' %}
+    <form method="post" action="{% url 'attendance:take_attendance' subject_id=subject.id batch_id=batch.id %}">
+    {% endif %}
         <div style="background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 32px; overflow-x: auto;">
             <table class="data-table">
                 <thead>
@@ -35,8 +45,17 @@
                         <td>{{ enrollment.student.get_full_name|default:enrollment.student.username }}</td>
                         <td>{{ enrollment.student.studentprofile.college_roll_number }}</td>
                         <td style="text-align: center;">
+                            {% if mode == 'view' %}
+                                {% if student_attendance_map|get_item:enrollment.student.id %}
+                                    <span style="color: var(--field);">Present</span>
+                                {% else %}
+                                    <span style="color: var(--amber);">Absent</span>
+                                {% endif %}
+                            {% else %}
                             <input type="hidden" name="student_id" value="{{ enrollment.student.id }}">
-                            <input type="checkbox" class="form-check-input" name="is_present" value="{{ enrollment.student.id }}" checked>
+                            <input type="checkbox" class="form-check-input" name="is_present" value="{{ enrollment.student.id }}" 
+                                {% if mode == 'take' %}checked{% elif student_attendance_map|get_item:enrollment.student.id %}checked{% endif %}>
+                            {% endif %}
                         </td>
                     </tr>
                     {% empty %}
@@ -45,10 +64,18 @@
                 </tbody>
             </table>
             
-            {% if students %}
-            <button type="submit" class="nav-login" style="width: 100%; padding: 12px; font-size: 16px; margin-top: 24px;">Submit Attendance</button>
-            {% endif %}
+            <div style="margin-top: 24px;">
+                {% if mode == 'view' %}
+                    <a href="?mode=edit" class="nav-login" style="width: 100%; text-align: center; display: block; padding: 12px;">Edit Attendance</a>
+                {% elif students %}
+                    <button type="submit" class="nav-login" style="width: 100%; padding: 12px; font-size: 16px;">
+                        {% if mode == 'edit' %}Update Attendance{% else %}Submit Attendance{% endif %}
+                    </button>
+                {% endif %}
+            </div>
         </div>
+    {% if mode == 'take' or mode == 'edit' %}
     </form>
+    {% endif %}
 </div>
 {% endblock %}

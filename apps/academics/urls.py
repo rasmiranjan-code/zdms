@@ -15,4 +15,5 @@ urlpatterns = [
     path('ajax/get-semesters/', views.get_semesters_for_batch, name='ajax_get_semesters'),
     path('subjects/', views.SubjectListView.as_view(), name='subject_list'),
     path('subjects/add/', views.SubjectCreateView.as_view(), name='subject_add'),
+    path('ajax/get-batches/', views.get_batches_for_subject, name='ajax_get_batches'),
 ]
