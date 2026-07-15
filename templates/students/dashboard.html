@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Student Dashboard{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 1040px; margin: 40px auto; padding: 0 32px;">
+    <div style="margin-bottom: 24px;">
+        <h1 style="font-family: 'Source Serif 4', serif; font-size: 28px; font-weight: 600;">Student Dashboard</h1>
+        <p style="color: var(--muted); margin-top: 4px;">Welcome back, {{ user.get_full_name|default:user.username }}.</p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+        <div style="background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 32px;">
+            <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 16px;">My Profile</h2>
+            {% if enrollment %}
+            <dl style="display: grid; grid-template-columns: 150px 1fr; gap: 8px;">
+                <dt>Full Name</dt>
+                <dd>{{ user.get_full_name|default:'-' }}</dd>
+                <dt>Email</dt>
+                <dd>{{ user.email|default:'-' }}</dd>
+                <dt>Phone Number</dt>
+                <dd>{{ user.phone_number|default:'-' }}</dd>
+                <dt>College Roll No.</dt>
+                <dd>{{ user.studentprofile.college_roll_number }}</dd>
+                <dt>University Roll No.</dt>
+                <dd>{{ user.studentprofile.university_roll_number }}</dd>
+                <dt>Batch</dt>
+                <dd>{{ enrollment.batch }}</dd>
+                <dt>Current Semester</dt>
+                <dd>{{ enrollment.current_semester.number }}</dd>
+            </dl>
+            {% else %}
+            <p>No active enrollment found.</p>
+            {% endif %}
+        </div>
+
+        <div style="background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 32px;">
+            <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 16px;">Quick Actions</h2>
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <a href="{% url 'students:attendance' %}" class="portal-card" style="animation: none; opacity: 1; text-align: center;">View My Attendance</a>
+                <a href="{% url 'students:my_faculty' %}" class="portal-card" style="animation: none; opacity: 1; text-align: center;">View My Faculty</a>
+                <a href="#" class="portal-card" style="animation: none; opacity: 1; text-align: center;">View Results</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

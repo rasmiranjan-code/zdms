@@ -1,29 +1,10 @@
 <!-- templates/index.html -->
-
+{% extends "base.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zoology Department Management System</title>
-    <link rel="stylesheet" href="{% static 'css/base.css' %}">
-    <link rel="icon" href="{% static 'images/logo/zdms.png' %}" type="image/png">
-</head>
-<body>
-    <header class="site-header">
-        <div class="brand">
-            <img src="{% static 'images/logo/zdms.png' %}" alt="Department of Zoology logo" class="brand-mark">
-            <span class="brand-name">Department of Zoology</span>
-        </div>
-        <nav class="site-nav">
-            <a href="#about" class="nav-link">About</a>
-            <a href="#alumni" class="nav-link">Alumni</a>
-            <a href="{% url 'accounts:login' %}" class="nav-login">Sign in</a>
-        </nav>
-    </header>
 
-    <main>
+{% block title %}Zoology Department Management System{% endblock %}
+
+{% block content %}
         <section class="hero">
             <p class="eyebrow">Zoology Department &middot; Management System</p>
             <h1>One system for the department's academic work.</h1>
@@ -221,48 +202,4 @@
 
     <a href="#" class="text-link">View complete faculty directory &rarr;</a>
 </section>
-
-    
-
-    <footer class="site-footer">
-        <div class="footer-grid">
-            <div class="footer-col footer-brand">
-                <div class="brand">
-                    <img src="{% static 'images/logo/zdms.png' %}" alt="Department of Zoology logo" class="brand-mark">
-                    <span class="brand-name">Department of Zoology</span>
-                </div>
-                <p class="footer-about">
-                    Academic and administrative records for the Department of Zoology,
-                    covering students, faculty, and alumni.
-                </p>
-            </div>
-            <div class="footer-col">
-                <h4>Department</h4>
-                <a href="#about">About us</a>
-                <a href="#alumni">Alumni</a>
-                <a href="#">Faculty directory</a>
-                <a href="#">Academic calendar</a>
-            </div>
-            <div class="footer-col">
-                <h4>Portals</h4>
-                <a href="{% url 'accounts:login' %}">Student login</a>
-                <a href="{% url 'accounts:login' %}">Faculty login</a>
-                <a href="{% url 'accounts:login' %}">HOD login</a>
-            </div>
-            <div class="footer-col">
-                <h4>Contact</h4>
-                <a href="mailto:zoology@university.edu">zoology@university.edu</a>
-                <a href="tel:+911234567890">+91 12345 67890</a>
-                <p class="footer-address">Department of Zoology, Main Campus</p>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <span>&copy; 2026 Department of Zoology</span>
-            <span class="footer-bottom-links">
-                <a href="#">Privacy</a>
-                <a href="#">Terms</a>
-            </span>
-        </div>
-    </footer>
-</body>
-</html>
+{% endblock %}

@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}All Students{% endblock %}
+
+{% block content %}
+<style>
+    .data-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    .data-table th, .data-table td { border: 1px solid var(--line); padding: 12px 15px; text-align: left; font-size: 14px; }
+    .data-table th { background-color: var(--paper-2); font-weight: 600; }
+    .data-table tbody tr:hover { background-color: var(--paper-1); }
+    .action-link { color: var(--accent); text-decoration: none; font-weight: 500; }
+    .action-link:hover { text-decoration: underline; }
+</style>
+
+<div class="container" style="max-width: 1040px; margin: 40px auto; padding: 0 32px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+        <div>
+            <h1 style="font-family: 'Source Serif 4', serif; font-size: 28px; font-weight: 600;">All Students</h1>
+            <p style="color: var(--muted); margin-top: 4px;">List of all students enrolled in the department.</p>
+        </div>
+        <a href="{% url 'accounts:hod_add_student' %}" class="nav-login">Add New Student</a>
+    </div>
+
+    <!-- Filter Form -->
+    <div style="background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 24px; margin-bottom: 24px;">
+        <form method="get" action="{% url 'students:list' %}">
+            <div style="display: grid; grid-template-columns: 1fr 1fr 120px; gap: 16px;">
+                <select name="batch" class="form-control" style="padding: 8px 12px; border: 1px solid var(--line); border-radius: 6px;">
+                    <option value="">Filter by Batch</option>
+                    {% for batch in all_batches %}
+                        <option value="{{ batch.pk }}" {% if batch.pk == selected_batch %}selected{% endif %}>{{ batch.academic_session }}</option>
+                    {% endfor %}
+                </select>
+                <select name="semester" class="form-control" style="padding: 8px 12px; border: 1px solid var(--line); border-radius: 6px;">
+                    <option value="">Filter by Semester</option>
+                    {% for semester in all_semesters %}
+                        <option value="{{ semester.pk }}" {% if semester.pk == selected_semester %}selected{% endif %}>Semester {{ semester.number }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit" class="nav-login" style="width: 100%; border: none;">Filter</button>
+            </div>
+        </form>
+    </div>
+
+    <div style="background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 32px; overflow-x: auto;">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>College Roll No.</th>
+                    <th>Batch</th>
+                    <th>Current Semester</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for enrollment in enrollments %}
+                <tr>
+                    <td>{{ enrollment.student.get_full_name|default:enrollment.student.username }}</td>
+                    <td>{{ enrollment.student.studentprofile.college_roll_number }}</td>
+                    <td>{{ enrollment.batch }}</td>
+                    <td>{{ enrollment.current_semester.number }}</td>
+                    <td>
+                        <a href="{% url 'students:detail' enrollment.student.pk %}" class="action-link">View Details</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="4" style="text-align: center; padding: 20px;">No students found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

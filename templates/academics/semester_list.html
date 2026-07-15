@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Semesters{% endblock %}
+
+{% block content %}
+<style>
+    .data-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    .data-table th, .data-table td { border: 1px solid var(--line); padding: 12px 15px; text-align: left; font-size: 14px; }
+    .data-table th { background-color: var(--paper-2); font-weight: 600; }
+</style>
+
+<div class="container" style="max-width: 900px; margin: 40px auto; padding: 0 32px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+        <div>
+            <h1 style="font-family: 'Source Serif 4', serif; font-size: 28px; font-weight: 600;">Semesters</h1>
+            <p style="color: var(--muted); margin-top: 4px;">Manage semesters for each batch.</p>
+        </div>
+        <a href="{% url 'academics:semester_add' %}" class="nav-login">Add New Semester</a>
+    </div>
+
+    <div style="background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 32px; overflow-x: auto;">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Semester Number</th>
+                    <th>Batch</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for semester in semesters %}
+                <tr>
+                    <td>{{ semester.number }}</td>
+                    <td>{{ semester.batch }}</td>
+                    <td>{{ semester.get_status_display }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="3" style="text-align: center; padding: 20px;">No semesters found. First, create a Batch.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Faculty Dashboard{% endblock %}
+
+{% block content %}
+<style>
+    .data-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    .data-table th, .data-table td { border: 1px solid var(--line); padding: 12px 15px; text-align: left; font-size: 14px; }
+    .data-table th { background-color: var(--paper-2); font-weight: 600; }
+</style>
+
+<div class="container" style="max-width: 1040px; margin: 40px auto; padding: 0 32px;">
+    <div style="margin-bottom: 24px;">
+        <h1 style="font-family: 'Source Serif 4', serif; font-size: 28px; font-weight: 600;">Faculty Dashboard</h1>
+        <p style="color: var(--muted); margin-top: 4px;">Welcome back, {{ user.get_full_name|default:user.username }}.</p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px;">
+        <div style="background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 32px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <h2 style="font-size: 18px; font-weight: 600;">My Assigned Subjects</h2>
+                <form method="get" style="display: flex; gap: 12px; align-items: center;">
+                    <select name="batch" class="form-control" style="padding: 6px 10px; border: 1px solid var(--line); border-radius: 6px;">
+                        <option value="">Filter by Batch</option>
+                        {% for batch in assigned_batches %}
+                            <option value="{{ batch.pk }}" {% if batch.pk == selected_batch %}selected{% endif %}>{{ batch.academic_session }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit" class="nav-login" style="border: none; padding: 7px 18px;">Filter</button>
+                </form>
+            </div>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Subject</th>
+                        <th>Batch</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for assignment in assignments %}
+                    <tr>
+                        <td>{{ assignment.subject.name }} ({{ assignment.subject.code }})</td>
+                        <td>{{ assignment.batch }}</td>
+                        <td>
+                            <a href="{% url 'attendance:take_attendance' subject_id=assignment.subject.id batch_id=assignment.batch.id %}" class="nav-login" style="padding: 5px 15px; font-size: 13px;">Take Attendance</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="3" style="text-align: center; padding: 20px;">You have not been assigned any subjects yet.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div style="background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 32px;">
+            <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 16px;">Quick Actions</h2>
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <a href="#" class="portal-card" style="animation: none; opacity: 1; text-align: center;">Upload Marks</a>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

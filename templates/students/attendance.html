@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}My Attendance{% endblock %}
+
+{% block content %}
+<style>
+    .attendance-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+    .attendance-table th, .attendance-table td {
+        border: 1px solid var(--line);
+        padding: 12px 15px;
+        text-align: left;
+        font-size: 14px;
+    }
+    .attendance-table th {
+        background-color: var(--paper-2);
+        font-weight: 600;
+    }
+    .attendance-table tr:nth-child(even) {
+        background-color: #fdfbf6;
+    }
+    .progress-bar-container {
+        width: 100%;
+        background-color: var(--paper-2);
+        border-radius: 4px;
+        overflow: hidden;
+    }
+    .progress-bar {
+        height: 10px;
+        background-color: var(--field);
+        border-radius: 4px;
+    }
+    .low-attendance {
+        background-color: var(--amber);
+    }
+</style>
+
+<div class="container" style="max-width: 1040px; margin: 40px auto; padding: 0 32px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+        <div>
+            <h1 style="font-family: 'Source Serif 4', serif; font-size: 28px; font-weight: 600;">My Attendance</h1>
+            <p style="color: var(--muted); margin-top: 4px;">Overall Attendance: <strong>{{ overall_percentage|floatformat:2 }}%</strong></p>
+        </div>
+    </div>
+
+    <div style="background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 32px; overflow-x: auto;">
+        <table class="attendance-table">
+            <thead>
+                <tr>
+                    <th>Subject</th>
+                    <th>Total Classes</th>
+                    <th>Attended</th>
+                    <th style="width: 150px;">Percentage</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in attendance_records %}
+                <tr>
+                    <td>{{ record.subject }}</td>
+                    <td>{{ record.total }}</td>
+                    <td>{{ record.attended }}</td>
+                    <td>
+                        <div class="progress-bar-container" title="{{ record.percentage|floatformat:2 }}%">
+                            <div class="progress-bar {% if record.percentage < 75 %}low-attendance{% endif %}" style="width: {{ record.percentage }}%;"></div>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

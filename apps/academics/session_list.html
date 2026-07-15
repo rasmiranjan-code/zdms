@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Academic Sessions{% endblock %}
+
+{% block content %}
+<style>
+    .data-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    .data-table th, .data-table td { border: 1px solid var(--line); padding: 12px 15px; text-align: left; font-size: 14px; }
+    .data-table th { background-color: var(--paper-2); font-weight: 600; }
+</style>
+
+<div class="container" style="max-width: 900px; margin: 40px auto; padding: 0 32px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+        <div>
+            <h1 style="font-family: 'Source Serif 4', serif; font-size: 28px; font-weight: 600;">Academic Sessions</h1>
+            <p style="color: var(--muted); margin-top: 4px;">Manage academic years for the department.</p>
+        </div>
+        <a href="{% url 'academics:session_add' %}" class="nav-login">Add New Session</a>
+    </div>
+
+    <div style="background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 32px; overflow-x: auto;">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Session</th>
+                    <th>Created On</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for session in sessions %}
+                <tr>
+                    <td>{{ session }}</td>
+                    <td>{{ session.created_at|date:"d M, Y" }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="2" style="text-align: center; padding: 20px;">No academic sessions found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
