@@ -7,6 +7,7 @@
     .data-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
     .data-table th, .data-table td { border: 1px solid var(--line); padding: 12px 15px; text-align: left; font-size: 14px; }
     .data-table th { background-color: var(--paper-2); font-weight: 600; }
+    .quick-actions a { padding: 12px; border-radius: 8px; }
 </style>
 
 <div class="container" style="max-width: 1040px; margin: 40px auto; padding: 0 32px;">
@@ -43,8 +44,7 @@
                         <td>{{ assignment.subject.name }} ({{ assignment.subject.code }})</td>
                         <td>{{ assignment.batch }}</td>
                         <td>
-                            <a href="{% url 'attendance:take_attendance' subject_id=assignment.subject.id batch_id=assignment.batch.id %}" class="nav-login" style="padding: 5px 15px; font-size: 13px;">Take Attendance</a>
-                        </td>
+<a href="{% url 'attendance:take_attendance' subject_id=assignment.subject.id batch_id=assignment.batch.id %}" class="table-btn">Take Attendance</a>                        </td>
                     </tr>
                     {% empty %}
                     <tr><td colspan="3" style="text-align: center; padding: 20px;">You have not been assigned any subjects yet.</td></tr>
@@ -55,12 +55,10 @@
 
         <div style="background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 32px;">
             <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 16px;">Quick Actions</h2>
-            <div style="display: flex; flex-direction: column; gap: 12px;">
-                <a href="{% url 'attendance:attendance_dashboard' %}" class="portal-card" style="animation: none; opacity: 1; text-align: center;">Take Attendance</a>
-                <a href="#" class="portal-card" style="animation: none; opacity: 1; text-align: center;">Upload Marks</a>
-            </div>
+            <div class="quick-actions" style="display: flex; flex-direction: column; gap: 12px;">
+                <a href="{% url 'attendance:attendance_dashboard' %}" class="portal-card" style="animation: none; opacity: 1; text-align: center;">Attendance Dashboard</a>
+<a href="#" class="portal-card" style="animation: none; opacity: 0.6; text-align: center; cursor: not-allowed;" onclick="return false;">Upload Marks (Coming Soon)</a>            </div>
         </div>
     </div>
-
 </div>
 {% endblock %}

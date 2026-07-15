@@ -1,33 +1,38 @@
 /* static/css/base.css */
+/* Department of Zoology — theme: herbarium / field-notebook academic */
 
-@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=Inter:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=Inter:wght@400;500;600;700&display=swap');
 
 :root {
     --ink: #23241f;
-    --paper: #f7f3ea;
-    --paper-2: #efe9d8;
-    --line: #ddd6c4;
+    --paper: #f6f2e7;
+    --paper-2: #ece4d0;
+    --line: #d9d0b8;
     --field: #3b5d42;
-    --field-dark: #263f2b;
-    --field-light: #5c7f5f;
-    --amber: #b6812f;
-    --muted: #726d5e;
-    --shadow: 0 1px 2px rgba(35,36,31,0.05), 0 6px 18px rgba(35,36,31,0.05);
-    --shadow-hover: 0 4px 10px rgba(35,36,31,0.08), 0 18px 34px rgba(35,36,31,0.10);
+    --field-dark: #21391f;
+    --field-light: #6a8f6d;
+    --amber: #a8722e;
+    --amber-light: #c99a52;
+    --muted: #6e6a58;
+    --shadow: 0 1px 2px rgba(35,36,31,0.06), 0 8px 20px rgba(35,36,31,0.06);
+    --shadow-hover: 0 6px 14px rgba(35,36,31,0.10), 0 22px 40px rgba(35,36,31,0.12);
+    --focus-ring: 0 0 0 3px rgba(59,93,66,0.35);
 }
 
 [data-theme="dark"] {
-    --ink: #f7f3ea;
-    --paper: #23241f;
-    --paper-2: #2c2d28;
-    --line: #41423c;
-    --field: #5c7f5f;
-    --field-dark: #7a9f7d;
-    --field-light: #4a6d4c;
-    --amber: #d49f4b;
-    --muted: #938f80;
-    --shadow: 0 1px 2px rgba(0,0,0,0.2), 0 6px 18px rgba(0,0,0,0.2);
-    --shadow-hover: 0 4px 10px rgba(0,0,0,0.3), 0 18px 34px rgba(0,0,0,0.3);
+    --ink: #ece6d6;
+    --paper: #1b1c17;
+    --paper-2: #24261f;
+    --line: #3b3c33;
+    --field: #7ea982;
+    --field-dark: #a8cbab;
+    --field-light: #5c7f5f;
+    --amber: #e0aa5c;
+    --amber-light: #f0c785;
+    --muted: #a29c88;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 20px rgba(0,0,0,0.30);
+    --shadow-hover: 0 6px 16px rgba(0,0,0,0.35), 0 24px 44px rgba(0,0,0,0.40);
+    --focus-ring: 0 0 0 3px rgba(126,169,130,0.45);
 }
 
 * {
@@ -36,15 +41,20 @@
     box-sizing: border-box;
 }
 
+html {
+    scroll-behavior: smooth;
+}
+
 body {
     font-family: 'Inter', -apple-system, sans-serif;
     background:
-        radial-gradient(900px 460px at 12% -8%, rgba(59,93,66,0.08), transparent 60%),
-        radial-gradient(800px 460px at 100% 0%, rgba(182,129,47,0.07), transparent 55%),
+        radial-gradient(900px 460px at 12% -8%, rgba(59,93,66,0.09), transparent 60%),
+        radial-gradient(800px 460px at 100% 0%, rgba(168,114,46,0.08), transparent 55%),
         var(--paper);
     color: var(--ink);
     line-height: 1.55;
     min-height: 100vh;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* faint specimen-label texture */
@@ -59,7 +69,24 @@ body::before {
     z-index: 0;
 }
 
+[data-theme="dark"] body::before {
+    background-image: radial-gradient(rgba(236,230,214,0.035) 1px, transparent 1px);
+}
+
 header, main, footer { position: relative; z-index: 1; }
+
+a { color: inherit; }
+
+::selection {
+    background: var(--field);
+    color: #fff;
+}
+
+:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+    border-radius: 4px;
+}
 
 /* ---------- header ---------- */
 
@@ -106,15 +133,31 @@ header, main, footer { position: relative; z-index: 1; }
 }
 
 .nav-link {
+    position: relative;
     text-decoration: none;
     color: var(--muted);
     font-size: 14px;
     font-weight: 500;
     transition: color 0.2s ease;
+    padding-bottom: 2px;
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 100%;
+    bottom: -2px;
+    height: 1px;
+    background: var(--field);
+    transition: right 0.25s cubic-bezier(0.65,0,0.35,1);
 }
 
 .nav-link:hover {
     color: var(--field);
+}
+
+.nav-link:hover::after {
+    right: 0;
 }
 
 .nav-login {
@@ -127,9 +170,14 @@ header, main, footer { position: relative; z-index: 1; }
     border: 1px solid var(--line);
     border-radius: 999px;
     background: #fff;
-    transition: color 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
+    transition: color 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease, transform 0.2s ease;
     overflow: hidden;
     z-index: 1;
+    display: inline-block;
+}
+
+[data-theme="dark"] .nav-login {
+    background: var(--paper-2);
 }
 
 .nav-login::before {
@@ -146,6 +194,10 @@ header, main, footer { position: relative; z-index: 1; }
     color: #fff;
     border-color: var(--field-dark);
     box-shadow: 0 6px 16px rgba(59,93,66,0.25);
+}
+
+.nav-login:active {
+    transform: scale(0.97);
 }
 
 .nav-login:hover::before { transform: translateX(0); }
@@ -236,11 +288,14 @@ header, main, footer { position: relative; z-index: 1; }
     animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+[data-theme="dark"] .portal-card {
+    background: var(--paper-2);
+}
+
 .portal-card:nth-child(1) { animation-delay: 0.44s; }
 .portal-card:nth-child(2) { animation-delay: 0.55s; }
 .portal-card:nth-child(3) { animation-delay: 0.66s; }
 
-/* color fill that slides in on hover, same idea as .nav-login */
 .portal-card::before {
     content: '';
     position: absolute;
@@ -251,7 +306,6 @@ header, main, footer { position: relative; z-index: 1; }
     z-index: -1;
 }
 
-/* specimen-label top rule */
 .portal-card::after {
     content: '';
     position: absolute;
@@ -278,7 +332,6 @@ header, main, footer { position: relative; z-index: 1; }
     color: rgba(255,255,255,0.82);
 }
 
-/* small monogram badge before each label, styled like a museum specimen tag */
 .portal-label {
     display: flex;
     align-items: center;
@@ -297,13 +350,6 @@ header, main, footer { position: relative; z-index: 1; }
     background: var(--paper-2);
     border: 1px solid var(--line);
     transition: background 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
-}
-
-.portal-card:nth-child(1) .portal-label::before { content: 'S'; }
-.portal-card:nth-child(2) .portal-label::before { content: 'F'; }
-.portal-card:nth-child(3) .portal-label::before { content: 'H'; }
-
-.portal-label::before {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -312,6 +358,10 @@ header, main, footer { position: relative; z-index: 1; }
     font-weight: 600;
     color: var(--field);
 }
+
+.portal-card:nth-child(1) .portal-label::before { content: 'S'; }
+.portal-card:nth-child(2) .portal-label::before { content: 'F'; }
+.portal-card:nth-child(3) .portal-label::before { content: 'H'; }
 
 .portal-card:hover .portal-label::before {
     background: #fff;
@@ -325,6 +375,7 @@ header, main, footer { position: relative; z-index: 1; }
     color: var(--muted);
     line-height: 1.5;
     padding-left: 38px;
+    transition: color 0.3s ease;
 }
 
 .portal-arrow {
@@ -380,7 +431,7 @@ header, main, footer { position: relative; z-index: 1; }
     color: var(--muted);
 }
 
-/* ---------- section eyebrow (shared by about + alumni) ---------- */
+/* ---------- section eyebrow ---------- */
 
 .section-eyebrow {
     display: inline-flex;
@@ -454,6 +505,11 @@ header, main, footer { position: relative; z-index: 1; }
     gap: 16px;
     padding: 20px 0;
     border-top: 1px solid var(--line);
+    transition: padding-left 0.25s ease;
+}
+
+.about-item:hover {
+    padding-left: 6px;
 }
 
 .about-item-mark {
@@ -515,12 +571,17 @@ header, main, footer { position: relative; z-index: 1; }
     border: 1px solid var(--line);
     border-radius: 10px;
     box-shadow: var(--shadow);
-    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+[data-theme="dark"] .alumni-card {
+    background: var(--paper-2);
 }
 
 .alumni-card:hover {
     transform: translateY(-3px);
     box-shadow: var(--shadow-hover);
+    border-color: var(--field-light);
 }
 
 .alumni-initial {
@@ -536,6 +597,10 @@ header, main, footer { position: relative; z-index: 1; }
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+[data-theme="dark"] .alumni-initial {
+    background: var(--paper);
 }
 
 .alumni-card h3 {
@@ -594,12 +659,17 @@ header, main, footer { position: relative; z-index: 1; }
     border: 1px solid var(--line);
     border-radius: 10px;
     box-shadow: var(--shadow);
-    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+[data-theme="dark"] .faculty-card {
+    background: var(--paper-2);
 }
 
 .faculty-card:hover {
     transform: translateY(-3px);
     box-shadow: var(--shadow-hover);
+    border-color: var(--field-light);
 }
 
 .faculty-initial {
@@ -615,6 +685,10 @@ header, main, footer { position: relative; z-index: 1; }
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+[data-theme="dark"] .faculty-initial {
+    background: var(--paper);
 }
 
 .faculty-card h3 {
@@ -716,15 +790,134 @@ header, main, footer { position: relative; z-index: 1; }
     color: var(--field);
 }
 
+/* ---------- dashboard ---------- */
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 32px;
+    align-items: start;
+}
+
+/* card surface used across dashboard panels */
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.data-table th,
+.data-table td {
+    border: 1px solid var(--line);
+    padding: 12px 15px;
+    text-align: left;
+    font-size: 14px;
+}
+
+.data-table th {
+    background-color: var(--paper-2);
+    font-weight: 600;
+}
+
+.data-table tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+.data-table tbody tr:hover {
+    background-color: var(--paper-2);
+}
+
+/* Simple pill button for table rows / compact contexts
+   (no sliding fill — keeps it crisp inside bordered table cells) */
+.table-btn {
+    display: inline-block;
+    text-decoration: none;
+    color: var(--ink);
+    font-size: 13px;
+    font-weight: 500;
+    padding: 6px 16px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: #fff;
+    transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+}
+
+[data-theme="dark"] .table-btn {
+    background: var(--paper-2);
+}
+
+.table-btn:hover {
+    background: var(--field);
+    color: #fff;
+    border-color: var(--field-dark);
+}
+
+.table-btn:active {
+    transform: scale(0.96);
+}
+
+/* ---------- theme toggle (optional, if present in base template) ---------- */
+
+.theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 1px solid var(--line);
+    background: #fff;
+    color: var(--muted);
+    cursor: pointer;
+    transition: color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+[data-theme="dark"] .theme-toggle {
+    background: var(--paper-2);
+}
+
+.theme-toggle:hover {
+    color: var(--field);
+    border-color: var(--field-light);
+    transform: rotate(14deg);
+}
+
+/* ---------- scrollbar (subtle, in-theme) ---------- */
+
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--paper);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--line);
+    border-radius: 6px;
+    border: 2px solid var(--paper);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--field-light);
+}
+
 /* ---------- responsive ---------- */
+
+@media (max-width: 1080px) {
+    .about-section,
+    .footer-grid { padding-left: 24px; padding-right: 24px; }
+}
 
 @media (max-width: 900px) {
     .about-section {
         grid-template-columns: 1fr;
         gap: 36px;
     }
-    .alumni-grid {
-        grid-template-columns: 1fr;
+    .alumni-grid,
+    .faculty-grid {
+        grid-template-columns: repeat(2, 1fr);
     }
     .dashboard-grid {
         grid-template-columns: 1fr;
@@ -733,15 +926,28 @@ header, main, footer { position: relative; z-index: 1; }
         grid-template-columns: 1fr 1fr;
         gap: 32px 24px;
     }
+    .portal-select {
+        grid-template-columns: 1fr 1fr;
+    }
+    .stats-strip {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px 8px;
+    }
 }
 
 @media (max-width: 720px) {
     .portal-select {
         grid-template-columns: 1fr;
+        padding: 0 24px 64px;
+    }
+    .alumni-grid,
+    .faculty-grid {
+        grid-template-columns: 1fr;
     }
     .stats-strip {
         grid-template-columns: repeat(2, 1fr);
         gap: 20px 0;
+        padding: 0 24px;
     }
     .stat {
         border-left: none;
@@ -752,31 +958,69 @@ header, main, footer { position: relative; z-index: 1; }
     .stat:nth-child(2) {
         border-top: none;
     }
+    .hero {
+        padding: 64px 24px 44px;
+    }
     .hero h1 {
         font-size: 30px;
     }
     .site-header {
-        padding: 18px 24px;
+        padding: 16px 20px;
         flex-wrap: wrap;
-        gap: 14px;
+        gap: 12px;
+    }
+    .site-nav {
+        gap: 16px;
+        flex-wrap: wrap;
+    }
+    .about-section,
+    .alumni-section,
+    .faculty-section {
+        padding-left: 20px;
+        padding-right: 20px;
+        padding-bottom: 72px;
     }
     .footer-grid {
         grid-template-columns: 1fr;
+        padding: 0 20px 32px;
+    }
+    .site-footer {
+        padding: 40px 0 0;
     }
     .footer-bottom {
         flex-direction: column;
         gap: 10px;
         align-items: flex-start;
+        padding: 22px 20px 26px;
+    }
+    .data-table th,
+    .data-table td {
+        padding: 9px 10px;
+        font-size: 13px;
     }
 }
 
-/* ---------- dashboard ---------- */
-.dashboard-grid {
-    display: grid;
-    grid-template-columns: 1fr 2fr;
-    gap: 32px;
-    align-items: start;
+@media (max-width: 480px) {
+    .portal-card {
+        padding: 24px 20px 22px;
+    }
+    .hero h1 {
+        font-size: 26px;
+    }
+    .brand-name {
+        font-size: 14px;
+    }
+    .nav-login {
+        padding: 8px 16px;
+        font-size: 13px;
+    }
+    .data-table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
 }
+
 @media (prefers-reduced-motion: reduce) {
     * { animation: none !important; transition: none !important; opacity: 1 !important; }
 }
