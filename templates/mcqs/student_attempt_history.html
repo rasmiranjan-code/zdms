@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Attempt History for {{ student.get_full_name }}{% endblock %}
+
+{% block content %}
+<style>
+    .data-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    .data-table th, .data-table td { border: 1px solid var(--line); padding: 12px 15px; text-align: left; font-size: 14px; }
+    .data-table th { background-color: var(--paper-2); font-weight: 600; }
+    .correct { color: var(--field); }
+    .incorrect { color: var(--amber); }
+</style>
+
+<div class="container" style="max-width: 1040px; margin: 40px auto; padding: 0 32px;">
+    <div style="margin-bottom: 24px;">
+        <h1 style="font-family: 'Source Serif 4', serif; font-size: 28px; font-weight: 600;">MCQ Attempt History</h1>
+        <p style="color: var(--muted); margin-top: 4px;">Showing all practice attempts for <strong>{{ student.get_full_name|default:student.username }}</strong>.</p>
+    </div>
+
+    <div style="background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 32px; overflow-x: auto;">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Date & Time</th>
+                    <th>Subject</th>
+                    <th>Question</th>
+                    <th>Selected Answer</th>
+                    <th>Result</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for attempt in attempts %}
+                <tr>
+                    <td>{{ attempt.created_at|date:"d M Y, P" }}</td>
+                    <td>{{ attempt.question.subject.name }}</td>
+                    <td>{{ attempt.question.question_text|truncatewords:15 }}</td>
+                    <td>{{ attempt.selected_answer.answer_text|truncatewords:10 }}</td>
+                    <td>
+                        {% if attempt.is_correct %}
+                            <span class="correct">Correct</span>
+                        {% else %}
+                            <span class="incorrect">Incorrect</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                    <tr><td colspan="5" style="text-align: center; padding: 20px;">This student has not attempted any MCQs yet.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

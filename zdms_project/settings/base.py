@@ -33,6 +33,8 @@ INSTALLED_APPS = [
     'apps.reports',
     'apps.dashboard',
     'apps.audit',
+    'apps.mcqs',  # <-- Is line ko yahan jodein
+
 ]
 
 MIDDLEWARE = [

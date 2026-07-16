@@ -1,33 +1,58 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}HOD Dashboard{% endblock %}
 
 {% block content %}
-<div class="container" style="max-width: 1040px; margin: 40px auto; padding: 0 32px;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+<div class="sd-wrap">
+    <!-- Header -->
+    <div class="sd-header">
         <div>
-            <h1 style="font-family: 'Source Serif 4', serif; font-size: 28px; font-weight: 600;">HOD Dashboard</h1>
-            <p style="color: var(--muted); margin-top: 4px;">Welcome back, {{ user.get_full_name|default:user.username }}.</p>
-        </div>
-        <div>
-            <div style="display: flex; gap: 12px;">
-                <a href="{% url 'accounts:hod_settings' %}" class="nav-login" style="background-color: var(--paper-3); color: var(--ink);">Settings</a>
-                <a href="{% url 'accounts:hod_add_student' %}" class="nav-login">Add New Student</a>
+            <div class="sd-header-greeting">👑 HOD Portal</div>
+            <h1>Welcome, {{ user.get_full_name|default:user.username }}</h1>
+            <div class="sd-header-sub">
+                <span>Oversee and manage all departmental activities.</span>
             </div>
+        </div>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+            <a href="{% url 'accounts:hod_settings' %}" class="nav-login" style="background-color: var(--paper-2); color: var(--ink);">Settings</a>
+            <a href="{% url 'accounts:hod_add_student' %}" class="nav-login">Add Student</a>
+            <a href="{% url 'accounts:hod_add_faculty' %}" class="nav-login">Add Faculty</a>
         </div>
     </div>
 
-    <div style="background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 32px;">
-        <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 16px;">Quick Actions</h2>
-        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px;">
-            <!-- Add more dashboard cards here -->
-            <a href="{% url 'accounts:faculty_assignment_list' %}" class="portal-card" style="animation: none; opacity: 1;">Manage Faculty</a>
-            <a href="{% url 'students:list' %}" class="portal-card" style="animation: none; opacity: 1;">View All Students</a>
-            <a href="{% url 'academics:session_list' %}" class="portal-card" style="animation: none; opacity: 1;">Academic Sessions</a>
-            <a href="{% url 'academics:batch_list' %}" class="portal-card" style="animation: none; opacity: 1;">Manage Batches</a>
-            <a href="{% url 'academics:semester_list' %}" class="portal-card" style="animation: none; opacity: 1;">Manage Semesters</a>
-            <a href="{% url 'academics:subject_list' %}" class="portal-card" style="animation: none; opacity: 1;">Manage Subjects</a>
+    <!-- Stats -->
+    <div class="sd-stats">
+        <div class="sd-stat-card sd-stat-1"><div class="sd-stat-icon">🎓</div><div class="sd-stat-value">{{ student_count }}</div><div class="sd-stat-label">Total Students</div></div>
+        <div class="sd-stat-card sd-stat-2"><div class="sd-stat-icon">👥</div><div class="sd-stat-value">{{ faculty_count }}</div><div class="sd-stat-label">Total Faculty</div></div>
+        <div class="sd-stat-card sd-stat-3"><div class="sd-stat-icon">📚</div><div class="sd-stat-value">{{ subject_count }}</div><div class="sd-stat-label">Total Subjects</div></div>
+        <div class="sd-stat-card sd-stat-4"><div class="sd-stat-icon">📦</div><div class="sd-stat-value">{{ batch_count }}</div><div class="sd-stat-label">Total Batches</div></div>
+    </div>
+
+    <!-- Management Panel -->
+    <div class="sd-panel">
+        <div class="sd-panel-header">
+            <div>
+                <div class="sd-panel-title">Management Portal</div>
+                <div class="sd-panel-sub">Access all administrative sections from here.</div>
+            </div>
+        </div>
+        <div class="sd-subjects-grid">
+            <a href="{% url 'students:list' %}" class="sd-subject-card"><div class="sd-subject-name">View All Students</div><div class="sd-subject-code">Manage student records</div></a>
+            <a href="{% url 'accounts:faculty_assignment_list' %}" class="sd-subject-card"><div class="sd-subject-name">Manage Faculty</div><div class="sd-subject-code">Assign subjects and roles</div></a>
+            <a href="{% url 'academics:session_list' %}" class="sd-subject-card"><div class="sd-subject-name">Academic Sessions</div><div class="sd-subject-code">Manage academic years</div></a>
+            <a href="{% url 'academics:batch_list' %}" class="sd-subject-card"><div class="sd-subject-name">Manage Batches</div><div class="sd-subject-code">Create and view batches</div></a>
+            <a href="{% url 'academics:semester_list' %}" class="sd-subject-card"><div class="sd-subject-name">Manage Semesters</div><div class="sd-subject-code">Organize semesters</div></a>
+            <a href="{% url 'academics:subject_list' %}" class="sd-subject-card"><div class="sd-subject-name">Manage Subjects</div><div class="sd-subject-code">Add or edit subjects</div></a>
+            <a href="{% url 'mcqs:hod_select_semester' %}" class="sd-subject-card"><div class="sd-subject-name">Manage MCQs</div><div class="sd-subject-code">Review all questions</div></a>
+            <a href="{% url 'mcqs:student_accuracy_report' %}" class="sd-subject-card"><div class="sd-subject-name">Student Reports</div><div class="sd-subject-code">Analyze performance</div></a>
+            <a href="{% url 'notices:upload_notice' %}" class="sd-subject-card"><div class="sd-subject-name">Upload Notice</div><div class="sd-subject-code">Post announcements</div></a>
         </div>
     </div>
 </div>
+
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+<style>
+    .sd-subjects-grid { grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); }
+</style>
 {% endblock %}

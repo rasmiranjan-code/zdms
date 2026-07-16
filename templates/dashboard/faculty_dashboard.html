@@ -1,64 +1,99 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Faculty Dashboard{% endblock %}
 
 {% block content %}
-<style>
-    .data-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-    .data-table th, .data-table td { border: 1px solid var(--line); padding: 12px 15px; text-align: left; font-size: 14px; }
-    .data-table th { background-color: var(--paper-2); font-weight: 600; }
-    .quick-actions a { padding: 12px; border-radius: 8px; }
-</style>
-
-<div class="container" style="max-width: 1040px; margin: 40px auto; padding: 0 32px;">
-    <div style="margin-bottom: 24px;">
-        <h1 style="font-family: 'Source Serif 4', serif; font-size: 28px; font-weight: 600;">Faculty Dashboard</h1>
-        <p style="color: var(--muted); margin-top: 4px;">Welcome back, {{ user.get_full_name|default:user.username }}.</p>
+<div class="sd-wrap">
+    <!-- Header -->
+    <div class="sd-header">
+        <div>
+            <div class="sd-header-greeting">💼 Faculty Portal</div>
+            <h1>Welcome, {{ user.get_full_name|default:user.username }}</h1>
+        </div>
+        <div class="sd-header-date" id="sdDate"></div>
     </div>
 
-    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px;">
-        <div style="background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 32px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                <h2 style="font-size: 18px; font-weight: 600;">My Assigned Subjects</h2>
+    <div class="sd-main">
+        <!-- Left Column -->
+        <div class="sd-col-left">
+            <div class="sd-panel">
+                <div class="sd-panel-header">
+                    <div>
+                        <div class="sd-panel-title">My Assigned Subjects</div>
+                        <div class="sd-panel-sub">Subjects assigned to you for teaching.</div>
+                    </div>
+                </div>
                 <form method="get" style="display: flex; gap: 12px; align-items: center;">
-                    <select name="batch" class="form-control" style="padding: 6px 10px; border: 1px solid var(--line); border-radius: 6px;">
+                    <select name="batch" class="form-control" style="padding: 8px 12px; border-radius: 8px; flex-grow: 1;">
                         <option value="">Filter by Batch</option>
                         {% for batch in assigned_batches %}
                             <option value="{{ batch.pk }}" {% if batch.pk == selected_batch %}selected{% endif %}>{{ batch.academic_session }}</option>
                         {% endfor %}
                     </select>
-                    <button type="submit" class="nav-login" style="border: none; padding: 7px 18px;">Filter</button>
+                    <button type="submit" class="nav-login" style="border: none; padding: 9px 22px;">Filter</button>
                 </form>
+                <div class="table-responsive" style="overflow-x: auto;">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Subject</th>
+                                <th>Batch</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for assignment in assignments %}
+                            <tr>
+                                <td>{{ assignment.subject.name }} ({{ assignment.subject.code }})</td>
+                                <td>{{ assignment.batch }}</td>
+                                <td>
+                                    <a href="{% url 'attendance:attendance_dashboard' %}?subject={{ assignment.subject.id }}&batch={{ assignment.batch.id }}" class="table-btn">Take Attendance</a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="3" style="text-align: center; padding: 20px;">You have not been assigned any subjects yet.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Subject</th>
-                        <th>Batch</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for assignment in assignments %}
-                    <tr>
-                        <td>{{ assignment.subject.name }} ({{ assignment.subject.code }})</td>
-                        <td>{{ assignment.batch }}</td>
-                        <td>
-<a href="{% url 'attendance:take_attendance' subject_id=assignment.subject.id batch_id=assignment.batch.id %}" class="table-btn">Take Attendance</a>                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr><td colspan="3" style="text-align: center; padding: 20px;">You have not been assigned any subjects yet.</td></tr>
-                    {% endfor %}
-                </tbody>
-            </table>
         </div>
 
-        <div style="background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 32px;">
-            <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 16px;">Quick Actions</h2>
-            <div class="quick-actions" style="display: flex; flex-direction: column; gap: 12px;">
-                <a href="{% url 'attendance:attendance_dashboard' %}" class="portal-card" style="animation: none; opacity: 1; text-align: center;">Attendance Dashboard</a>
-<a href="#" class="portal-card" style="animation: none; opacity: 0.6; text-align: center; cursor: not-allowed;" onclick="return false;">Upload Marks (Coming Soon)</a>            </div>
+        <!-- Right Sidebar -->
+        <div class="sd-col-right">
+            <div class="sd-panel">
+                <div class="sd-panel-header">
+                    <div class="sd-panel-title">Quick Actions</div>
+                </div>
+                <div class="sd-actions-grid" style="grid-template-columns: 1fr;">
+                    <a href="{% url 'attendance:attendance_dashboard' %}" class="sd-action-card"><div class="sd-action-icon">📅</div><div class="sd-action-text"><div class="sd-action-title">Take Attendance</div></div><div class="sd-action-arrow">→</div></a>
+                    <a href="{% url 'mcqs:faculty_select_semester' %}" class="sd-action-card"><div class="sd-action-icon">🎯</div><div class="sd-action-text"><div class="sd-action-title">Manage MCQs</div></div><div class="sd-action-arrow">→</div></a>
+                    <a href="{% url 'mcqs:student_accuracy_report' %}" class="sd-action-card"><div class="sd-action-icon">📊</div><div class="sd-action-text"><div class="sd-action-title">Student Reports</div></div><div class="sd-action-arrow">→</div></a>
+                    <a href="{% url 'notices:upload_notice' %}" class="sd-action-card"><div class="sd-action-icon">📢</div><div class="sd-action-text"><div class="sd-action-title">Upload Notice</div></div><div class="sd-action-arrow">→</div></a>
+                    <a href="#" class="sd-action-card" style="opacity: 0.6; cursor: not-allowed;" onclick="return false;"><div class="sd-action-icon">🏆</div><div class="sd-action-text"><div class="sd-action-title">Upload Marks</div><div class="sd-action-desc">Coming Soon</div></div></a>
+                    <a href="{% url 'notes:select_semester' %}" class="sd-action-card">
+    <div class="sd-action-icon">📚</div>
+    <div class="sd-action-text">
+        <div class="sd-action-title">Digital Library</div>
+    </div>
+    <div class="sd-action-arrow">→</div>
+</a>
+
+                </div>
+            </div>
         </div>
     </div>
 </div>
+
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+<script>
+(function(){
+    var dateEl = document.getElementById('sdDate');
+    if (dateEl) {
+        var options = { weekday:'long', year:'numeric', month:'long', day:'numeric' };
+        dateEl.textContent = new Date().toLocaleDateString(undefined, options);
+    }
+})();
+</script>
 {% endblock %}

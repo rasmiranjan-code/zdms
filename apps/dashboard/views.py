@@ -2,9 +2,21 @@
 # This file can be used for more complex dashboard logic later.
 
 from django.views.generic import TemplateView
-from apps.core.mixins import FacultyRequiredMixin
+from apps.core.mixins import FacultyRequiredMixin, HODRequiredMixin
 from apps.accounts.models import FacultySubjectBatchMapping, User
-from apps.academics.models import Batch
+from apps.academics.models import Batch, Subject
+
+
+class HODDashboardView(HODRequiredMixin, TemplateView):
+    template_name = 'registration/hod_dashboard.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['student_count'] = User.objects.filter(role='STUDENT').count()
+        context['faculty_count'] = User.objects.filter(role='FACULTY').count()
+        context['subject_count'] = Subject.objects.count()
+        context['batch_count'] = Batch.objects.count()
+        return context
 
 
 class FacultyDashboardView(FacultyRequiredMixin, TemplateView):

@@ -1,47 +1,224 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Student Dashboard{% endblock %}
 
 {% block content %}
-<div class="container" style="max-width: 1040px; margin: 40px auto; padding: 0 32px;">
-    <div style="margin-bottom: 24px;">
-        <h1 style="font-family: 'Source Serif 4', serif; font-size: 28px; font-weight: 600;">Student Dashboard</h1>
-        <p style="color: var(--muted); margin-top: 4px;">Welcome back, {{ user.get_full_name|default:user.username }}.</p>
-    </div>
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
 
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
-        <div style="background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 32px;">
-            <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 16px;">My Profile</h2>
+<div class="sd-wrap">
+
+    <!-- ===== HEADER ===== -->
+    <div class="sd-header">
+        <div>
+            <div class="sd-header-greeting" id="sdGreeting">👋 Welcome</div>
+            <h1>{{ user.get_full_name|default:user.username }}</h1>
             {% if enrollment %}
-            <dl style="display: grid; grid-template-columns: 150px 1fr; gap: 8px;">
-                <dt>Full Name</dt>
-                <dd>{{ user.get_full_name|default:'-' }}</dd>
-                <dt>Email</dt>
-                <dd>{{ user.email|default:'-' }}</dd>
-                <dt>Phone Number</dt>
-                <dd>{{ user.phone_number|default:'-' }}</dd>
-                <dt>College Roll No.</dt>
-                <dd>{{ user.studentprofile.college_roll_number }}</dd>
-                <dt>University Roll No.</dt>
-                <dd>{{ user.studentprofile.university_roll_number }}</dd>
-                <dt>Batch</dt>
-                <dd>{{ enrollment.batch }}</dd>
-                <dt>Current Semester</dt>
-                <dd>{{ enrollment.current_semester.number }}</dd>
-            </dl>
-            {% else %}
-            <p>No active enrollment found.</p>
+            <div class="sd-header-sub">
+                <span>🎓 Semester {{ enrollment.current_semester.number }}</span>
+                <span>📦 Batch {{ enrollment.batch }}</span>
+            </div>
             {% endif %}
         </div>
+        <div class="sd-header-date" id="sdDate"></div>
+    </div>
 
-        <div style="background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 32px;">
-            <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 16px;">Quick Actions</h2>
-            <div style="display: flex; flex-direction: column; gap: 12px;">
-                <a href="{% url 'students:attendance' %}" class="portal-card" style="animation: none; opacity: 1; text-align: center;">View My Attendance</a>
-                <a href="{% url 'students:my_faculty' %}" class="portal-card" style="animation: none; opacity: 1; text-align: center;">View My Faculty</a>
-                <a href="#" class="portal-card" style="animation: none; opacity: 1; text-align: center;">View Results</a>
-            </div>
+    <!-- ===== STATS ===== -->
+    <div class="sd-stats">
+        <div class="sd-stat-card sd-stat-1">
+            <div class="sd-stat-icon">📚</div>
+            <div class="sd-stat-value">{{ subjects|length }}</div>
+            <div class="sd-stat-label">Total Subjects</div>
+        </div>
+        <div class="sd-stat-card sd-stat-2">
+            <div class="sd-stat-icon">📝</div>
+            <div class="sd-stat-value">{{ mcq_accuracy|floatformat:1 }}%</div>
+            <div class="sd-stat-label">MCQ Accuracy</div>
+        </div>
+        <div class="sd-stat-card sd-stat-3">
+            <div class="sd-stat-icon">🎯</div>
+            <div class="sd-stat-value">{{ total_mcq_attempts }}</div>
+            <div class="sd-stat-label">Total MCQ Attempts</div>
+        </div>
+        <div class="sd-stat-card sd-stat-4">
+            <div class="sd-stat-icon">📅</div>
+            <div class="sd-stat-value">{{ attendance_percentage|floatformat:1 }}%</div>
+            <div class="sd-stat-label">Overall Attendance</div>
         </div>
     </div>
-</div>
+
+    <!-- ===== MAIN ===== -->
+    <div class="sd-main">
+
+        <!-- LEFT COLUMN -->
+        <div class="sd-col-left">
+
+            <!-- Subjects -->
+            <div class="sd-panel">
+                <div class="sd-panel-header">
+                    <div>
+                        <div class="sd-panel-title">My Subjects</div>
+                        <div class="sd-panel-sub">Semester {{ enrollment.current_semester.number }} subjects</div>
+                    </div>
+                    <span class="sd-badge">{{ subjects|length }} Subjects</span>
+                </div>
+                <div class="sd-subjects-grid">
+                    {% for subject in subjects %}
+                        <div class="sd-subject-card">
+                            <div class="sd-subject-name">{{ subject.name }}</div>
+                            <div class="sd-subject-code">{{ subject.code }}</div>
+                            <a href="{% url 'mcqs:practice_questions' subject.id %}" class="sd-subject-btn">
+                                Practice MCQs →
+                            </a>
+                        </div>
+                    {% empty %}
+                        <div class="sd-empty">No subjects assigned for this semester.</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="sd-panel">
+                <div class="sd-panel-header">
+                    <div class="sd-panel-title">Quick Actions</div>
+                </div>
+                <div class="sd-actions-grid">
+                    <a href="{% url 'students:attendance' %}" class="sd-action-card">
+                        <div class="sd-action-icon">📅</div>
+                        <div class="sd-action-text">
+                            <div class="sd-action-title">Attendance</div>
+                            <div class="sd-action-desc">View records</div>
+                        </div>
+                        <div class="sd-action-arrow">→</div>
+                    </a>
+                    <a href="{% url 'results:my_results' %}" class="sd-action-card">
+                        <div class="sd-action-icon">🏆</div>
+                        <div class="sd-action-text">
+                            <div class="sd-action-title">Results</div>
+                            <div class="sd-action-desc">Check scores</div>
+                        </div>
+                        <div class="sd-action-arrow">→</div>
+                    </a>
+                    <a href="{% url 'mcqs:student_select_semester' %}" class="sd-action-card">
+                        <div class="sd-action-icon">🎯</div>
+                        <div class="sd-action-text">
+                            <div class="sd-action-title">Practice MCQs</div>
+                            <div class="sd-action-desc">Sharpen skills</div>
+                        </div>
+                        <div class="sd-action-arrow">→</div>
+                    </a>
+                    <a href="{% url 'notices:notice_list' %}" class="sd-action-card">
+                        <div class="sd-action-icon">📢</div>
+                        <div class="sd-action-text">
+                            <div class="sd-action-title">Notices</div>
+                            <div class="sd-action-desc">Announcements</div>
+                        </div>
+                        <div class="sd-action-arrow">→</div>
+                    </a>
+                    <a href="{% url 'students:my_faculty' %}" class="sd-action-card">
+                        <div class="sd-action-icon">👥</div>
+                        <div class="sd-action-text">
+                            <div class="sd-action-title">My Faculty</div>
+                            <div class="sd-action-desc">View your teachers</div>
+                        </div>
+                        <div class="sd-action-arrow">→</div>
+                    </a>
+                    <a href="{% url 'students:profile' %}" class="sd-action-card">
+                        <div class="sd-action-icon">👤</div>
+                        <div class="sd-action-text">
+                            <div class="sd-action-title">Profile</div>
+                            <div class="sd-action-desc">Manage account</div>
+                        </div>
+                        <div class="sd-action-arrow">→</div>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- RIGHT SIDEBAR -->
+        <div class="sd-col-right">
+
+            <!-- Performance -->
+            <div class="sd-panel">
+                <div class="sd-panel-header">
+                    <div class="sd-panel-title">Performance Overview</div>
+                </div>
+                <div class="sd-progress-row">
+                    <div class="sd-progress-item">
+                        <div class="sd-ring" style="--pct:{{ mcq_accuracy|default:0 }}; --ring-color:var(--primary);">
+                            <div class="sd-ring-value">{{ mcq_accuracy|floatformat:0 }}%</div>
+                        </div>
+                        <div class="sd-progress-label">MCQ Accuracy</div>
+                    </div>
+                    <div class="sd-progress-item">
+                        <div class="sd-ring" style="--pct:{{ attendance_percentage|default:0 }}; --ring-color:var(--success);">
+                            <div class="sd-ring-value">{{ attendance_percentage|floatformat:0 }}%</div>
+                        </div>
+                        <div class="sd-progress-label">Attendance</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notice -->
+            {% if latest_notice %}
+            <div class="sd-panel">
+                <div class="sd-panel-header">
+                    <div class="sd-panel-title">Latest Notice</div>
+                    <span class="sd-badge">New</span>
+                </div>
+                <div class="sd-notice-card">
+                    <div class="sd-notice-top">
+                        <div class="sd-notice-title">{{ latest_notice.title }}</div>
+                        <div class="sd-notice-date">{{ latest_notice.created_at|date:"d M" }}</div>
+                    </div>
+                    {% if latest_notice.content %}
+                    <div class="sd-notice-desc">
+                        {{ latest_notice.content|truncatewords:20 }}
+                    </div>
+                    {% endif %}
+                    <a href="{% url 'notices:notice_list' %}" class="sd-notice-btn">View All Notices →</a>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Recent Activity -->
+            <div class="sd-panel">
+                <div class="sd-panel-header">
+                    <div class="sd-panel-title">Recent Activity</div>
+                </div>
+                <div class="sd-activity-list">
+                    {% for activity in recent_activities %}
+                    <div class="sd-activity-item">
+                        <div class="sd-activity-dot">📝</div>
+                        <div>
+                            <div class="sd-activity-title">MCQ Attempt in {{ activity.question.subject.name }}</div>
+                            <div class="sd-activity-meta">{{ activity.created_at|timesince }} ago</div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="sd-empty" style="padding: 12px;">No recent activity.</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+<script>
+(function(){
+    var greetingEl = document.getElementById('sdGreeting');
+    var dateEl = document.getElementById('sdDate');
+    var now = new Date();
+    var hour = now.getHours();
+    var greeting = 'Good Evening';
+    if (hour < 12) { greeting = 'Good Morning'; }
+    else if (hour < 17) { greeting = 'Good Afternoon'; }
+    if (greetingEl) { greetingEl.textContent = '👋 ' + greeting; }
+    if (dateEl) {
+        var options = { weekday:'long', year:'numeric', month:'long', day:'numeric' };
+        dateEl.textContent = now.toLocaleDateString(undefined, options);
+    }
+})();
+</script>
 {% endblock %}

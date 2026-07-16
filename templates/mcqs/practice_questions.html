@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}Practice: {{ subject.name }}{% endblock %}
+{% block content %}
+<style>
+    .question-block { background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 24px; margin-bottom: 20px; }
+    .question-image { max-width: 100%; height: auto; border-radius: 8px; margin: 16px 0; border: 1px solid var(--line); }
+    .options-list { list-style: none; padding: 0; margin: 16px 0; }
+    .option-item { padding: 10px; border: 1px solid var(--line); border-radius: 6px; margin-bottom: 8px; cursor: pointer; transition: background 0.2s ease; }
+    .option-item:hover { background: var(--paper-2); }
+    .option-item.correct { background: #dff0d8; border-color: #3c763d; }
+    .option-item.incorrect { background: #f2dede; border-color: #a94442; }
+    .creator-tag { font-size: 12px; color: var(--muted); margin-top: 16px; border-top: 1px solid var(--line); padding-top: 8px; }
+</style>
+<div class="container" style="max-width: 800px; margin: 40px auto; padding: 0 32px;">
+    <h1 style="font-family: 'Source Serif 4', serif; font-size: 28px; font-weight: 600;">Practice: {{ subject.name }}</h1>
+    <div id="questions-container" style="margin-top: 24px;">
+        {% for question in questions %}
+        <div class="question-block">
+            <p><strong>Q: {{ question.question_text }}</strong></p>
+            {% if question.image %}
+                {# Make sure MEDIA_URL is configured correctly #}
+                <img src="{{ question.image.url }}" alt="Question Image" class="question-image">
+            {% endif %}
+            <ul class="options-list">
+                {% for answer in question.answers.all %}
+                <li class="option-item" data-correct="{{ answer.is_correct|yesno:'true,false' }}" data-answer-id="{{ answer.id }}">{{ answer.answer_text }}</li>
+                {% endfor %}
+            </ul>
+            <div class="creator-tag">Added by: {{ question.created_by.get_full_name|default:question.created_by.username }}</div>
+        </div>
+        {% empty %}
+        <p>No questions available for this subject yet.</p>
+        {% endfor %}
+    </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const questions = document.querySelectorAll('.question-block');
+    questions.forEach(question => {
+        const options = question.querySelectorAll('.option-item');
+        let answered = false;
+        options.forEach(option => {
+            option.addEventListener('click', function() {
+                if (answered) return;
+
+                // Send attempt to server
+                fetch("{% url 'mcqs:log_attempt' %}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: JSON.stringify({
+                        question_id: {{ question.id }},
+                        answer_id: option.dataset.answerId
+                    })
+                }).then(response => {
+                    if (response.ok) {
+                        answered = true; // Mark as answered only after successful logging
+                    }
+                });
+
+                const isCorrect = this.dataset.correct === 'true';
+                if (isCorrect) {
+                    this.classList.add('correct');
+                } else {
+                    this.classList.add('incorrect');
+                    // Also show the correct one
+                    options.forEach(opt => {
+                        if (opt.dataset.correct === 'true') {
+                            opt.classList.add('correct');
+                        }
+                    });
+                }
+            });
+        });
+    });
+});
+</script>
+{% endblock %}

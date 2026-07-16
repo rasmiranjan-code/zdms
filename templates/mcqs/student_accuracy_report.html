@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Student MCQ Accuracy Report{% endblock %}
+
+{% block content %}
+<style>
+    .data-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    .data-table th, .data-table td { border: 1px solid var(--line); padding: 12px 15px; text-align: left; font-size: 14px; }
+    .data-table th { background-color: var(--paper-2); font-weight: 600; }
+    .student-row td { border-top: 2px solid var(--ink) !important; }
+    .progress-bar-bg { background-color: var(--paper-2); border-radius: 4px; overflow: hidden; }
+    .progress-bar { background-color: var(--field); height: 10px; border-radius: 4px; }
+</style>
+
+<div class="container" style="max-width: 1040px; margin: 40px auto; padding: 0 32px;">
+    <div style="margin-bottom: 24px;">
+        <h1 style="font-family: 'Source Serif 4', serif; font-size: 28px; font-weight: 600;">Student MCQ Accuracy Report</h1>
+        <p style="color: var(--muted); margin-top: 4px;">Analyze student performance in practice MCQs.</p>
+    </div>
+
+    <!-- Filter Form -->
+    <div style="background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 24px; margin-bottom: 24px;">
+        <form method="get">
+            <div style="display: grid; grid-template-columns: 1fr 120px; gap: 16px;">
+                <select name="batch" class="form-control" style="padding: 8px 12px; border: 1px solid var(--line); border-radius: 6px;">
+                    <option value="">Filter by Batch (All)</option>
+                    {% for batch in batches %}
+                        <option value="{{ batch.pk }}" {% if batch.pk == selected_batch %}selected{% endif %}>{{ batch.academic_session }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit" class="nav-login" style="width: 100%; border: none;">Filter</button>
+            </div>
+        </form>
+    </div>
+
+    <div style="background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 32px; overflow-x: auto;">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Student</th>
+                    <th>Subject</th>
+                    <th style="width: 150px;">Accuracy</th>
+                    <th>Total Attempts</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student_id, data in report.items %}
+                    {% for subject_data in data.subjects %}
+                        <tr {% if forloop.first %}class="student-row"{% endif %}>
+                            <td>
+                                {% if forloop.first %}
+                                    <a href="{% url 'mcqs:student_attempt_history' student_id %}" style="text-decoration: none; font-weight: 500;">{{ data.name }}</a>
+                                {% endif %}
+                            </td>
+                            <td>{{ subject_data.name }}</td>
+                            <td>
+                                <div class="progress-bar-bg">
+                                    <div class="progress-bar" style="width: {{ subject_data.accuracy }}%;"></div>
+                                </div>
+                                <span style="font-size: 12px; color: var(--muted);">{{ subject_data.accuracy|floatformat:1 }}%</span>
+                            </td>
+                            <td>{{ subject_data.attempts }}</td>
+                        </tr>
+                    {% endfor %}
+                {% empty %}
+                    <tr><td colspan="4" style="text-align: center; padding: 20px;">No attempt data found for the selected filter.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

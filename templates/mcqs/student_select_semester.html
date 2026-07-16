@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Practice Questions - Select Semester{% endblock %}
+{% block content %}
+<div class="container" style="max-width: 800px; margin: 40px auto; padding: 0 32px;">
+    <h1 style="font-family: 'Source Serif 4', serif; font-size: 28px; font-weight: 600;">Practice Questions</h1>
+    <p style="color: var(--muted); margin-top: 4px;">Choose a semester to start practicing.</p>
+    <div style="margin-top: 24px; display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px;">
+        {% for semester in semesters %}
+            <a href="{% url 'mcqs:student_select_subject' semester.id %}" class="portal-card" style="animation: none; opacity: 1;">
+                <span class="portal-label">Semester {{ semester.number }}</span>
+                <span class="portal-desc">{{ semester.batch.academic_session }}</span>
+            </a>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

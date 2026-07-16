@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.views.generic import UpdateView
+from django.db.models import Count, Q
 from django.urls import reverse_lazy
 from apps.academics.models import Enrollment, Subject, Batch, Semester
 from apps.accounts.models import FacultySubjectBatchMapping, User
@@ -9,6 +10,8 @@ from apps.accounts.models import User
 from apps.core.decorators import hod_required
 from apps.core.mixins import HODRequiredMixin
 from django.shortcuts import get_object_or_404 
+from apps.notices.models import Notice
+from apps.mcqs.models import StudentAttempt
 from apps.accounts.forms import StudentUpdateForm
 
 from apps.attendance.models import Attendance
@@ -65,9 +68,61 @@ def dashboard(request):
         enrollment = Enrollment.objects.select_related('batch', 'current_semester').get(student=student, is_active=True)
     except Enrollment.DoesNotExist:
         enrollment = None
-    context = {'enrollment': enrollment}
+    
+    # Get subjects for the student's current semester to show on dashboard
+    subjects = []
+    if enrollment and enrollment.current_semester:
+        subjects = enrollment.current_semester.subjects.all()
+
+    # Calculate overall MCQ accuracy
+    mcq_attempts = StudentAttempt.objects.filter(student=student)
+    total_mcq_attempts = mcq_attempts.count()
+    correct_mcq_attempts = mcq_attempts.filter(is_correct=True).count()
+    mcq_accuracy = (correct_mcq_attempts / total_mcq_attempts * 100) if total_mcq_attempts > 0 else 0
+
+    # Calculate overall attendance
+    attendance_records = Attendance.objects.filter(student=student)
+    total_classes = attendance_records.count()
+    classes_attended = attendance_records.filter(is_present=True).count()
+    attendance_percentage = (classes_attended / total_classes * 100) if total_classes > 0 else 0
+
+    # Get latest notice
+    latest_notice = Notice.objects.order_by('-created_at').first()
+
+    # Get recent activities (e.g., last 3 MCQ attempts)
+    recent_activities = StudentAttempt.objects.filter(student=student).select_related(
+        'question__subject'
+    ).order_by('-created_at')[:3]
+
+
+    context = {
+        'enrollment': enrollment, 
+        'subjects': subjects,
+        # Stats
+        'mcq_accuracy': mcq_accuracy,
+        'total_mcq_attempts': total_mcq_attempts,
+        'attendance_percentage': attendance_percentage,
+        'total_classes': total_classes,
+        # Sidebar
+        'latest_notice': latest_notice,
+        # Recent Activity
+        'recent_activities': recent_activities,
+    }
     return render(request, "students/dashboard.html", context)
 
+@login_required
+def profile_view(request):
+    student = request.user
+    if student.role != 'STUDENT':
+        return redirect('accounts:landing')
+
+    try:
+        enrollment = Enrollment.objects.get(student=student, is_active=True)
+    except Enrollment.DoesNotExist:
+        enrollment = None
+
+    context = {'student': student, 'enrollment': enrollment}
+    return render(request, 'students/profile.html', context)
 
 @login_required
 def attendance_view(request):

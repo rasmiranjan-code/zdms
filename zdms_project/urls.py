@@ -12,6 +12,10 @@ urlpatterns = [
     path('dashboard/', include('apps.dashboard.urls')),
     path('academics/', include('apps.academics.urls')),
     path('attendance/', include('apps.attendance.urls')),
+    path('mcqs/', include('apps.mcqs.urls')),
+    path('results/', include('apps.results.urls')),
+    path('notices/', include('apps.notices.urls')),
+    path('notes/', include('apps.notes.urls')),
 ]
 
 if settings.DEBUG:

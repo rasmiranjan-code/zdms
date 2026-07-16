@@ -30,11 +30,13 @@
                         {% csrf_token %}
                         <button type="submit" class="nav-login" style="border: none; background: transparent; cursor: pointer; font-family: inherit; font-size: 14px; font-weight: 500; color: var(--ink);">Sign out</button>
                     </form>
-                    {% if user.profile_picture %}
-                        <img src="{{ user.profile_picture.url }}" alt="Profile Picture" style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover;">
-                    {% else %}
-                        <img src="{% static 'images/default_avatar.png' %}" alt="Default Profile Picture" style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover;">
-                    {% endif %}
+                    <a {% if user.role == 'STUDENT' %}href="{% url 'students:profile' %}"{% endif %} title="My Profile">
+                        {% if user.profile_picture %}
+                            <img src="{{ user.profile_picture.url }}" alt="Profile Picture" style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover; display: block;">
+                        {% else %}
+                            <img src="{% static 'images/default_avatar.png' %}" alt="Default Profile Picture" style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover; display: block;">
+                        {% endif %}
+                    </a>
                 </div>
             {% else %}
                 <a href="#about" class="nav-link">About</a>
@@ -45,6 +47,21 @@
     </header>
 
     <main>
+        {% if messages %}
+            <div class="messages-container" style="position: fixed; top: 80px; right: 20px; z-index: 1000; width: 320px;">
+            {% for message in messages %}
+                <div class="message-popup message-{{ message.tags }}" style="background: #fff; color: var(--ink); border: 1px solid var(--line); padding: 15px 20px; margin-bottom: 10px; border-radius: 8px; box-shadow: var(--shadow); font-size: 14px; font-weight: 500; opacity: 0; animation: slideInFade 0.5s forwards;">
+                    {{ message }}
+                </div>
+            {% endfor %}
+            </div>
+            <style>
+                @keyframes slideInFade {
+                    from { opacity: 0; transform: translateX(20px); }
+                    to { opacity: 1; transform: translateX(0); }
+                }
+            </style>
+        {% endif %}
         {% block content %}
         {% endblock %}
     </main>

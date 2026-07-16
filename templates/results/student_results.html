@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}My Results{% endblock %}
+
+{% block content %}
+<style>
+    .data-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    .data-table th, .data-table td { border: 1px solid var(--line); padding: 12px 15px; text-align: left; font-size: 14px; }
+    .data-table th { background-color: var(--paper-2); font-weight: 600; }
+    .semester-block { background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 32px; margin-bottom: 24px; }
+</style>
+
+<div class="container" style="max-width: 900px; margin: 40px auto; padding: 0 32px;">
+    <div style="margin-bottom: 24px;">
+        <h1 style="font-family: 'Source Serif 4', serif; font-size: 28px; font-weight: 600;">My Results</h1>
+        <p style="color: var(--muted); margin-top: 4px;">Here is a summary of your academic performance.</p>
+    </div>
+
+    {% for semester, results in results_by_semester.items %}
+    <div class="semester-block">
+        <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 16px;">Semester {{ semester.number }} ({{ semester.batch.academic_session }})</h2>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Subject</th>
+                    <th>Internal Marks</th>
+                    <th>External Marks</th>
+                    <th>Total Marks</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for result in results %}
+                <tr>
+                    <td>{{ result.subject.name }}</td>
+                    <td>{{ result.internal_marks }}</td>
+                    <td>{{ result.external_marks }}</td>
+                    <td><strong>{{ result.total_marks }}</strong></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% empty %}
+    <div class="semester-block" style="text-align: center;">
+        <p>Your results have not been published yet.</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

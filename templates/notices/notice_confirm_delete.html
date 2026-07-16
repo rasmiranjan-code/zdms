@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Confirm Delete{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 600px; margin: 60px auto; padding: 0 32px; text-align: center;">
+    <h1 style="font-family: 'Source Serif 4', serif; font-size: 24px; font-weight: 600;">Are you sure?</h1>
+    <p style="color: var(--muted); margin-top: 8px; margin-bottom: 24px;">
+        Are you sure you want to delete the notice:
+        <br>
+        <strong>"{{ notice.title }}"</strong>?
+        <br>
+        This action cannot be undone.
+    </p>
+
+    <form method="post">
+        {% csrf_token %}
+        <div style="display: flex; justify-content: center; gap: 12px;">
+            <a href="{% url 'notices:notice_list' %}" class="nav-login" style="background: var(--paper-2); color: var(--ink);">Cancel</a>
+            <button type="submit" class="nav-login" style="background: var(--amber); border-color: var(--amber);">Confirm Delete</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
