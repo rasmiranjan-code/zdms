@@ -43,17 +43,24 @@ class HODAnalyticsView(HODRequiredMixin, TemplateView):
         context['total_mcqs'] = Question.objects.count()
         context['total_notes'] = Note.objects.count()
 
+        # --- Chart Data ---
+        batch_filter_id = self.request.GET.get('batch')
+        
         # Batch-wise performance data for chart
-        batches = Batch.objects.all().select_related('academic_session').order_by('academic_session__start_year')
+        all_batches = Batch.objects.all().select_related('academic_session').order_by('-academic_session__start_year')
+        
+        batches_to_chart = all_batches
+        if batch_filter_id:
+            batches_to_chart = all_batches.filter(pk=batch_filter_id)
+
         batch_performance_data = []
 
-        for batch in batches:
+        for batch in batches_to_chart:
             student_ids = batch.enrollments.filter(is_active=True).values_list('student_id', flat=True)
 
             batch_total_classes = Attendance.objects.filter(student_id__in=student_ids).count()
             batch_attended_classes = Attendance.objects.filter(student_id__in=student_ids, is_present=True).count()
             batch_attendance = (batch_attended_classes / batch_total_classes * 100) if batch_total_classes > 0 else 0
-
             batch_total_attempts = StudentAttempt.objects.filter(student_id__in=student_ids).count()
             batch_correct_attempts = StudentAttempt.objects.filter(student_id__in=student_ids, is_correct=True).count()
             batch_accuracy = (batch_correct_attempts / batch_total_attempts * 100) if batch_total_attempts > 0 else 0
@@ -65,6 +72,8 @@ class HODAnalyticsView(HODRequiredMixin, TemplateView):
             })
         
         context['batch_performance_data'] = batch_performance_data
+        context['all_batches'] = all_batches
+        context['selected_batch'] = int(batch_filter_id) if batch_filter_id else None
         return context
 
 

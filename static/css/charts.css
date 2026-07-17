@@ -1,0 +1,20 @@
+/* static/css/charts.css */
+
+.chart-panel {
+    /* Animation for the chart container */
+    opacity: 0;
+    transform: translateY(20px);
+    animation: chartFadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;
+}
+
+@keyframes chartFadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+#batchPerformanceChart {
+    width: 100% !important;
+    height: auto !important;
+}
