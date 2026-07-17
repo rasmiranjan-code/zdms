@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Digital Library - Select Subject{% endblock %}
+{% block content %}
+<div class="container" style="max-width: 900px; margin: 40px auto; padding: 0 32px;">
+    <h1 style="font-family: 'Source Serif 4', serif; font-size: 28px; font-weight: 600;">Select Subject for Semester {{ semester.number }}</h1>
+    <p style="color: var(--muted); margin-top: 4px;">Choose a subject to view its notes.</p>
+    <div style="margin-top: 24px; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px;">
+        {% for subject in subjects %}
+            <a href="{% url 'notes:student_note_list' subject.id %}" class="portal-card" style="animation: none; opacity: 1;">
+                <span class="portal-label">{{ subject.name }}</span>
+                <span class="portal-desc">{{ subject.code }}</span>
+            </a>
+        {% empty %}
+            <p>No subjects found for this semester.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -4,14 +4,19 @@ from django.shortcuts import get_object_or_404, render
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, View
 from django.urls import reverse_lazy
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
 from .models import Note
 from .forms import NoteForm
 from apps.academics.models import Semester, Subject
-from apps.mcqs.views import HODFacultyRequiredMixin, HODFacultyRequiredMixin as NotesAuthorOrHODMixin
+from apps.mcqs.views import HODFacultyRequiredMixin
 
 # --- Faculty/HOD Views ---
+
+class NoteAuthorOrHODMixin(UserPassesTestMixin):
+    def test_func(self):
+        note = self.get_object()
+        return self.request.user.role == 'HOD' or note.uploaded_by == self.request.user
 
 class SelectSemesterForNotesView(HODFacultyRequiredMixin, ListView):
     model = Semester
@@ -65,6 +70,30 @@ class NoteUploadView(HODFacultyRequiredMixin, CreateView):
 
     def get_success_url(self):
         return reverse_lazy('notes:note_list', kwargs={'subject_id': self.kwargs['subject_id']})
+
+class NoteUpdateView(NoteAuthorOrHODMixin, UpdateView):
+    model = Note
+    form_class = NoteForm
+    template_name = 'notes/note_form.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['subject'] = self.object.subject
+        return context
+
+    def get_success_url(self):
+        messages.success(self.request, "Note updated successfully.")
+        return reverse_lazy('notes:note_list', kwargs={'subject_id': self.object.subject.id})
+
+class NoteDeleteView(NoteAuthorOrHODMixin, DeleteView):
+    model = Note
+    template_name = 'notes/note_confirm_delete.html'
+    context_object_name = 'note'
+
+    def get_success_url(self):
+        messages.success(self.request, "Note deleted successfully.")
+        return reverse_lazy('notes:note_list', kwargs={'subject_id': self.object.subject.id})
+
 
 # --- Student Views ---
 
