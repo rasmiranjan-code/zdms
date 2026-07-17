@@ -2,4 +2,5 @@ from django.apps import AppConfig
 
 
 class FacultyAttendanceConfig(AppConfig):
-    name = 'faculty_attendance'
+    default_auto_field = 'django.db.models.BigAutoField'
+    name = 'apps.faculty_attendance'
