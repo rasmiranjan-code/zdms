@@ -5,6 +5,7 @@
 
 {% block content %}
 <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+<link rel="stylesheet" href="{% static 'css/charts.css' %}">
 
 <div class="sd-wrap">
     <!-- Header -->
@@ -27,6 +28,31 @@
         <div class="sd-stat-card sd-stat-4"><div class="sd-stat-icon">📚</div><div class="sd-stat-value">{{ total_notes }}</div><div class="sd-stat-label">Total Notes Uploaded</div></div>
     </div>
 
+    <!-- Batch Performance Chart -->
+    <div class="sd-panel">
+    <div class="sd-panel chart-panel">
+        <div class="sd-panel-header">
+            <div class="sd-panel-title">Batch-wise Performance Comparison</div>
+            <div>
+                <div class="sd-panel-title">Batch-wise Performance Comparison</div>
+                <div class="sd-panel-sub">Filter to see performance for a specific batch or all batches.</div>
+            </div>
+            <form method="get" style="display: flex; gap: 12px; align-items: center;">
+                <select name="batch" class="form-control" style="padding: 8px 12px; border-radius: 8px; min-width: 200px;">
+                    <option value="">All Batches</option>
+                    {% for batch in all_batches %}
+                        <option value="{{ batch.pk }}" {% if batch.pk == selected_batch %}selected{% endif %}>{{ batch.academic_session }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit" class="nav-login" style="border: none; padding: 9px 22px; flex-shrink: 0;">Filter</button>
+            </form>
+        </div>
+        <canvas id="batchPerformanceChart" height="100"></canvas>
+        <div style="position: relative; height: 350px;">
+            <canvas id="batchPerformanceChart"></canvas>
+        </div>
+    </div>
+
 </div>
 
 <script>
@@ -37,5 +63,52 @@
         dateEl.textContent = new Date().toLocaleDateString(undefined, options);
     }
 })();
+</script>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('batchPerformanceChart').getContext('2d');
+    const batchData = {{ batch_performance_data|safe }};
+
+    const labels = batchData.map(d => d.name);
+    const attendanceData = batchData.map(d => d.attendance);
+    const accuracyData = batchData.map(d => d.accuracy);
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Attendance %',
+                    data: attendanceData,
+                    backgroundColor: 'rgba(37, 99, 235, 0.6)', // Primary color
+                    borderColor: 'rgba(37, 99, 235, 1)',
+                    borderWidth: 1
+                },
+                {
+                    label: 'MCQ Accuracy %',
+                    data: accuracyData,
+                    backgroundColor: 'rgba(16, 185, 129, 0.6)', // Success color
+                    borderColor: 'rgba(16, 185, 129, 1)',
+                    borderWidth: 1
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    ticks: { callback: value => value + '%' }
+                }
+            }
+        }
+    });
+});
 </script>
 {% endblock %}

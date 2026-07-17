@@ -42,6 +42,29 @@ class HODAnalyticsView(HODRequiredMixin, TemplateView):
 
         context['total_mcqs'] = Question.objects.count()
         context['total_notes'] = Note.objects.count()
+
+        # Batch-wise performance data for chart
+        batches = Batch.objects.all().select_related('academic_session').order_by('academic_session__start_year')
+        batch_performance_data = []
+
+        for batch in batches:
+            student_ids = batch.enrollments.filter(is_active=True).values_list('student_id', flat=True)
+
+            batch_total_classes = Attendance.objects.filter(student_id__in=student_ids).count()
+            batch_attended_classes = Attendance.objects.filter(student_id__in=student_ids, is_present=True).count()
+            batch_attendance = (batch_attended_classes / batch_total_classes * 100) if batch_total_classes > 0 else 0
+
+            batch_total_attempts = StudentAttempt.objects.filter(student_id__in=student_ids).count()
+            batch_correct_attempts = StudentAttempt.objects.filter(student_id__in=student_ids, is_correct=True).count()
+            batch_accuracy = (batch_correct_attempts / batch_total_attempts * 100) if batch_total_attempts > 0 else 0
+
+            batch_performance_data.append({
+                'name': str(batch.academic_session),
+                'attendance': round(batch_attendance, 2),
+                'accuracy': round(batch_accuracy, 2),
+            })
+        
+        context['batch_performance_data'] = batch_performance_data
         return context
 
 
