@@ -1,11 +1,10 @@
-# apps/attendance/urls.py
+# apps/faculty_attendance/urls.py
 
 from django.urls import path
 from . import views
 
-app_name = 'attendance'
+app_name = 'faculty_attendance'
 
 urlpatterns = [
-    path('', views.AttendanceDashboardView.as_view(), name='attendance_dashboard'),
-    path('take/<int:subject_id>/<int:batch_id>/', views.TakeAttendanceView.as_view(), name='take_attendance'),
+    path('', views.TakeFacultyAttendanceView.as_view(), name='take_attendance'),
 ]

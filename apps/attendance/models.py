@@ -1,38 +1,18 @@
+# apps/faculty_attendance/models.py
+
 from django.db import models
+from django.conf import settings
 from apps.core.models import TimeStampedModel
-from apps.academics.models import Subject, Batch
 
-
-class Attendance(TimeStampedModel):
-    student = models.ForeignKey(
-        'accounts.User',
-        on_delete=models.CASCADE,
-        related_name='attendance_records'
-    )
-    subject = models.ForeignKey(
-        Subject,
-        on_delete=models.CASCADE,
-        related_name='attendance_records'
-    )
-    batch = models.ForeignKey(
-        Batch,
-        on_delete=models.CASCADE,
-        related_name='attendance_records'
-    )
+class FacultyAttendance(TimeStampedModel):
+    faculty = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='attendances')
     date = models.DateField()
-    is_present = models.BooleanField(default=False)
-    marked_by = models.ForeignKey(
-        'accounts.User',
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name='attendance_marked'
-    )
+    is_present = models.BooleanField(default=True)
+    marked_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, related_name='faculty_attendances_marked')
 
     class Meta:
-        unique_together = ('student', 'subject', 'date')
-        ordering = ['-date']
+        unique_together = ('faculty', 'date')
+        ordering = ['-date', 'faculty__first_name']
 
     def __str__(self):
-        status = 'Present' if self.is_present else 'Absent'
-        return f"{self.student} - {self.subject} - {self.date} - {status}"
+        return f"{self.faculty.get_full_name()} - {self.date} - {'Present' if self.is_present else 'Absent'}"
