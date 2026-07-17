@@ -4,8 +4,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 from django.contrib import messages
 from django.utils import timezone
-from django.db import transaction
-from apps.core.mixins import FacultyRequiredMixin
+from django.db import transaction, models
+from apps.mcqs.views import HODFacultyRequiredMixin # Allows HOD and Faculty
 from apps.academics.models import Subject, Batch, Enrollment, Semester
 from .models import Attendance
 
@@ -13,16 +13,20 @@ from .models import Attendance
 class SelectSubjectForAttendanceView(FacultyRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         # This view is now part of the FacultyDashboardView
-        # Redirecting to the dashboard
+        # Redirecting to the dashboard. This view is mostly unused.
         return redirect('dashboard:faculty_dashboard')
 
-class AttendanceDashboardView(FacultyRequiredMixin, View):
+class AttendanceDashboardView(HODFacultyRequiredMixin, View):
     template_name = 'attendance/attendance_dashboard.html'
 
     def get(self, request, *args, **kwargs):
-        faculty = request.user
-        # Get all subjects assigned to the faculty
-        assigned_subjects = Subject.objects.filter(faculty_mappings__faculty=faculty).distinct()
+        user = request.user
+        
+        if user.role == 'HOD':
+            assigned_subjects = Subject.objects.all().order_by('name')
+        else: # Faculty
+            # Get all subjects assigned to the faculty
+            assigned_subjects = Subject.objects.filter(faculty_mappings__faculty=user).distinct()
 
         # Get selected subject and batch from GET request
         subject_id = request.GET.get('subject')
@@ -51,7 +55,7 @@ class AttendanceDashboardView(FacultyRequiredMixin, View):
         return render(request, self.template_name, context)
 
 
-class TakeAttendanceView(FacultyRequiredMixin, View):
+class TakeAttendanceView(HODFacultyRequiredMixin, View):
     template_name = 'attendance/take_attendance.html'
 
     def get(self, request, subject_id, batch_id):
