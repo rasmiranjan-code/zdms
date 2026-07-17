@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'apps.dashboard',
     'apps.audit',
     'apps.mcqs',  # <-- Is line ko yahan jodein
+    'apps.faculty_attendance',
 
 ]
 

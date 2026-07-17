@@ -1,57 +1,141 @@
-# apps/faculty_attendance/views.py
-
-from django.shortcuts import render, redirect
+# apps/attendance/views.py
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
-from django.utils import timezone
 from django.contrib import messages
+from django.utils import timezone
 from django.db import transaction
-from apps.core.mixins import HODRequiredMixin
-from apps.accounts.models import User
-from .models import FacultyAttendance
 
-class TakeFacultyAttendanceView(HODRequiredMixin, View):
-    template_name = 'faculty_attendance/take_attendance.html'
+from apps.mcqs.views import HODFacultyRequiredMixin  # Allows HOD and Faculty
+from apps.academics.models import Subject, Batch, Enrollment
+from .models import Attendance
+
+
+class SelectSubjectForAttendanceView(HODFacultyRequiredMixin, View):
+    """
+    Deprecated: subject selection now lives inside FacultyDashboardView.
+    Kept only to avoid breaking any stale bookmarked/linked URLs.
+    """
 
     def get(self, request, *args, **kwargs):
+        return redirect('dashboard:faculty_dashboard')
+
+
+class AttendanceDashboardView(HODFacultyRequiredMixin, View):
+    """
+    Lets HOD/Faculty pick a subject + batch and view the enrolled
+    students, flagging whether today's attendance is already marked.
+    """
+    template_name = 'attendance/attendance_dashboard.html'
+
+    def get(self, request, *args, **kwargs):
+        user = request.user
+
+        if user.role == 'HOD':
+            assigned_subjects = Subject.objects.all().order_by('name')
+        else:  # Faculty
+            assigned_subjects = (
+                Subject.objects
+                .filter(faculty_mappings__faculty=user)
+                .distinct()
+                .order_by('name')
+            )
+
+        subject_id = request.GET.get('subject')
+        batch_id = request.GET.get('batch')
+
+        students = None
+        subject = None
+        batch = None
+
+        if subject_id and batch_id:
+            subject = get_object_or_404(Subject, pk=subject_id)
+            batch = get_object_or_404(Batch, pk=batch_id)
+            students = (
+                Enrollment.objects
+                .filter(batch=batch, is_active=True)
+                .select_related('student__studentprofile')
+                .order_by('student__first_name')
+            )
+
+            today = timezone.now().date()
+            if Attendance.objects.filter(subject=subject, batch=batch, date=today).exists():
+                messages.info(
+                    request,
+                    f"Attendance for {subject.name} ({batch}) has already been taken today."
+                )
+
+        context = {
+            'assigned_subjects': assigned_subjects,
+            'students': students,
+            'selected_subject': subject,
+            'selected_batch': batch,
+        }
+        return render(request, self.template_name, context)
+
+
+class TakeAttendanceView(HODFacultyRequiredMixin, View):
+    """
+    Handles marking/editing/viewing attendance for a given subject + batch
+    on the current date.
+    """
+    template_name = 'attendance/take_attendance.html'
+
+    def get(self, request, subject_id, batch_id):
+        subject = get_object_or_404(Subject, pk=subject_id)
+        batch = get_object_or_404(Batch, pk=batch_id)
+        students = (
+            Enrollment.objects
+            .filter(batch=batch, is_active=True)
+            .select_related('student')
+            .order_by('student__first_name')
+        )
+
         today = timezone.now().date()
-        
-        # Check if attendance has already been taken today
-        existing_attendance = FacultyAttendance.objects.filter(date=today)
-        
-        if existing_attendance.exists():
-            messages.info(request, "Faculty attendance has already been marked for today.")
-            # Prepare context for viewing existing attendance
-            faculty_attendance_map = {att.faculty_id: att.is_present for att in existing_attendance}
-            faculties = User.objects.filter(role='FACULTY').order_by('first_name')
-            context = {
-                'faculties': faculties,
-                'attendance_taken': True,
-                'faculty_attendance_map': faculty_attendance_map,
-                'date': today,
-            }
-        else:
-            # Prepare context for taking new attendance
-            faculties = User.objects.filter(role='FACULTY').order_by('first_name')
-            context = {
-                'faculties': faculties,
-                'attendance_taken': False,
-                'date': today,
-            }
-            
+        existing_attendance = Attendance.objects.filter(subject=subject, batch=batch, date=today)
+        attendance_taken = existing_attendance.exists()
+
+        # Determine mode: 'edit' if requested, 'view' if already taken, 'take' otherwise
+        mode = request.GET.get('mode', 'take')
+        if attendance_taken and mode != 'edit':
+            mode = 'view'
+
+        student_attendance_map = {
+            att.student_id: att.is_present for att in existing_attendance
+        }
+
+        context = {
+            'subject': subject,
+            'batch': batch,
+            'students': students,
+            'mode': mode,
+            'attendance_taken': attendance_taken,
+            'student_attendance_map': student_attendance_map,
+        }
         return render(request, self.template_name, context)
 
     @transaction.atomic
-    def post(self, request, *args, **kwargs):
+    def post(self, request, subject_id, batch_id):
+        subject = get_object_or_404(Subject, pk=subject_id)
+        batch = get_object_or_404(Batch, pk=batch_id)
+        student_ids = request.POST.getlist('student_id')
+        present_students = set(request.POST.getlist('is_present'))
         today = timezone.now().date()
-        faculty_ids = request.POST.getlist('faculty_id')
-        present_faculty_ids = request.POST.getlist('is_present')
 
-        # Delete any existing records for today to prevent duplicates
-        FacultyAttendance.objects.filter(date=today).delete()
+        # Replace any existing records for today with the new submission
+        Attendance.objects.filter(subject=subject, batch=batch, date=today).delete()
 
-        for faculty_id in faculty_ids:
-            is_present = faculty_id in present_faculty_ids
-            FacultyAttendance.objects.create(faculty_id=faculty_id, date=today, is_present=is_present, marked_by=request.user)
+        attendance_records = [
+            Attendance(
+                student_id=int(student_id),
+                marked_by=request.user,
+                subject=subject,
+                batch=batch,
+                date=today,
+                is_present=student_id in present_students,
+            )
+            for student_id in student_ids
+        ]
+        Attendance.objects.bulk_create(attendance_records)
 
-        messages.success(request, "Faculty attendance has been successfully recorded.")
-        return redirect('faculty_attendance:take_attendance')
+        messages.success(request, f"Attendance for {subject.name} has been saved successfully.")
+        return redirect(request.path)
