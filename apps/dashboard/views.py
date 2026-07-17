@@ -1,12 +1,15 @@
 # apps/dashboard/views.py
 # This file can be used for more complex dashboard logic later.
 
+from django.db.models import Count, Q
 from django.views.generic import TemplateView
 from apps.core.mixins import FacultyRequiredMixin, HODRequiredMixin
 from apps.accounts.models import FacultySubjectBatchMapping, User
 from apps.academics.models import Batch, Subject
 from apps.mcqs.models import Question
 from apps.notes.models import Note
+from apps.attendance.models import Attendance
+from apps.mcqs.models import StudentAttempt
 
 
 class HODDashboardView(HODRequiredMixin, TemplateView):
@@ -18,6 +21,27 @@ class HODDashboardView(HODRequiredMixin, TemplateView):
         context['faculty_count'] = User.objects.filter(role='FACULTY').count()
         context['subject_count'] = Subject.objects.count()
         context['batch_count'] = Batch.objects.count()
+        return context
+
+
+class HODAnalyticsView(HODRequiredMixin, TemplateView):
+    template_name = 'dashboard/hod_analytics.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # Overall Attendance
+        total_classes = Attendance.objects.count()
+        attended_classes = Attendance.objects.filter(is_present=True).count()
+        context['overall_attendance'] = (attended_classes / total_classes * 100) if total_classes > 0 else 0
+
+        # Overall MCQ Accuracy
+        total_attempts = StudentAttempt.objects.count()
+        correct_attempts = StudentAttempt.objects.filter(is_correct=True).count()
+        context['overall_mcq_accuracy'] = (correct_attempts / total_attempts * 100) if total_attempts > 0 else 0
+
+        context['total_mcqs'] = Question.objects.count()
+        context['total_notes'] = Note.objects.count()
         return context
 
 

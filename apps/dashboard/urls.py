@@ -8,4 +8,5 @@ app_name = 'dashboard'
 urlpatterns = [
     path('hod/', views.HODDashboardView.as_view(), name='hod_dashboard'),
     path('faculty/', views.FacultyDashboardView.as_view(), name='faculty_dashboard'),
+    path('hod/analytics/', views.HODAnalyticsView.as_view(), name='hod_analytics'),
 ]

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Department Analytics{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+
+<div class="sd-wrap">
+    <!-- Header -->
+    <div class="sd-header">
+        <div>
+            <div class="sd-header-greeting">📈 Department Analytics</div>
+            <h1>Performance Overview</h1>
+            <div class="sd-header-sub">
+                <span>A high-level view of the entire department's metrics.</span>
+            </div>
+        </div>
+        <div class="sd-header-date" id="sdDate"></div>
+    </div>
+
+    <!-- Stats -->
+    <div class="sd-stats">
+        <div class="sd-stat-card sd-stat-1"><div class="sd-stat-icon">📅</div><div class="sd-stat-value">{{ overall_attendance|floatformat:1 }}%</div><div class="sd-stat-label">Overall Attendance</div></div>
+        <div class="sd-stat-card sd-stat-2"><div class="sd-stat-icon">🎯</div><div class="sd-stat-value">{{ overall_mcq_accuracy|floatformat:1 }}%</div><div class="sd-stat-label">Overall MCQ Accuracy</div></div>
+        <div class="sd-stat-card sd-stat-3"><div class="sd-stat-icon">❓</div><div class="sd-stat-value">{{ total_mcqs }}</div><div class="sd-stat-label">Total MCQs Created</div></div>
+        <div class="sd-stat-card sd-stat-4"><div class="sd-stat-icon">📚</div><div class="sd-stat-value">{{ total_notes }}</div><div class="sd-stat-label">Total Notes Uploaded</div></div>
+    </div>
+
+</div>
+
+<script>
+(function(){
+    var dateEl = document.getElementById('sdDate');
+    if (dateEl) {
+        var options = { weekday:'long', year:'numeric', month:'long', day:'numeric' };
+        dateEl.textContent = new Date().toLocaleDateString(undefined, options);
+    }
+})();
+</script>
+{% endblock %}
