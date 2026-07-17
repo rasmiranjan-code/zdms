@@ -5,6 +5,8 @@ from django.views.generic import TemplateView
 from apps.core.mixins import FacultyRequiredMixin, HODRequiredMixin
 from apps.accounts.models import FacultySubjectBatchMapping, User
 from apps.academics.models import Batch, Subject
+from apps.mcqs.models import Question
+from apps.notes.models import Note
 
 
 class HODDashboardView(HODRequiredMixin, TemplateView):
@@ -39,4 +41,11 @@ class FacultyDashboardView(FacultyRequiredMixin, TemplateView):
         # For filter dropdown
         context['assigned_batches'] = Batch.objects.filter(id__in=FacultySubjectBatchMapping.objects.filter(faculty=faculty).values_list('batch_id', flat=True).distinct())
         context['selected_batch'] = int(batch_filter_id) if batch_filter_id else None
+
+        # Add stats for the dashboard
+        distinct_subjects = assignments.values('subject').distinct()
+        context['assigned_subjects_count'] = distinct_subjects.count()
+        context['assigned_batches_count'] = assignments.values('batch').distinct().count()
+        context['mcqs_added_count'] = Question.objects.filter(created_by=faculty).count()
+        context['notes_added_count'] = Note.objects.filter(uploaded_by=faculty).count()
         return context
