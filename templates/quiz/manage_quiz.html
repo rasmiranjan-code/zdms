@@ -2,7 +2,7 @@
 
 {% block extra_head %}
 <style>
-    .answer-row { display: grid; grid-template-columns: 1fr 100px; gap: 16px; align-items: center; margin-bottom: 12px; }
+    .answer-block { border: 1px solid var(--line); border-radius: 8px; padding: 16px; margin-bottom: 12px; }
 </style>
 {% endblock %}
 {% block title %}Manage Test: {{ quiz.title }}{% endblock %}
@@ -32,11 +32,14 @@
                     <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 0; padding-top: 10px; border-top: 1px solid var(--line);">Answer Options</h3>
                     {{ answer_formset.management_form }}
                     {% for form in answer_formset %}
-                        <div class="answer-row">
-                            {{ form.answer_text }}
-                            <label style="display: flex; align-items: center; gap: 8px; justify-content: center;">
-                                {{ form.is_correct }} Correct
-                            </label>
+                        <div class="answer-block">
+                            <div style="display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 10px;">
+                                {{ form.answer_text }}
+                                <label style="display: flex; align-items: center; gap: 8px; justify-content: center; flex-shrink: 0;">
+                                    {{ form.is_correct }} Correct
+                                </label>
+                            </div>
+                            {{ form.explanation }}
                         </div>
                     {% endfor %}
                     <div>
