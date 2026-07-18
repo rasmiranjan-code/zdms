@@ -1,0 +1,121 @@
+/* static/css/test.css */
+
+.test-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 24px;
+    height: calc(100vh - 71px); /* Full height minus header */
+    padding: 24px;
+}
+
+.test-main {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+}
+
+.test-sidebar {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Timer */
+.test-timer {
+    text-align: center;
+    margin-bottom: 24px;
+}
+.timer-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted);
+}
+.timer-clock {
+    font-family: 'Source Code Pro', monospace; /* Or any monospaced font */
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+/* Question Palette */
+.palette-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+    gap: 8px;
+    margin-top: 16px;
+}
+.palette-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    background: var(--card);
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+.palette-btn:hover {
+    background: var(--paper-2);
+    border-color: var(--primary);
+}
+.palette-btn.answered {
+    background: var(--success);
+    color: #fff;
+    border-color: var(--success);
+}
+.palette-btn.review {
+    background: var(--warning);
+    color: #fff;
+    border-color: var(--warning);
+}
+.palette-btn.current {
+    background: var(--primary);
+    color: #fff;
+    border-color: var(--primary);
+}
+
+/* Question Area */
+.question-area {
+    flex-grow: 1;
+}
+.question-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 12px;
+    margin-bottom: 20px;
+}
+.question-number { font-size: 16px; font-weight: 600; }
+.question-marks { font-size: 14px; font-weight: 500; color: var(--muted); }
+.question-text { font-size: 18px; line-height: 1.6; margin-bottom: 24px; }
+
+.options-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.option-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.option-label:hover {
+    border-color: var(--primary);
+    background: #F5F8FF;
+}
+.option-label input[type="radio"]:checked + .option-text {
+    font-weight: 600;
+}

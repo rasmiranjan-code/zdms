@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Tests for {{ subject.name }}{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 1040px; margin: 40px auto; padding: 0 32px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+        <div>
+            <h1 style="font-family: 'Source Serif 4', serif; font-size: 28px; font-weight: 600;">Tests for {{ subject.name }}</h1>
+            <p style="color: var(--muted); margin-top: 4px;">Manage online tests for this subject.</p>
+        </div>
+        <a href="{% url 'quiz:create_quiz' subject.id %}" class="nav-login">Create New Test</a>
+    </div>
+
+    <div class="table-responsive" style="background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; overflow-x: auto;">
+        <table class="data-table" style="margin-top: 0;">
+            <thead>
+                <tr>
+                    <th>Test Title</th>
+                    <th>Duration</th>
+                    <th>Starts At</th>
+                    <th>Ends At</th>
+                    <th>Status</th>
+                    <th style="text-align: right;">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for quiz in quizzes %}
+                    <tr>
+                        <td>{{ quiz.title }}</td>
+                        <td>{{ quiz.duration_minutes }} mins</td>
+                        <td>{{ quiz.start_time|date:"d M Y, P" }}</td>
+                        <td>{{ quiz.end_time|date:"d M Y, P" }}</td>
+                        <td>
+                            {% if quiz.is_published %}
+                                <span style="color: var(--success); font-weight: 500;">Published</span>
+                            {% else %}
+                                <span style="color: var(--muted);">Draft</span>
+                            {% endif %}
+                        </td>
+                        <td style="text-align: right;">
+                            <a href="{% url 'quiz:manage_quiz' quiz.pk %}" class="table-btn">Manage</a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="6" style="text-align: center; padding: 20px;">No tests created for this subject yet.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Create Test{% endblock %}
+{% block content %}
+<div class="container" style="max-width: 700px; margin: 40px auto; padding: 0 32px;">
+    <h1 style="font-family: 'Source Serif 4', serif; font-size: 28px; font-weight: 600;">
+        Create Test for {{ subject.name }}
+    </h1>
+    <p style="color: var(--muted); margin-top: 4px;">Fill in the details for the new test.</p>
+    <form method="post" style="background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 32px; margin-top: 24px;">
+        {% csrf_token %}
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div style="grid-column: 1 / -1;">
+                <label for="{{ form.title.id_for_label }}" style="display: block; font-weight: 500; margin-bottom: 6px;">Test Title</label>
+                {{ form.title }}
+            </div>
+            <div>
+                <label for="{{ form.duration_minutes.id_for_label }}" style="display: block; font-weight: 500; margin-bottom: 6px;">Duration (Minutes)</label>
+                {{ form.duration_minutes }}
+            </div>
+            <div>
+                <label for="{{ form.total_marks.id_for_label }}" style="display: block; font-weight: 500; margin-bottom: 6px;">Total Marks</label>
+                {{ form.total_marks }}
+            </div>
+            <div>
+                <label for="{{ form.start_time.id_for_label }}" style="display: block; font-weight: 500; margin-bottom: 6px;">Start Time</label>
+                {{ form.start_time }}
+            </div>
+            <div>
+                <label for="{{ form.end_time.id_for_label }}" style="display: block; font-weight: 500; margin-bottom: 6px;">End Time</label>
+                {{ form.end_time }}
+            </div>
+            <div style="grid-column: 1 / -1; display: flex; align-items: center; gap: 10px; padding-top: 10px;">
+                {{ form.is_published }}
+                <label for="{{ form.is_published.id_for_label }}">Publish this test (make it visible to students)</label>
+            </div>
+        </div>
+        <button type="submit" class="nav-login" style="width: 100%; margin-top: 24px;">Create Test & Add Questions</button>
+    </form>
+</div>
+{% endblock %}
