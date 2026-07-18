@@ -23,8 +23,6 @@ INSTALLED_APPS = [
     'apps.academics',
     'apps.students',
     'apps.attendance',
-    'apps.assignments',
-    'apps.quiz',
     'apps.results',
     'apps.notes',
     'apps.notices',
@@ -33,8 +31,9 @@ INSTALLED_APPS = [
     'apps.reports',
     'apps.dashboard',
     'apps.audit',
-    'apps.mcqs',  # <-- Is line ko yahan jodein
+    'apps.mcqs',
     'apps.faculty_attendance',
+    'apps.quiz',
 
 ]
 

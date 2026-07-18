@@ -17,6 +17,7 @@ urlpatterns = [
     path('notices/', include('apps.notices.urls')),
     path('notes/', include('apps.notes.urls')),
     path('faculty-attendance/', include('apps.faculty_attendance.urls')),
+    path('quiz/', include('apps.quiz.urls')),
 ]
 
 if settings.DEBUG:
