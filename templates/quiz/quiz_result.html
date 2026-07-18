@@ -3,22 +3,81 @@
 {% block title %}Test Result: {{ quiz.title }}{% endblock %}
 
 {% block content %}
-<div class="container" style="max-width: 700px; margin: 60px auto; padding: 0 32px; text-align: center;">
-    <div style="background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 40px;">
-        <h1 style="font-family: 'Source Serif 4', serif; font-size: 28px; font-weight: 600;">Test Submitted!</h1>
-        <p style="color: var(--muted); margin-top: 8px;">Here is your result for the test: <strong>{{ quiz.title }}</strong></p>
+<style>
+    .review-question {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 24px;
+        margin-bottom: 16px;
+        text-align: left;
+    }
+    .review-options {
+        list-style: none;
+        padding: 0;
+        margin-top: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    .review-option {
+        padding: 10px 14px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .review-option.correct {
+        border-color: var(--success);
+        background-color: #F0FDF4; /* Light green */
+    }
+    .review-option.incorrect {
+        border-color: var(--danger);
+        background-color: #FEF2F2; /* Light red */
+    }
+    .review-option .icon {
+        font-size: 16px;
+    }
+</style>
 
-        <div style="margin: 32px 0;">
-            <span style="font-size: 14px; font-weight: 500; color: var(--muted);">You Scored</span>
-            <div style="font-family: 'Source Serif 4', serif; font-size: 52px; font-weight: 700; color: var(--primary); line-height: 1.2;">
-                {{ attempt.score|floatformat:2 }} <span style="font-size: 24px; color: var(--muted);">/ {{ quiz.total_marks }}</span>
+<div class="container" style="max-width: 800px; margin: 40px auto; padding: 0 32px;">
+    <div style="text-align: center;">
+        <div style="background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 40px;">
+            <h1 style="font-family: 'Source Serif 4', serif; font-size: 28px; font-weight: 600;">Test Submitted!</h1>
+            <p style="color: var(--muted); margin-top: 8px;">Here is your result for the test: <strong>{{ quiz.title }}</strong></p>
+
+            <div style="margin: 32px 0;">
+                <span style="font-size: 14px; font-weight: 500; color: var(--muted);">You Scored</span>
+                <div style="font-family: 'Source Serif 4', serif; font-size: 52px; font-weight: 700; color: var(--primary); line-height: 1.2;">
+                    {{ attempt.score|floatformat:2 }} <span style="font-size: 24px; color: var(--muted);">/ {{ quiz.total_marks }}</span>
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: center; gap: 16px; margin-top: 32px;">
+                <a href="{% url 'quiz:student_quiz_list' %}" class="nav-login" style="background: var(--paper-2); color: var(--ink);">Back to Tests</a>
+                <a href="{% url 'students:dashboard' %}" class="nav-login">Go to Dashboard</a>
             </div>
         </div>
-
-        <div style="display: flex; justify-content: center; gap: 16px; margin-top: 32px;">
-            <a href="{% url 'quiz:student_quiz_list' %}" class="nav-login" style="background: var(--paper-2); color: var(--ink);">Back to Tests</a>
-            <a href="{% url 'students:dashboard' %}" class="nav-login">Go to Dashboard</a>
-        </div>
     </div>
+
+    <h2 style="font-family: 'Source Serif 4', serif; font-size: 24px; font-weight: 600; margin-top: 48px; margin-bottom: 24px;">Review Your Answers</h2>
+
+    {% for item in review_data %}
+    <div class="review-question">
+        <p><strong>Q{{ forloop.counter }}: {{ item.quiz_question.question.question_text|linebreaksbr }}</strong></p>
+        <ul class="review-options">
+            {% for option in item.quiz_question.question.answers.all %}
+                <li class="review-option 
+                    {% if option.is_correct %}correct{% endif %}
+                    {% if item.student_answer and item.student_answer.selected_answer.id == option.id and not option.is_correct %}incorrect{% endif %}">
+                    
+                    {% if option.is_correct %}<span class="icon">✓</span>{% elif item.student_answer and item.student_answer.selected_answer.id == option.id %}<span class="icon">✗</span>{% else %}<span class="icon" style="opacity: 0.2;">•</span>{% endif %}
+                    {{ option.answer_text }}
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endfor %}
 </div>
 {% endblock %}

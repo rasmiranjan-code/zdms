@@ -273,5 +273,27 @@ class QuizResultView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['attempt'] = get_object_or_404(StudentQuizAttempt, quiz=self.get_object(), student=self.request.user)
+        quiz = self.get_object()
+        attempt = get_object_or_404(StudentQuizAttempt, quiz=quiz, student=self.request.user)
+        context['attempt'] = attempt
+
+        # --- Prepare detailed review data ---
+        quiz_questions = QuizQuestion.objects.filter(quiz=quiz).select_related('question').prefetch_related('question__answers')
+        student_answers_map = {sa.quiz_question_id: sa for sa in StudentAnswer.objects.filter(attempt=attempt)}
+
+        review_data = []
+        for qq in quiz_questions:
+            student_answer_obj = student_answers_map.get(qq.id)
+            correct_answer = None
+            for option in qq.question.answers.all():
+                if option.is_correct:
+                    correct_answer = option
+                    break
+            
+            review_data.append({
+                'quiz_question': qq,
+                'student_answer': student_answer_obj,
+                'correct_answer': correct_answer,
+            })
+        context['review_data'] = review_data
         return context
