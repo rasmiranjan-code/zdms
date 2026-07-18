@@ -4,12 +4,13 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.views.generic import ListView, CreateView, DetailView, View
 from django.urls import reverse_lazy
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, AccessMixin
 from django.utils import timezone
 from django.http import JsonResponse
 import json
+from django.db import transaction
 
-from .models import Quiz, QuizQuestion, StudentQuizAttempt, StudentAnswer
+from .models import Quiz, QuizQuestion, StudentQuizAttempt, StudentAnswer, Answer
 from .forms import QuizForm, AddQuestionToQuizForm, ManualQuestionForm, AnswerFormSet
 from apps.academics.models import Semester, Subject, Enrollment
 from apps.mcqs.views import HODFacultyRequiredMixin
@@ -128,6 +129,21 @@ class ManageQuizView(HODFacultyRequiredMixin, DetailView):
 
 # --- Student Views (To be built) ---
 
+class StudentQuizAccessMixin(AccessMixin):
+    """Verify that the current user is the student who owns the attempt."""
+    def dispatch(self, request, *args, **kwargs):
+        attempt = get_object_or_404(StudentQuizAttempt, pk=self.kwargs['pk'])
+        if attempt.student != request.user:
+            messages.error(request, "You do not have permission to access this test.")
+            return self.handle_no_permission()
+        
+        # Check if test is already submitted
+        if attempt.is_submitted and 'result' not in request.path:
+             messages.info(request, "You have already submitted this test.")
+             return redirect('quiz:quiz_result', pk=attempt.quiz.pk)
+
+        return super().dispatch(request, *args, **kwargs)
+
 class StudentQuizListView(LoginRequiredMixin, View):
     template_name = 'quiz/student_quiz_list.html'
 
@@ -180,11 +196,11 @@ class StartQuizView(LoginRequiredMixin, View):
 
         if attempt.is_submitted:
             messages.info(request, "You have already submitted this test.")
-            return redirect('quiz:quiz_result', pk=attempt.pk)
+            return redirect('quiz:quiz_result', pk=attempt.quiz.pk)
 
         return redirect('quiz:take_quiz', pk=attempt.pk)
 
-class TakeQuizView(LoginRequiredMixin, DetailView):
+class TakeQuizView(StudentQuizAccessMixin, DetailView):
     model = StudentQuizAttempt
     template_name = 'quiz/take_quiz.html'
     context_object_name = 'attempt'
@@ -193,13 +209,62 @@ class TakeQuizView(LoginRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
         attempt = self.get_object()
         
-        # Security check: ensure the user owns this attempt
-        if attempt.student != self.request.user:
-            # This should ideally not happen if URLs are correct
-            raise PermissionDenied
+        # Calculate quiz end time for the timer
+        end_time = attempt.created_at + timezone.timedelta(minutes=attempt.quiz.duration_minutes)
+        context['end_time_iso'] = end_time.isoformat()
 
         context['quiz_questions'] = attempt.quiz.questions.select_related('question__subject').prefetch_related('question__answers').all()
         return context
+
+class SubmitQuizView(StudentQuizAccessMixin, View):
+    @transaction.atomic
+    def post(self, request, pk):
+        attempt = get_object_or_404(StudentQuizAttempt, pk=pk)
+        
+        if attempt.is_submitted:
+            return JsonResponse({'status': 'error', 'message': 'Test already submitted.'}, status=400)
+
+        data = json.loads(request.body)
+        answers_data = data.get('answers', {})
+        
+        total_score = 0
+        
+        # Get all questions and correct answers for this quiz in one go
+        quiz_questions = QuizQuestion.objects.filter(quiz=attempt.quiz).select_related('question')
+        correct_answers_map = {
+            str(ans.question_id): ans.id 
+            for ans in Answer.objects.filter(question__in=[qq.question for qq in quiz_questions], is_correct=True)
+        }
+
+        student_answers_to_create = []
+
+        for quiz_question in quiz_questions:
+            question_id_str = str(quiz_question.question.id)
+            selected_answer_id = answers_data.get(str(quiz_question.id))
+            
+            is_correct = False
+            if selected_answer_id and int(selected_answer_id) == correct_answers_map.get(question_id_str):
+                is_correct = True
+                total_score += quiz_question.marks
+
+            student_answers_to_create.append(
+                StudentAnswer(
+                    attempt=attempt,
+                    quiz_question=quiz_question,
+                    selected_answer_id=selected_answer_id,
+                    is_correct=is_correct
+                )
+            )
+        
+        StudentAnswer.objects.bulk_create(student_answers_to_create)
+
+        # Update the attempt object
+        attempt.score = total_score
+        attempt.is_submitted = True
+        attempt.submitted_at = timezone.now()
+        attempt.save()
+
+        return JsonResponse({'status': 'success', 'result_url': reverse('quiz:quiz_result', kwargs={'pk': attempt.quiz.pk})})
 
 class QuizResultView(LoginRequiredMixin, DetailView):
     model = Quiz

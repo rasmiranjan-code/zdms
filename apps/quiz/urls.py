@@ -18,4 +18,5 @@ urlpatterns = [
     path('start/<int:pk>/', views.StartQuizView.as_view(), name='start_quiz'),
     path('attempt/<int:pk>/', views.TakeQuizView.as_view(), name='take_quiz'),
     path('result/<int:pk>/', views.QuizResultView.as_view(), name='quiz_result'),
+    path('submit/<int:pk>/', views.SubmitQuizView.as_view(), name='submit_quiz'),
 ]
