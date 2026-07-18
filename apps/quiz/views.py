@@ -127,6 +127,18 @@ class ManageQuizView(HODFacultyRequiredMixin, DetailView):
 
         return redirect('quiz:manage_quiz', pk=quiz.pk)
 
+class QuizAttemptsView(HODFacultyRequiredMixin, DetailView):
+    model = Quiz
+    template_name = 'quiz/quiz_attempts.html'
+    context_object_name = 'quiz'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        quiz = self.get_object()
+        context['attempts'] = StudentQuizAttempt.objects.filter(quiz=quiz, is_submitted=True).select_related('student').order_by('-score')
+        return context
+
+
 # --- Student Views (To be built) ---
 
 class StudentQuizAccessMixin(AccessMixin):
