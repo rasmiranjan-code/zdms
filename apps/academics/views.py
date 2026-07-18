@@ -24,12 +24,7 @@ class AcademicSessionCreateView(HODRequiredMixin, CreateView):
 class BatchListView(HODRequiredMixin, ListView):
     model = Batch
     template_name = 'academics/batch_list.html'
-    context_object_name = 'batches'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['archived_batches'] = Batch.objects.filter(is_active=False).order_by('-expiry_date')
-        return context
+    context_object_name = 'active_batches'
 
 
 class BatchCreateView(HODRequiredMixin, CreateView):

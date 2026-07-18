@@ -1,5 +1,5 @@
 # apps/academics/models.py
-
+from datetime import date
 from django.db import models
 from apps.core.models import TimeStampedModel
 from apps.core.constants import SEMESTER_STATUS_CHOICES, SUBJECT_TYPE_CHOICES
@@ -23,6 +23,14 @@ class Batch(TimeStampedModel):
     """Represents a group of students, e.g., B.Sc. Zoology 2024-2027."""
     academic_session = models.OneToOneField(AcademicSession, on_delete=models.CASCADE)
     is_active = models.BooleanField(default=True)
+    expiry_date = models.DateField(null=True, blank=True, help_text="Date after which the batch is considered inactive.")
+
+    def save(self, *args, **kwargs):
+        # Automatically set expiry date if not set
+        if not self.expiry_date and self.academic_session:
+            # Set expiry to Aug 31 of the session's end year
+            self.expiry_date = date(self.academic_session.end_year, 8, 31)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return str(self.academic_session)
