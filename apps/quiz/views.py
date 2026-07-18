@@ -12,9 +12,9 @@ from django.db import transaction
 
 from .models import Quiz, QuizQuestion, StudentQuizAttempt, StudentAnswer, Answer
 from .forms import QuizForm, AddQuestionToQuizForm, ManualQuestionForm, AnswerFormSet
-from apps.academics.models import Semester, Subject, Enrollment
-from apps.mcqs.views import HODFacultyRequiredMixin
+from apps.academics.models import Semester, Subject, Enrollment, Batch
 from apps.mcqs.models import Question 
+from apps.mcqs.views import HODFacultyRequiredMixin
 
 # --- Faculty/HOD Views ---
 
@@ -24,16 +24,34 @@ class SelectSemesterForQuizView(HODFacultyRequiredMixin, ListView):
     context_object_name = 'semesters'
 
     def get_queryset(self):
-        queryset = Semester.objects.select_related('batch__academic_session').order_by('-batch__academic_session__start_year', 'number')
+        queryset = (
+            Semester.objects
+            .select_related('batch__academic_session')
+            .order_by('-batch__academic_session__start_year', 'number')
+        )
+
         batch_id = self.request.GET.get('batch')
+
         if batch_id:
             queryset = queryset.filter(batch_id=batch_id)
+
         return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['batches'] = Subject.objects.all().select_related('semester__batch').distinct('semester__batch')
-        context['selected_batch'] = int(self.request.GET.get('batch')) if self.request.GET.get('batch') else None
+
+        context['batches'] = (
+            Batch.objects
+            .select_related('academic_session')
+            .order_by('-academic_session__start_year')
+        )
+
+        context['selected_batch'] = (
+            int(self.request.GET.get('batch'))
+            if self.request.GET.get('batch')
+            else None
+        )
+
         return context
 
 class SelectSubjectForQuizView(HODFacultyRequiredMixin, ListView):
