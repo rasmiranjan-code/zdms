@@ -1,7 +1,7 @@
 # apps/quiz/forms.py
 
 from django import forms
-from .models import Quiz, QuizQuestion
+from .models import Quiz, QuizQuestion, Question as QuizModelQuestion, Answer as QuizAnswer
 from apps.mcqs.models import Question
 
 class QuizForm(forms.ModelForm):
@@ -29,3 +29,22 @@ class AddQuestionToQuizForm(forms.ModelForm):
         widgets = {
             'marks': forms.NumberInput(attrs={'class': 'form-control'}),
         }
+
+class ManualQuestionForm(forms.ModelForm):
+    class Meta:
+        model = QuizModelQuestion
+        fields = ['question_text', 'image']
+        widgets = {
+            'question_text': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Enter question text here...'}),
+            'image': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+        }
+
+class AnswerForm(forms.ModelForm):
+    class Meta:
+        model = QuizAnswer
+        fields = ['answer_text', 'is_correct']
+        widgets = {
+            'answer_text': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter answer option...'}),
+        }
+
+AnswerFormSet = forms.inlineformset_factory(QuizModelQuestion, QuizAnswer, form=AnswerForm, extra=4, max_num=4, can_delete=False)

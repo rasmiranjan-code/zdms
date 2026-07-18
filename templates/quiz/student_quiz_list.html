@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}My Tests{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 900px; margin: 40px auto; padding: 0 32px;">
+    <h1 style="font-family: 'Source Serif 4', serif; font-size: 28px; font-weight: 600;">My Tests</h1>
+    <p style="color: var(--muted); margin-top: 4px;">List of all available tests for your subjects.</p>
+
+    <div class="table-responsive" style="margin-top: 24px; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; overflow-x: auto;">
+        <table class="data-table" style="margin-top: 0;">
+            <thead>
+                <tr>
+                    <th>Test Title</th>
+                    <th>Subject</th>
+                    <th>Duration</th>
+                    <th>Availability</th>
+                    <th style="text-align: right;">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for quiz in quizzes %}
+                    <tr>
+                        <td>{{ quiz.title }}</td>
+                        <td>{{ quiz.subject.name }}</td>
+                        <td>{{ quiz.duration_minutes }} mins</td>
+                        <td>{{ quiz.start_time|date:"d M, P" }} to {{ quiz.end_time|date:"d M, P" }}</td>
+                        <td style="text-align: right;">
+                            {% if quiz.id in completed_quiz_ids %}
+                                <a href="{% url 'quiz:quiz_result' quiz.id %}" class="table-btn" style="background: var(--success); color: #fff; border-color: var(--success);">View Result</a>
+                            {% elif quiz.start_time <= now and now <= quiz.end_time %}
+                                <a href="{% url 'quiz:start_quiz' quiz.pk %}" class="nav-login">Start Test</a>
+                            {% elif now < quiz.start_time %}
+                                <span style="color: var(--muted); font-size: 13px;">Upcoming</span>
+                            {% else %}
+                                <span style="color: var(--danger); font-size: 13px;">Expired</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="5" style="text-align: center; padding: 20px;">No tests are available for you at the moment.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

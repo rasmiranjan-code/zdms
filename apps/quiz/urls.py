@@ -12,4 +12,10 @@ urlpatterns = [
     path('manage/subjects/<int:subject_id>/', views.QuizListView.as_view(), name='quiz_list'),
     path('manage/subjects/<int:subject_id>/create/', views.QuizCreateView.as_view(), name='create_quiz'),
     path('manage/<int:pk>/', views.ManageQuizView.as_view(), name='manage_quiz'),
+
+    # Student URLs
+    path('', views.StudentQuizListView.as_view(), name='student_quiz_list'),
+    path('start/<int:pk>/', views.StartQuizView.as_view(), name='start_quiz'),
+    path('attempt/<int:pk>/', views.TakeQuizView.as_view(), name='take_quiz'),
+    path('result/<int:pk>/', views.QuizResultView.as_view(), name='quiz_result'),
 ]

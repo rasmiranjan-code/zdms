@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Test: {{ attempt.quiz.title }}{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/test.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="test-wrapper">
+    <main class="test-main">
+        <div class="question-area">
+            {% for q in quiz_questions %}
+            <div class="question-container" id="question-{{ forloop.counter }}" style="display: {% if forloop.first %}block{% else %}none{% endif %};">
+                <div class="question-header">
+                    <span class="question-number">Question {{ forloop.counter }} of {{ quiz_questions|length }}</span>
+                    <span class="question-marks">Marks: {{ q.marks }}</span>
+                </div>
+                <p class="question-text">{{ q.question.question_text|linebreaksbr }}</p>
+                {% if q.question.image %}
+                    <img src="{{ q.question.image.url }}" alt="Question Image" style="max-width: 100%; border-radius: 8px; margin-bottom: 20px;">
+                {% endif %}
+                <ul class="options-list">
+                    {% for answer in q.question.answers.all %}
+                    <li>
+                        <label class="option-label">
+                            <input type="radio" name="question_{{ q.id }}" value="{{ answer.id }}">
+                            <span class="option-text">{{ answer.answer_text }}</span>
+                        </label>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="test-navigation" style="display: flex; justify-content: space-between; margin-top: auto; padding-top: 20px; border-top: 1px solid var(--line);">
+            <button id="prev-btn" class="nav-login" style="background: var(--paper-2); color: var(--ink);">Previous</button>
+            <button id="next-btn" class="nav-login">Next</button>
+        </div>
+    </main>
+
+    <aside class="test-sidebar">
+        <div class="test-timer">
+            <div class="timer-label">Time Remaining</div>
+            <div class="timer-clock" id="timer-clock">--:--</div>
+        </div>
+        <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 12px;">Question Palette</h3>
+        <div class="palette-grid">
+            {% for q in quiz_questions %}
+            <button class="palette-btn" data-question="{{ forloop.counter }}">{{ forloop.counter }}</button>
+            {% endfor %}
+        </div>
+        <button id="submit-test-btn" class="nav-login" style="width: 100%; margin-top: auto; background: var(--danger); border-color: var(--danger);">Submit Test</button>
+    </aside>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let currentQuestion = 1;
+    const totalQuestions = {{ quiz_questions|length }};
+    const questions = document.querySelectorAll('.question-container');
+    const paletteBtns = document.querySelectorAll('.palette-btn');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+
+    function showQuestion(qNum) {
+        questions.forEach(q => q.style.display = 'none');
+        document.getElementById(`question-${qNum}`).style.display = 'block';
+        
+        paletteBtns.forEach(btn => btn.classList.remove('current'));
+        document.querySelector(`.palette-btn[data-question="${qNum}"]`).classList.add('current');
+
+        prevBtn.style.visibility = (qNum === 1) ? 'hidden' : 'visible';
+        nextBtn.textContent = (qNum === totalQuestions) ? 'Finish' : 'Next';
+        currentQuestion = qNum;
+    }
+
+    prevBtn.addEventListener('click', () => {
+        if (currentQuestion > 1) showQuestion(currentQuestion - 1);
+    });
+
+    nextBtn.addEventListener('click', () => {
+        if (currentQuestion < totalQuestions) {
+            showQuestion(currentQuestion + 1);
+        } else {
+            // Handle finish click
+            document.getElementById('submit-test-btn').click();
+        }
+    });
+
+    paletteBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            showQuestion(parseInt(btn.dataset.question));
+        });
+    });
+
+    showQuestion(1);
+});
+</script>
+{% endblock %}

@@ -1,5 +1,10 @@
 {% extends "base.html" %}
 
+{% block extra_head %}
+<style>
+    .answer-row { display: grid; grid-template-columns: 1fr 100px; gap: 16px; align-items: center; margin-bottom: 12px; }
+</style>
+{% endblock %}
 {% block title %}Manage Test: {{ quiz.title }}{% endblock %}
 
 {% block content %}
@@ -12,17 +17,31 @@
     <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 24px; align-items: start;">
         <!-- Add Question Form -->
         <div style="background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px;">
-            <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 16px;">Add Question</h2>
-            <form method="post">
+            <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 16px;">Add New Question</h2>
+            <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 <div style="display: flex; flex-direction: column; gap: 16px;">
                     <div>
-                        <label for="{{ form.question.id_for_label }}" style="display: block; font-weight: 500; margin-bottom: 6px;">Select Question</label>
-                        {{ form.question }}
+                        <label for="{{ question_form.question_text.id_for_label }}" style="display: block; font-weight: 500; margin-bottom: 6px;">Question Text</label>
+                        {{ question_form.question_text }}
                     </div>
                     <div>
-                        <label for="{{ form.marks.id_for_label }}" style="display: block; font-weight: 500; margin-bottom: 6px;">Marks</label>
-                        {{ form.marks }}
+                        <label for="{{ question_form.image.id_for_label }}" style="display: block; font-weight: 500; margin-bottom: 6px;">Image (Optional)</label>
+                        {{ question_form.image }}
+                    </div>
+                    <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 0; padding-top: 10px; border-top: 1px solid var(--line);">Answer Options</h3>
+                    {{ answer_formset.management_form }}
+                    {% for form in answer_formset %}
+                        <div class="answer-row">
+                            {{ form.answer_text }}
+                            <label style="display: flex; align-items: center; gap: 8px; justify-content: center;">
+                                {{ form.is_correct }} Correct
+                            </label>
+                        </div>
+                    {% endfor %}
+                    <div>
+                        <label for="id_marks" style="display: block; font-weight: 500; margin-bottom: 6px;">Marks for this Question</label>
+                        <input type="number" name="marks" value="1" id="id_marks" class="form-control">
                     </div>
                 </div>
                 <button type="submit" class="nav-login" style="width: 100%; margin-top: 20px;">Add to Test</button>
