@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block title %}Batches{% endblock %}
+{% block title %}Manage Batches{% endblock %}
 
 {% block content %}
 <style>
@@ -10,10 +11,13 @@
 </style>
 
 <div class="container" style="max-width: 900px; margin: 40px auto; padding: 0 32px;">
+<div class="container" style="max-width: 1040px; margin: 40px auto; padding: 0 32px;">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
         <div>
             <h1 style="font-family: 'Source Serif 4', serif; font-size: 28px; font-weight: 600;">Batches</h1>
             <p style="color: var(--muted); margin-top: 4px;">Manage student batches for each academic session.</p>
+            <h1 style="font-family: 'Source Serif 4', serif; font-size: 28px; font-weight: 600;">Manage Batches</h1>
+            <p style="color: var(--muted); margin-top: 4px;">Create new batches or view archived ones.</p>
         </div>
         <a href="{% url 'academics:batch_add' %}" class="nav-login">Add New Batch</a>
     </div>
@@ -37,6 +41,57 @@
                 {% endfor %}
             </tbody>
         </table>
+    <!-- Active Batches -->
+    <div style="background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; margin-bottom: 32px;">
+        <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 16px;">Active Batches</h2>
+        <div class="table-responsive" style="overflow-x: auto;">
+            <table class="data-table" style="margin-top: 0;">
+                <thead>
+                    <tr>
+                        <th>Academic Session</th>
+                        <th>Expiry Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for batch in active_batches %}
+                        {% if batch.is_active %}
+                        <tr>
+                            <td>{{ batch.academic_session }}</td>
+                            <td>{{ batch.expiry_date|date:"d M, Y" }}</td>
+                        </tr>
+                        {% endif %}
+                    {% empty %}
+                        <tr><td colspan="2" style="text-align: center; padding: 20px;">No active batches found.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
+
+    <!-- Archived Batches -->
+    <div style="background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px;">
+        <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 16px;">Archived Batches</h2>
+        <div class="table-responsive" style="overflow-x: auto;">
+            <table class="data-table" style="margin-top: 0;">
+                <thead>
+                    <tr>
+                        <th>Academic Session</th>
+                        <th>Expired On</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for batch in archived_batches %}
+                        <tr>
+                            <td>{{ batch.academic_session }}</td>
+                            <td>{{ batch.expiry_date|date:"d M, Y" }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="2" style="text-align: center; padding: 20px;">No archived batches found.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
 </div>
 {% endblock %}
