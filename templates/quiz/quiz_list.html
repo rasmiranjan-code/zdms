@@ -39,7 +39,6 @@
                             {% endif %}
                         </td>
                         <td style="text-align: right;">
-                            <a href="{% url 'quiz:manage_quiz' quiz.pk %}" class="table-btn">Manage</a>
                             <div style="display: flex; gap: 8px; justify-content: flex-end;">
                                 <a href="{% url 'quiz:manage_quiz' quiz.pk %}" class="table-btn">Manage Questions</a>
                                 <a href="{% url 'quiz:quiz_attempts' quiz.pk %}" class="table-btn" style="background: var(--paper-2);">View Attempts</a>
