@@ -23,6 +23,7 @@ class Answer(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='answers')
     answer_text = models.CharField(max_length=500)
     is_correct = models.BooleanField(default=False)
+    explanation = models.TextField(blank=True, null=True, help_text="Explanation for the correct answer.")
 
     def __str__(self):
         return self.answer_text

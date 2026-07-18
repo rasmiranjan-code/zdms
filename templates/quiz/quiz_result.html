@@ -39,6 +39,13 @@
     .review-option .icon {
         font-size: 16px;
     }
+    .explanation-box {
+        background-color: #F0F8FF; /* AliceBlue */
+        border: 1px solid #B0E0E6; /* PowderBlue */
+        border-radius: 8px;
+        padding: 12px;
+        margin-top: 12px;
+    }
 </style>
 
 <div class="container" style="max-width: 800px; margin: 40px auto; padding: 0 32px;">
@@ -77,6 +84,11 @@
                 </li>
             {% endfor %}
         </ul>
+        {% if item.correct_answer.explanation %}
+            <div class="explanation-box">
+                <strong>Explanation:</strong> {{ item.correct_answer.explanation|linebreaksbr }}
+            </div>
+        {% endif %}
     </div>
     {% endfor %}
 </div>
