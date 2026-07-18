@@ -42,9 +42,10 @@ class ManualQuestionForm(forms.ModelForm):
 class AnswerForm(forms.ModelForm):
     class Meta:
         model = QuizAnswer
-        fields = ['answer_text', 'is_correct']
+        fields = ['answer_text', 'is_correct', 'explanation']
         widgets = {
             'answer_text': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter answer option...'}),
+            'explanation': forms.Textarea(attrs={'class': 'form-control', 'rows': 2, 'placeholder': 'Explanation (if this is the correct answer)'}),
         }
 
 AnswerFormSet = forms.inlineformset_factory(QuizModelQuestion, QuizAnswer, form=AnswerForm, extra=4, max_num=4, can_delete=False)
