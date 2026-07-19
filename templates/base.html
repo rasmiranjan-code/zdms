@@ -11,7 +11,7 @@
 <body>
     <header class="site-header">
         <div class="brand">
-            <a href="{% url 'accounts:landing' %}" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 12px;">
+            <a href="{% if user.is_authenticated %}{% if user.role == 'HOD' %}{% url 'dashboard:hod_dashboard' %}{% elif user.role == 'FACULTY' %}{% url 'dashboard:faculty_dashboard' %}{% elif user.role == 'STUDENT' %}{% url 'students:dashboard' %}{% else %}{% url 'accounts:landing' %}{% endif %}{% else %}{% url 'accounts:landing' %}{% endif %}" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 12px;">
                 <img src="{% static 'images/logo/zdms.png' %}" alt="Department of Zoology logo" class="brand-mark">
                 <span class="brand-name">Department of Zoology</span>
             </a>

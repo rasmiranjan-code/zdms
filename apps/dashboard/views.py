@@ -5,10 +5,11 @@ from django.db.models import Count, Q
 from django.views.generic import TemplateView
 from apps.core.mixins import FacultyRequiredMixin, HODRequiredMixin
 from apps.accounts.models import FacultySubjectBatchMapping, User
-from apps.academics.models import Batch, Subject
+from apps.academics.models import Batch, Subject, Semester, Enrollment
 from apps.mcqs.models import Question
 from apps.notes.models import Note
 from apps.attendance.models import Attendance
+from apps.quiz.models import Quiz
 from apps.mcqs.models import StudentAttempt
 
 
@@ -98,10 +99,24 @@ class FacultyDashboardView(FacultyRequiredMixin, TemplateView):
         context['assigned_batches'] = Batch.objects.filter(id__in=FacultySubjectBatchMapping.objects.filter(faculty=faculty).values_list('batch_id', flat=True).distinct())
         context['selected_batch'] = int(batch_filter_id) if batch_filter_id else None
 
-        # Add stats for the dashboard
-        distinct_subjects = assignments.values('subject').distinct()
-        context['assigned_subjects_count'] = distinct_subjects.count()
-        context['assigned_batches_count'] = assignments.values('batch').distinct().count()
+        # --- Stats Calculation ---
+        assigned_batch_ids = context['assigned_batches'].values_list('id', flat=True)
+
+        # Total unique subjects and batches assigned
+        context['assigned_subjects_count'] = assignments.values('subject').distinct().count()
+        context['assigned_batches_count'] = assigned_batch_ids.count()
+
+        # Total MCQs and Notes added by this faculty
         context['mcqs_added_count'] = Question.objects.filter(created_by=faculty).count()
         context['notes_added_count'] = Note.objects.filter(uploaded_by=faculty).count()
+
+        # Total unique students in the faculty's assigned batches
+        context['total_students'] = Enrollment.objects.filter(batch_id__in=assigned_batch_ids).values('student').distinct().count()
+
+        # Total attendance sessions taken by the faculty
+        context['attendance_taken'] = Attendance.objects.filter(marked_by=faculty).values('date', 'subject', 'batch').distinct().count()
+
+        # Total tests created by the faculty
+        context['tests_created'] = Quiz.objects.filter(created_by=faculty).count()
+
         return context
