@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'apps.mcqs',
     'apps.faculty_attendance',
     'apps.quiz',
+    'apps.threed_library.apps.ThreedLibraryConfig',
 
 ]
 

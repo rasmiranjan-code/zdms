@@ -1,13 +1,13 @@
 # apps/threed_library/views.py
 
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 from django.urls import reverse_lazy
 from django.contrib import messages
-from django.contrib.auth.mixins import UserPassesTestMixin
+from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 
 from .models import ThreeDModel
 from .forms import ThreeDModelForm
-from apps.core.mixins import HODFacultyRequiredMixin
+from apps.mcqs.views import HODFacultyRequiredMixin
 
 class ModelAuthorOrHODMixin(UserPassesTestMixin):
     """Mixin to allow access only to the model author or an HOD."""
@@ -43,3 +43,17 @@ class ThreeDModelDeleteView(ModelAuthorOrHODMixin, DeleteView):
     template_name = 'threed_library/model_confirm_delete.html'
     context_object_name = 'model'
     success_url = reverse_lazy('threed_library:manage_list')
+
+
+# --- Student Views ---
+
+class StudentModelListView(LoginRequiredMixin, ListView):
+    model = ThreeDModel
+    template_name = 'threed_library/student_model_list.html'
+    context_object_name = 'models'
+    paginate_by = 12
+
+class StudentModelDetailView(LoginRequiredMixin, DetailView):
+    model = ThreeDModel
+    template_name = 'threed_library/student_model_detail.html'
+    context_object_name = 'model'
