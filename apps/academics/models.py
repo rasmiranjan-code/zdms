@@ -21,7 +21,7 @@ class AcademicSession(TimeStampedModel):
 
 class Batch(TimeStampedModel):
     """Represents a group of students, e.g., B.Sc. Zoology 2024-2027."""
-    academic_session = models.OneToOneField(AcademicSession, on_delete=models.CASCADE)
+    academic_session = models.ForeignKey(AcademicSession, on_delete=models.CASCADE, related_name='batches')
     is_active = models.BooleanField(default=True)
     expiry_date = models.DateField(null=True, blank=True, help_text="Date after which the batch is considered inactive.")
 

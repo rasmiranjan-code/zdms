@@ -44,6 +44,10 @@ class ThreeDModelDeleteView(ModelAuthorOrHODMixin, DeleteView):
     context_object_name = 'model'
     success_url = reverse_lazy('threed_library:manage_list')
 
+    def post(self, request, *args, **kwargs):
+        messages.success(self.request, f"Model '{self.get_object().title}' has been deleted.")
+        return super().post(request, *args, **kwargs)
+
 
 # --- Student Views ---
 
