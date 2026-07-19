@@ -258,25 +258,33 @@
             <!-- Stats -->
             <div class="stats">
                 <div class="stat-card c-blue">
-                    <div class="stat-icon">📘</div>
+                    <div class="stat-icon" style="padding: 6px;">
+                        <img src="{% static 'images/logo/education.png' %}" alt="Students" style="width: 100%; height: 100%; object-fit: contain;">
+                    </div>
                     <div class="stat-value">{{ assigned_subjects_count }}</div>
                     <div class="stat-label">Assigned Subjects</div>
                     <a href="#" class="stat-link">View Details →</a>
                 </div>
                 <div class="stat-card c-green">
-                    <div class="stat-icon">📦</div>
-                    <div class="stat-value">{{ assigned_batches_count }}</div>
-                    <div class="stat-label">Total Batches</div>
+                    <div class="stat-icon" style="padding: 6px;">
+                        <img src="{% static 'images/logo/student.png' %}" alt="Students" style="width: 100%; height: 100%; object-fit: contain;">
+                    </div>
+                    <div class="stat-value">{{ total_students }}</div>
+                    <div class="stat-label">Total Students</div>
                     <a href="#" class="stat-link">View Details →</a>
                 </div>
                 <div class="stat-card c-orange">
-                    <div class="stat-icon">🎯</div>
+                    <div class="stat-icon" style="padding: 6px;">
+                        <img src="{% static 'images/logo/exam-time.png' %}" alt="Students" style="width: 100%; height: 100%; object-fit: contain;">
+                    </div>
                     <div class="stat-value">{{ mcqs_added_count }}</div>
                     <div class="stat-label">MCQs Added</div>
                     <a href="{% url 'mcqs:faculty_select_semester' %}" class="stat-link">Manage MCQs →</a>
                 </div>
                 <div class="stat-card c-purple">
-                    <div class="stat-icon">📝</div>
+                <div class="stat-icon" style="padding: 6px;">
+                        <img src="{% static 'images/logo/exam.png' %}" alt="Students" style="width: 100%; height: 100%; object-fit: contain;">
+                    </div>
                     <div class="stat-value">{{ tests_created }}</div>
                     <div class="stat-label">Tests Created</div>
                     <a href="{% url 'quiz:select_semester' %}" class="stat-link">Manage Tests →</a>
@@ -288,13 +296,15 @@
                 <div class="panel">
                     <div class="panel-head">
                         <div class="panel-head-left">
-                            <div class="panel-icon">📘</div>
+                            <div class="stat-icon" style="padding: 6px;">
+                        <img src="{% static 'images/logo/education.png' %}" alt="Students" style="width: 100%; height: 100%; object-fit: contain;">
+                    </div>
                             <div>
                                 <div class="panel-title">My Assigned Subjects</div>
                                 <div class="panel-sub">Subjects assigned to you for teaching.</div>
                             </div>
                         </div>
-                        <a href="{% url 'mcqs:faculty_select_semester' %}" class="btn-primary">+ Add MCQs</a>
+                        <a href="{% url 'mcqs:faculty_select_semester' %}" class="btn-primary"> Add MCQs</a>
                     </div>
 
                     <form method="get" class="filter-row">
@@ -304,7 +314,7 @@
                                 <option value="{{ batch.pk }}" {% if batch.pk == selected_batch %}selected{% endif %}>{{ batch.academic_session }}</option>
                             {% endfor %}
                         </select>
-                        <button type="submit" class="btn-filter">▲ Filter</button>
+                        <button type="submit" class="btn-filter">Filter</button>
                     </form>
 
                     <div class="table-scroll">
@@ -356,18 +366,23 @@
                     </div>
                     <div class="qa-grid">
                         <a href="{% url 'attendance:attendance_dashboard' %}" class="qa-card">
-                            <div class="qa-icon qi-blue">📅</div>
+                            <div class="stat-icon" style="padding: 6px;">
+                        <img src="{% static 'images/logo/roll-call.png' %}" alt="Students" style="width: 100%; height: 100%; object-fit: contain;">
+                    </div>
                             <div class="qa-title">Take<br>Attendance</div>
                             <span class="qa-arrow">›</span>
                         </a>
                         <a href="{% url 'mcqs:faculty_select_semester' %}" class="qa-card">
-                            <div class="qa-icon qi-red">🎯</div>
+                            <div class="stat-icon" style="padding: 6px;">
+                        <img src="{% static 'images/logo/choose.png' %}" alt="Students" style="width: 100%; height: 100%; object-fit: contain;">
+                    </div>
                             <div class="qa-title">Manage<br>MCQs</div>
                             <span class="qa-arrow">›</span>
                         </a>
                         <a href="{% url 'notes:select_semester' %}" class="qa-card">
-                            <div class="qa-icon qi-green">📚</div>
-                            <div class="qa-title">Digital<br>Library</div>
+ <div class="stat-icon" style="padding: 6px;">
+                        <img src="{% static 'images/logo/books.png' %}" alt="Students" style="width: 100%; height: 100%; object-fit: contain;">
+                    </div>                            <div class="qa-title">Digital<br>Library</div>
                             <span class="qa-arrow">›</span>
                         </a>
                         <a href="{% url 'mcqs:student_accuracy_report' %}" class="qa-card">
