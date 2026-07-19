@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+
+{% block title %}Confirm Delete{% endblock %}
+
+{% block content %}
+<style>
+    .delete-wrap {
+        max-width: 480px;
+        margin: 60px auto;
+        padding: 0 24px;
+    }
+    .delete-card {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 32px 28px;
+        text-align: center;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+        opacity: 0;
+        animation: cardIn 0.4s ease forwards;
+    }
+    @keyframes cardIn {
+        from { opacity: 0; transform: translateY(10px) scale(0.98); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .delete-icon {
+        width: 48px;
+        height: 48px;
+        margin: 0 auto 16px;
+        border-radius: 50%;
+        background: #fef2f2;
+        color: #dc2626;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        font-weight: 700;
+        animation: iconPulse 1.8s ease-in-out 0.4s infinite;
+    }
+    @keyframes iconPulse {
+        0%, 100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.15); }
+        50% { box-shadow: 0 0 0 8px rgba(220, 38, 38, 0); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .delete-card { animation: none; opacity: 1; }
+        .delete-icon { animation: none; }
+    }
+    .delete-card h1 {
+        font-family: 'Source Serif 4', serif;
+        font-size: 22px;
+        font-weight: 600;
+        color: #0f172a;
+        margin: 0 0 10px;
+    }
+    .delete-card p {
+        color: #64748b;
+        font-size: 14px;
+        line-height: 1.6;
+        margin: 0 0 24px;
+    }
+    .delete-card strong {
+        color: #0f172a;
+    }
+    .delete-warning {
+        display: block;
+        margin-top: 6px;
+        font-size: 13px;
+        color: #dc2626;
+    }
+    .delete-actions {
+        display: flex;
+        gap: 10px;
+    }
+    .delete-actions .btn {
+        flex: 1;
+        text-align: center;
+        font-size: 14px;
+        font-weight: 500;
+        padding: 11px 16px;
+        border-radius: 8px;
+        text-decoration: none;
+        cursor: pointer;
+        border: none;
+        transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+    }
+    .btn-cancel {
+        background: #44822d;
+        color: #f6f8fa;
+    }
+    .btn-cancel:hover {
+        background: #002556;
+        transform: translateY(-3px);
+        box-shadow: 0 8px 16px rgba(15, 23, 42, 0.12);
+    }
+    .btn-cancel:active {
+        transform: translateY(-1px) scale(0.98);
+        box-shadow: 0 3px 6px rgb(6, 34, 101);
+    }
+    .btn-danger {
+        background: #dc2626;
+        color: #fff;
+        box-shadow: 0 2px 4px rgba(220, 38, 38, 0.25);
+    }
+    .btn-danger:hover {
+        background: #b91c1c;
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(220, 38, 38, 0.35);
+    }
+    .btn-danger:active {
+        transform: translateY(-1px) scale(0.98);
+        box-shadow: 0 4px 8px rgba(220, 38, 38, 0.3);
+    }
+
+    /* Page fade-out on delete confirm */
+    .page-fade-out {
+        animation: fadeOutPage 0.35s ease forwards;
+    }
+    @keyframes fadeOutPage {
+        from { opacity: 1; transform: scale(1); }
+        to { opacity: 0; transform: scale(0.97); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .btn-cancel:hover, .btn-danger:hover,
+        .btn-cancel:active, .btn-danger:active { transform: none; }
+        .page-fade-out { animation: none; }
+    }
+
+    @media (max-width: 480px) {
+        .delete-wrap { margin: 32px auto; padding: 0 16px; }
+        .delete-card { padding: 24px 20px; }
+        .delete-actions { flex-direction: column-reverse; }
+    }
+</style>
+
+<div class="delete-wrap">
+    <div class="delete-card">
+        <div class="delete-icon">!</div>
+        <h1>Delete this test?</h1>
+        <p>
+            Are you sure you want to delete <strong>"{{ quiz.title }}"</strong>?
+            <span class="delete-warning">This will delete all associated questions and student attempts. This action cannot be undone.</span>
+        </p>
+
+        <form method="post" id="delete-form">
+            {% csrf_token %}
+            <div class="delete-actions">
+                <a href="{% url 'quiz:quiz_list' quiz.subject.id %}" class="btn btn-cancel">Cancel</a>
+                <button type="submit" class="btn btn-danger">Confirm Delete</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.getElementById('delete-form').addEventListener('submit', function (e) {
+        e.preventDefault();
+        var form = this;
+        document.querySelector('.delete-wrap').classList.add('page-fade-out');
+        setTimeout(function () {
+            form.submit();
+        }, 320);
+    });
+</script>
+{% endblock %}

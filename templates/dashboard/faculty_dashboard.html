@@ -1,101 +1,692 @@
-{% extends "base.html" %}
 {% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Faculty Dashboard</title>
+<link rel="icon" href="{% static 'images/logo/zdms.png' %}" type="image/png">
+<style>
+    :root {
+        --navy: #10193b;
+        --navy-2: #16204a;
+        --accent: #4f46e5;
+        --accent-2: #6366f1;
+        --bg: #f3f5fb;
+        --card: #ffffff;
+        --line: #e9ecf5;
+        --ink: #0f172a;
+        --muted: #6b7280;
+    }
+    * { box-sizing: border-box; }
+    body {
+        margin: 0;
+        font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        background: var(--bg);
+        color: var(--ink);
+    }
+    a { text-decoration: none; color: inherit; }
+    button { font-family: inherit; }
 
-{% block title %}Faculty Dashboard{% endblock %}
+    .shell { display: flex; min-height: 100vh; }
 
-{% block content %}
-<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+    /* ---------- Sidebar ---------- */
+    .sidebar {
+        width: 268px;
+        background: var(--navy);
+        color: #cbd3e8;
+        display: flex;
+        flex-direction: column;
+        flex-shrink: 0;
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        transition: transform 0.3s ease;
+        z-index: 100;
+    }
+    .sidebar-scroll { flex: 1; overflow-y: auto; padding: 20px 16px; }
+    .brand { display: flex; align-items: center; gap: 12px; padding: 4px 8px 22px; }
+    .brand img { width: 42px; height: 42px; border-radius: 50%; background: #fff; object-fit: cover; }
+    .brand-name { font-size: 17px; font-weight: 700; color: #fff; line-height: 1.2; }
+    .brand-sub { font-size: 11px; color: #8b95b8; line-height: 1.3; max-width: 150px; }
 
-<div class="sd-wrap">
-    <!-- Header -->
-    <div class="sd-header">
-        <div>
-            <div class="sd-header-greeting">💼 Faculty Portal</div>
-            <h1>Welcome, {{ user.get_full_name|default:user.username }}</h1>
+    .nav-group { display: flex; flex-direction: column; gap: 2px; }
+    .nav-item {
+        display: flex; align-items: center; gap: 12px; padding: 11px 14px; border-radius: 10px;
+        font-size: 14px; font-weight: 500; color: #c3cae0; position: relative;
+        transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
+    }
+    .nav-item .ic { width: 20px; text-align: center; flex-shrink: 0; opacity: 0.9; }
+    .nav-item:hover { background: rgba(255,255,255,0.06); color: #fff; transform: translateX(2px); }
+    .nav-item.active {
+        background: linear-gradient(135deg, var(--accent), var(--accent-2));
+        color: #fff; box-shadow: 0 6px 16px rgba(79, 70, 229, 0.35);
+    }
+    .nav-item.active::after {
+        content: ''; position: absolute; right: 12px; width: 6px; height: 6px; border-radius: 50%; background: #fff;
+    }
+    .nav-badge {
+        margin-left: auto; background: #ef4444; color: #fff; font-size: 10.5px; font-weight: 700;
+        padding: 1px 7px; border-radius: 999px;
+    }
+    .nav-divider { margin: 20px 8px 8px; font-size: 11px; letter-spacing: 0.08em; color: #6b7597; font-weight: 600; }
+
+    .sidebar-footer {
+        padding: 14px 24px; border-top: 1px solid rgba(255,255,255,0.08);
+        font-size: 11px; color: #6b7597; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 4px;
+    }
+
+    .sidebar-overlay { display: none; }
+
+    /* ---------- Main ---------- */
+    .main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+
+    .topbar {
+        display: flex; align-items: center; justify-content: space-between; gap: 16px;
+        background: var(--card); border-bottom: 1px solid var(--line);
+        padding: 14px 32px; position: sticky; top: 0; z-index: 20;
+    }
+    .topbar-left { display: flex; align-items: center; gap: 16px; }
+    .hamburger {
+        font-size: 20px; color: var(--ink); cursor: pointer; background: none; border: none;
+        display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 8px;
+        transition: background 0.15s ease;
+    }
+    .hamburger:hover { background: #f1f3f9; }
+    .topbar-title { font-size: 17px; font-weight: 700; white-space: nowrap; }
+
+    .search-box {
+        display: flex; align-items: center; gap: 8px; background: #f4f6fb;
+        border: 1px solid var(--line); border-radius: 10px; padding: 9px 14px;
+        flex: 1; max-width: 340px; color: var(--muted); font-size: 14px;
+    }
+    .search-box input { border: none; outline: none; background: transparent; font-size: 14px; width: 100%; color: var(--ink); }
+
+    .topbar-right { display: flex; align-items: center; gap: 18px; flex-shrink: 0; }
+    .bell {
+        position: relative; width: 38px; height: 38px; border-radius: 50%; background: #f1f3f9;
+        display: flex; align-items: center; justify-content: center; font-size: 16px;
+        transition: background 0.15s ease;
+    }
+    .bell:hover { background: #e5e9f5; }
+    .bell .dot {
+        position: absolute; top: -2px; right: -2px; width: 16px; height: 16px; border-radius: 50%;
+        background: var(--accent); color: #fff; font-size: 9px; font-weight: 700;
+        display: flex; align-items: center; justify-content: center; border: 2px solid #fff;
+    }
+    .user-chip { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+    .avatar {
+        width: 40px; height: 40px; border-radius: 50%; background: #dbe3ff; color: #4f46e5;
+        display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px;
+        overflow: hidden; flex-shrink: 0;
+    }
+    .avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .user-meta { display: none; }
+    .user-name { font-size: 14px; font-weight: 600; line-height: 1.2; }
+    .user-role { font-size: 12px; color: var(--muted); }
+    .chev { font-size: 11px; color: var(--muted); }
+
+    .content { padding: 24px 32px 40px; flex: 1; }
+
+    /* ---------- Welcome banner ---------- */
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(10px);} to { opacity: 1; transform: translateY(0);} }
+
+    .banner {
+        background: var(--card); border: 1px solid var(--line); border-radius: 16px;
+        padding: 24px 28px; margin-bottom: 20px; position: relative; overflow: hidden;
+        display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap;
+        animation: fadeUp 0.4s ease both;
+    }
+    .banner-left { display: flex; align-items: center; gap: 16px; }
+    .banner-avatar {
+        width: 56px; height: 56px; border-radius: 50%; background: #ede9fe;
+        display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0;
+        overflow: hidden;
+    }
+    .banner-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .banner-hi { font-size: 14.5px; color: var(--muted); }
+    .banner h1 { font-size: 25px; margin: 2px 0 6px; font-weight: 800; }
+    .banner .sub { font-size: 14px; color: var(--muted); }
+
+    .banner-illustration { flex-shrink: 0; height: 78px; width: 140px; display: flex; align-items: center; justify-content: center; overflow: visible; }
+    .banner-illustration img { height: 100%; width: auto; object-fit: contain; transform: scale(1.9); }
+
+    .date-badge {
+        display: flex; align-items: center; gap: 10px; background: #f6f7fc;
+        border: 1px solid var(--line); padding: 10px 16px; border-radius: 12px;
+        font-size: 13px; font-weight: 600; color: var(--ink); white-space: nowrap; flex-shrink: 0;
+    }
+    .date-badge .cal-ic {
+        width: 30px; height: 30px; border-radius: 8px; background: #eef0fb; color: var(--accent);
+        display: flex; align-items: center; justify-content: center; font-size: 14px;
+    }
+    .date-badge div div:first-child { font-size: 11.5px; color: var(--muted); font-weight: 500; }
+
+    /* ---------- Stats ---------- */
+    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin-bottom: 20px; }
+    .stat-card {
+        background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 20px;
+        opacity: 0; animation: fadeUp 0.4s ease forwards;
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+    .stat-card:hover { transform: translateY(-4px); box-shadow: 0 14px 28px rgba(15,23,42,0.08); }
+    .stat-card:nth-child(1) { animation-delay: 0.05s; }
+    .stat-card:nth-child(2) { animation-delay: 0.1s; }
+    .stat-card:nth-child(3) { animation-delay: 0.15s; }
+    .stat-card:nth-child(4) { animation-delay: 0.2s; }
+
+    .stat-icon {
+        width: 46px; height: 46px; border-radius: 12px;
+        display: flex; align-items: center; justify-content: center; font-size: 20px;
+        background: var(--accent-bg, #e8edff); margin-bottom: 14px; transition: transform 0.3s ease;
+    }
+    .stat-card:hover .stat-icon { transform: scale(1.12) rotate(-4deg); }
+    .stat-value { font-size: 26px; font-weight: 800; margin-bottom: 2px; }
+    .stat-label { font-size: 13.5px; color: var(--muted); margin-bottom: 14px; }
+    .stat-link {
+        font-size: 12.5px; font-weight: 700; color: var(--accent-text, var(--accent));
+        background: var(--accent-bg, #e8edff); display: inline-flex; align-items: center; gap: 4px;
+        padding: 6px 12px; border-radius: 8px; transition: gap 0.2s ease, background 0.2s ease;
+    }
+    .stat-link:hover { gap: 7px; }
+
+    .c-blue   { --accent-bg: #e8edff; --accent-text: #4f46e5; }
+    .c-green  { --accent-bg: #e5f7ea; --accent-text: #16a34a; }
+    .c-orange { --accent-bg: #fef3e0; --accent-text: #d97706; }
+    .c-purple { --accent-bg: #f3e8fd; --accent-text: #9333ea; }
+
+    /* ---------- Main grid ---------- */
+    .grid {
+        display: grid; grid-template-columns: 1.7fr 1fr; gap: 20px; align-items: start; margin-bottom: 20px;
+        animation: fadeUp 0.45s ease both; animation-delay: 0.1s;
+    }
+    .panel { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 24px; transition: box-shadow 0.25s ease; }
+    .panel:hover { box-shadow: 0 8px 20px rgba(15,23,42,0.06); }
+
+    .panel-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 18px; flex-wrap: wrap; }
+    .panel-head-left { display: flex; gap: 12px; }
+    .panel-icon {
+        width: 40px; height: 40px; border-radius: 10px; background: #f3e8fd; color: #9333ea;
+        display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0;
+    }
+    .panel-title { font-size: 16.5px; font-weight: 700; margin: 0 0 3px; }
+    .panel-sub { font-size: 13px; color: var(--muted); }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff; border: none;
+        padding: 10px 18px; border-radius: 10px; font-size: 13.5px; font-weight: 600; cursor: pointer;
+        display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        box-shadow: 0 4px 12px rgba(79,70,229,0.3);
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(79,70,229,0.35); }
+    .btn-primary:active { transform: translateY(0) scale(0.97); }
+
+    .filter-row { display: flex; gap: 10px; margin-bottom: 18px; }
+    .filter-row select { flex: 1; padding: 11px 14px; border: 1px solid var(--line); border-radius: 10px; font-size: 14px; color: var(--ink); background: #fff; }
+    .btn-filter {
+        background: var(--accent); color: #fff; border: none; padding: 0 20px; border-radius: 10px;
+        font-size: 13.5px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+        box-shadow: 0 2px 6px rgba(79,70,229,0.25);
+    }
+    .btn-filter:hover { background: #4338ca; transform: translateY(-2px); box-shadow: 0 8px 16px rgba(79,70,229,0.3); }
+    .btn-filter:active { transform: translateY(0) scale(0.97); }
+
+    .table-scroll { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 460px; }
+    thead th { text-align: left; background: #f6f8fc; color: var(--muted); font-weight: 600; font-size: 12px; padding: 12px 16px; text-transform: uppercase; letter-spacing: 0.03em; }
+    tbody td { padding: 16px; border-top: 1px solid var(--line); color: var(--ink); }
+    tbody tr { transition: background 0.15s ease; }
+    tbody tr:hover { background: #f9fafc; }
+
+    .btn-outline {
+        border: 1px solid var(--accent); color: var(--accent); background: #fff;
+        padding: 8px 16px; border-radius: 9px; font-size: 13px; font-weight: 600; cursor: pointer;
+        transition: all 0.2s ease; white-space: nowrap; display: inline-flex; align-items: center; gap: 6px;
+    }
+    .btn-outline:hover { background: var(--accent); color: #fff; transform: translateY(-2px); box-shadow: 0 6px 14px rgba(79,70,229,0.25); }
+
+    .table-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 16px; font-size: 13px; color: var(--muted); flex-wrap: wrap; gap: 10px; }
+    .pager { display: flex; gap: 6px; }
+    .pager button, .pager .page-num {
+        width: 30px; height: 30px; border-radius: 8px; border: 1px solid var(--line); background: #fff;
+        display: flex; align-items: center; justify-content: center; font-size: 13px; cursor: pointer;
+        transition: all 0.15s ease;
+    }
+    .pager .page-num.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .pager button:hover { background: #f1f3f9; }
+
+    .tip-box {
+        margin-top: 18px; display: flex; align-items: center; gap: 10px;
+        background: #eef0fd; border: 1px solid #dfe3fb; color: #3730a3;
+        padding: 12px 16px; border-radius: 10px; font-size: 13px;
+    }
+    .tip-box .tip-ic { flex-shrink: 0; }
+    .tip-box strong { font-weight: 700; }
+    .tip-close { margin-left: auto; cursor: pointer; color: #6366f1; font-weight: 700; background: none; border: none; font-size: 14px; }
+
+    /* ---------- Quick actions ---------- */
+    .qa-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .qa-card {
+        display: flex; align-items: center; gap: 12px; padding: 14px;
+        border: 1px solid var(--line); border-radius: 12px; background: #fff;
+        opacity: 0; animation: fadeUp 0.35s ease forwards;
+        transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    }
+    .qa-card:not(.disabled):hover { transform: translateY(-4px); box-shadow: 0 14px 26px rgba(15,23,42,0.1); border-color: transparent; }
+    .qa-card:not(.disabled):active { transform: translateY(-1px) scale(0.98); }
+    .qa-card.disabled { opacity: 0.55; cursor: not-allowed; }
+    .qa-arrow { margin-left: auto; color: var(--muted); font-size: 13px; transition: transform 0.2s ease; }
+    .qa-card:hover .qa-arrow { transform: translateX(3px); }
+    .qa-grid .qa-card:nth-child(1) { animation-delay: 0.1s; }
+    .qa-grid .qa-card:nth-child(2) { animation-delay: 0.14s; }
+    .qa-grid .qa-card:nth-child(3) { animation-delay: 0.18s; }
+    .qa-grid .qa-card:nth-child(4) { animation-delay: 0.22s; }
+    .qa-grid .qa-card:nth-child(5) { animation-delay: 0.26s; }
+    .qa-grid .qa-card:nth-child(6) { animation-delay: 0.3s; }
+    .qa-grid .qa-card:nth-child(7) { animation-delay: 0.34s; grid-column: span 2; }
+
+    .qa-icon {
+        width: 38px; height: 38px; border-radius: 10px;
+        display: flex; align-items: center; justify-content: center; font-size: 16px;
+        flex-shrink: 0; transition: transform 0.3s ease;
+    }
+    .qa-card:hover .qa-icon { transform: scale(1.15); }
+    .qa-title { font-size: 13.5px; font-weight: 600; color: var(--ink); line-height: 1.25; }
+    .qa-desc { font-size: 11.5px; color: var(--muted); }
+
+    .qi-blue { background: #e8edff; }
+    .qi-red { background: #fde8ea; }
+    .qi-green { background: #e5f7ea; }
+    .qi-purple { background: #f3e8fd; }
+    .qi-orange { background: #fef3e0; }
+    .qi-pink { background: #fde8f3; }
+    .qi-gold { background: #fdf3d8; }
+
+    /* ---------- Bottom mini stats ---------- */
+    .mini-stats {
+        display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin-bottom: 8px;
+        animation: fadeUp 0.5s ease both; animation-delay: 0.15s;
+    }
+    .mini-card {
+        background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px;
+        display: flex; align-items: center; gap: 14px;
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+    .mini-card:hover { transform: translateY(-3px); box-shadow: 0 12px 22px rgba(15,23,42,0.07); }
+    .mini-icon {
+        width: 42px; height: 42px; border-radius: 12px; flex-shrink: 0;
+        display: flex; align-items: center; justify-content: center; font-size: 18px;
+    }
+    .mini-label { font-size: 12.5px; color: var(--muted); }
+    .mini-value { font-size: 19px; font-weight: 800; display: flex; align-items: center; gap: 6px; }
+    .mini-sub { font-size: 11.5px; color: var(--muted); }
+    .mini-up { color: #16a34a; font-size: 13px; }
+
+    /* ---------- Footer ---------- */
+    .footer {
+        display: flex; justify-content: space-between; padding: 16px 32px;
+        background: var(--navy); color: #93a0c8; font-size: 12.5px; flex-wrap: wrap; gap: 8px;
+    }
+
+    /* ---------- Responsive ---------- */
+    @media (max-width: 1180px) {
+        .stats, .mini-stats { grid-template-columns: repeat(2, 1fr); }
+        .grid { grid-template-columns: 1fr; }
+    }
+    @media (min-width: 861px) {
+        .user-meta { display: block; }
+    }
+    @media (max-width: 860px) {
+        .sidebar {
+            position: fixed; left: 0; top: 0; transform: translateX(-100%);
+            box-shadow: 20px 0 60px rgba(0,0,0,0.25);
+        }
+        .sidebar.open { transform: translateX(0); }
+        .sidebar-overlay {
+            display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.45); z-index: 90;
+        }
+        .sidebar-overlay.show { display: block; }
+        .content { padding: 18px; }
+        .topbar { padding: 12px 16px; }
+        .search-box { display: none; }
+        .banner-illustration { display: none; }
+        .banner { padding: 20px; }
+    }
+    @media (max-width: 640px) {
+        .stats, .mini-stats { grid-template-columns: 1fr 1fr; }
+        .qa-grid { grid-template-columns: 1fr; }
+        .qa-grid .qa-card:nth-child(7) { grid-column: span 1; }
+        .banner { flex-direction: column; align-items: flex-start; }
+        .date-badge { align-self: stretch; justify-content: center; }
+        .topbar-title { display: none; }
+        .footer { flex-direction: column; text-align: center; }
+    }
+    @media (max-width: 420px) {
+        .stats, .mini-stats { grid-template-columns: 1fr; }
+        .banner-left { flex-direction: column; text-align: center; align-items: center; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        * { animation: none !important; transition: none !important; }
+        .stat-card, .qa-card { opacity: 1 !important; }
+    }
+</style>
+</head>
+<body>
+<div class="shell">
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-scroll">
+            <div class="brand">
+                <img src="{% static 'images/logo/zdms.png' %}" alt="ZDMS logo">
+                <div>
+                    <div class="brand-name">ZDMS</div>
+                    <div class="brand-sub">Zoology Department Management System</div>
+                </div>
+            </div>
+
+            <nav class="nav-group">
+                <a href="{% url 'dashboard:faculty_dashboard' %}" class="nav-item active"><span class="ic">🏠</span> Dashboard</a>
+                <a href="#" class="nav-item"><span class="ic">📄</span> My Subjects</a>
+                <a href="#" class="nav-item"><span class="ic">🎒</span> Batches</a>
+                <a href="{% url 'mcqs:faculty_select_semester' %}" class="nav-item"><span class="ic">❓</span> MCQs</a>
+                <a href="#" class="nav-item"><span class="ic">🔔</span> Notices</a>
+                <a href="{% url 'attendance:attendance_dashboard' %}" class="nav-item"><span class="ic">🗓️</span> Attendance</a>
+                <a href="{% url 'notes:select_semester' %}" class="nav-item"><span class="ic">📖</span> Digital Library</a>
+                <a href="{% url 'mcqs:student_accuracy_report' %}" class="nav-item"><span class="ic">📊</span> Student Reports</a>
+                <a href="{% url 'quiz:select_semester' %}" class="nav-item"><span class="ic">✏️</span> Tests</a>
+                <a href="#" class="nav-item"><span class="ic">⬆️</span> Upload Marks</a>
+            </nav>
+
+            <div class="nav-divider">MORE</div>
+            <nav class="nav-group">
+                <a href="#" class="nav-item"><span class="ic">✉️</span> Messages <span class="nav-badge">3</span></a>
+                <a href="#" class="nav-item"><span class="ic">📆</span> Calendar</a>
+                <a href="#" class="nav-item"><span class="ic">⚙️</span> Settings</a>
+                <a href="#" class="nav-item"><span class="ic">❓</span> Help &amp; Support</a>
+                <a href="{% url 'accounts:logout' %}" class="nav-item"><span class="ic">↩️</span> Logout</a>
+            </nav>
         </div>
-        <div class="sd-header-date" id="sdDate"></div>
-    </div>
 
-    <!-- Stats -->
-    <div class="sd-stats">
-        <div class="sd-stat-card sd-stat-1"><div class="sd-stat-icon">📚</div><div class="sd-stat-value">{{ assigned_subjects_count }}</div><div class="sd-stat-label">Assigned Subjects</div></div>
-        <div class="sd-stat-card sd-stat-2"><div class="sd-stat-icon">📦</div><div class="sd-stat-value">{{ assigned_batches_count }}</div><div class="sd-stat-label">Assigned Batches</div></div>
-        <div class="sd-stat-card sd-stat-3"><div class="sd-stat-icon">🎯</div><div class="sd-stat-value">{{ mcqs_added_count }}</div><div class="sd-stat-label">MCQs Added</div></div>
-        <div class="sd-stat-card sd-stat-4"><div class="sd-stat-icon">📝</div><div class="sd-stat-value">{{ notes_added_count }}</div><div class="sd-stat-label">Notes Added</div></div>
-    </div>
+        <div class="sidebar-footer">
+            <span>© 2026 ZDMS</span>
+            <span>v1.0.0</span>
+        </div>
+    </aside>
 
-    <div class="sd-main">
-        <!-- Left Column -->
-        <div class="sd-col-left">
-            <div class="sd-panel">
-                <div class="sd-panel-header">
+    <div class="main">
+        <header class="topbar">
+            <div class="topbar-left">
+                <button class="hamburger" id="hamburgerBtn" aria-label="Toggle menu">☰</button>
+                <span class="topbar-title">Faculty Portal</span>
+            </div>
+
+            <div class="search-box">
+                🔍 <input type="text" placeholder="Search anything...">
+            </div>
+
+            <div class="topbar-right">
+                <div class="bell">🔔<span class="dot">3</span></div>
+                <div class="user-chip">
+                    <div class="avatar">
+                        {% if user.profile_picture %}
+                            <img src="{{ user.profile_picture.url }}" alt="Profile">
+                        {% else %}
+                            {{ user.get_full_name|default:user.username|slice:":2"|upper }}
+                        {% endif %}
+                    </div>
+                    <div class="user-meta">
+                        <div class="user-name">{{ user.get_full_name|default:user.username }}</div>
+                        <div class="user-role">Faculty</div>
+                    </div>
+                    <span class="chev">▾</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="content">
+
+            <!-- Welcome banner -->
+            <div class="banner">
+                <div class="banner-left">
+                    <div class="banner-avatar">
+                        {% if user.profile_picture %}
+                            <img src="{{ user.profile_picture.url }}" alt="Profile">
+                        {% else %}
+                            {{ user.get_full_name|default:user.username|slice:":2"|upper }}
+                        {% endif %}
+                    </div>
                     <div>
-                        <div class="sd-panel-title">My Assigned Subjects</div>
-                        <div class="sd-panel-sub">Subjects assigned to you for teaching.</div>
+                        <div class="banner-hi">Welcome back,</div>
+                        <h1>{{ user.get_full_name|default:user.username }} 👋</h1>
+                        <div class="sub">Here's what's happening in your portal today.</div>
                     </div>
                 </div>
-                <form method="get" style="display: flex; gap: 12px; align-items: center; margin-bottom: 20px;">
-                    <select name="batch" class="form-control" style="padding: 8px 12px; border-radius: 8px; flex-grow: 1;">
-                        <option value="">Filter by Batch</option>
-                        {% for batch in assigned_batches %}
-                            <option value="{{ batch.pk }}" {% if batch.pk == selected_batch %}selected{% endif %}>{{ batch.academic_session }}</option>
-                        {% endfor %}
-                    </select>
-                    <button type="submit" class="nav-login" style="border: none; padding: 9px 22px; flex-shrink: 0;">Filter</button>
-                </form>
-                <div class="table-responsive" style="overflow-x: auto;">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Subject</th>
-                                <th>Batch</th>
-                                <th style="text-align: right;">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for assignment in assignments %}
-                            <tr>
-                                <td>{{ assignment.subject.name }} ({{ assignment.subject.code }})</td>
-                                <td>{{ assignment.batch }}</td>
-                                <td style="text-align: right;">
-                                    <a href="{% url 'attendance:attendance_dashboard' %}?subject={{ assignment.subject.id }}&batch={{ assignment.batch.id }}" class="table-btn">Take Attendance</a>
-                                </td>
-                            </tr>
-                            {% empty %}
-                            <tr><td colspan="3" style="text-align: center; padding: 20px;">You have not been assigned any subjects yet.</td></tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+
+                <div class="banner-illustration">
+                    <img src="{% static 'images/logo/faculty.png' %}" alt="Faculty illustration">
+                </div>
+
+                <div class="date-badge">
+                    <div class="cal-ic">📅</div>
+                    <div>
+                        <div id="sdDay"></div>
+                        <div id="sdDate" style="font-size:14px;"></div>
+                    </div>
+                    <span class="chev">▾</span>
                 </div>
             </div>
+
+            <!-- Stats -->
+            <div class="stats">
+                <div class="stat-card c-blue">
+                    <div class="stat-icon">📘</div>
+                    <div class="stat-value">{{ assigned_subjects_count }}</div>
+                    <div class="stat-label">Assigned Subjects</div>
+                    <a href="#" class="stat-link">View Details →</a>
+                </div>
+                <div class="stat-card c-green">
+                    <div class="stat-icon">📦</div>
+                    <div class="stat-value">{{ assigned_batches_count }}</div>
+                    <div class="stat-label">Assigned Batches</div>
+                    <a href="#" class="stat-link">View Details →</a>
+                </div>
+                <div class="stat-card c-orange">
+                    <div class="stat-icon">🎯</div>
+                    <div class="stat-value">{{ mcqs_added_count }}</div>
+                    <div class="stat-label">MCQs Added</div>
+                    <a href="#" class="stat-link">View Details →</a>
+                </div>
+                <div class="stat-card c-purple">
+                    <div class="stat-icon">📝</div>
+                    <div class="stat-value">{{ notes_added_count }}</div>
+                    <div class="stat-label">Notices Added</div>
+                    <a href="#" class="stat-link">View Details →</a>
+                </div>
+            </div>
+
+            <!-- Main grid -->
+            <div class="grid">
+                <div class="panel">
+                    <div class="panel-head">
+                        <div class="panel-head-left">
+                            <div class="panel-icon">📘</div>
+                            <div>
+                                <div class="panel-title">My Assigned Subjects</div>
+                                <div class="panel-sub">Subjects assigned to you for teaching.</div>
+                            </div>
+                        </div>
+                        <button class="btn-primary">+ Assign New Subject</button>
+                    </div>
+
+                    <form method="get" class="filter-row">
+                        <select name="batch">
+                            <option value="">Filter by Batch</option>
+                            {% for batch in assigned_batches %}
+                                <option value="{{ batch.pk }}" {% if batch.pk == selected_batch %}selected{% endif %}>{{ batch.academic_session }}</option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit" class="btn-filter">▲ Filter</button>
+                    </form>
+
+                    <div class="table-scroll">
+                        <table>
+                            <thead>
+                                <tr><th>Subject</th><th>Batch</th><th style="text-align:right;">Action</th></tr>
+                            </thead>
+                            <tbody>
+                                {% for assignment in assignments %}
+                                <tr>
+                                    <td>{{ assignment.subject.name }}</td>
+                                    <td>{{ assignment.batch }}</td>
+                                    <td style="text-align:right;">
+                                        <a href="{% url 'attendance:attendance_dashboard' %}?subject={{ assignment.subject.id }}&batch={{ assignment.batch.id }}" class="btn-outline">📅 Take Attendance</a>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr><td colspan="3" style="text-align:center; padding: 24px; color: var(--muted);">You have not been assigned any subjects yet.</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="table-footer">
+                        <span>Showing {{ assignments|length }} of {{ assignments|length }} subject{{ assignments|length|pluralize }}</span>
+                        <div class="pager">
+                            <button>‹</button>
+                            <span class="page-num active">1</span>
+                            <button>›</button>
+                        </div>
+                    </div>
+
+                    <div class="tip-box" id="tipBox">
+                        <span class="tip-ic">💡</span>
+                        <span><strong>Tip:</strong> You can take attendance, upload marks and manage students from quick actions.</span>
+                        <button class="tip-close" onclick="document.getElementById('tipBox').style.display='none'">✕</button>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-head" style="margin-bottom: 8px;">
+                        <div class="panel-head-left">
+                            <div class="panel-icon" style="background:#fef3e0; color:#d97706;">⚡</div>
+                            <div>
+                                <div class="panel-title">Quick Actions</div>
+                                <div class="panel-sub">Frequently used features</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="qa-grid">
+                        <a href="{% url 'attendance:attendance_dashboard' %}" class="qa-card">
+                            <div class="qa-icon qi-blue">📅</div>
+                            <div class="qa-title">Take<br>Attendance</div>
+                            <span class="qa-arrow">›</span>
+                        </a>
+                        <a href="{% url 'mcqs:faculty_select_semester' %}" class="qa-card">
+                            <div class="qa-icon qi-red">🎯</div>
+                            <div class="qa-title">Manage<br>MCQs</div>
+                            <span class="qa-arrow">›</span>
+                        </a>
+                        <a href="{% url 'notes:select_semester' %}" class="qa-card">
+                            <div class="qa-icon qi-green">📚</div>
+                            <div class="qa-title">Digital<br>Library</div>
+                            <span class="qa-arrow">›</span>
+                        </a>
+                        <a href="{% url 'mcqs:student_accuracy_report' %}" class="qa-card">
+                            <div class="qa-icon qi-purple">📊</div>
+                            <div class="qa-title">Student<br>Reports</div>
+                            <span class="qa-arrow">›</span>
+                        </a>
+                        <a href="{% url 'quiz:select_semester' %}" class="qa-card">
+                            <div class="qa-icon qi-orange">📝</div>
+                            <div class="qa-title">Manage<br>Tests</div>
+                            <span class="qa-arrow">›</span>
+                        </a>
+                        <a href="{% url 'notices:upload_notice' %}" class="qa-card">
+                            <div class="qa-icon qi-pink">📢</div>
+                            <div class="qa-title">Upload<br>Notice</div>
+                            <span class="qa-arrow">›</span>
+                        </a>
+                        <a href="#" class="qa-card disabled" onclick="return false;">
+                            <div class="qa-icon qi-gold">🏆</div>
+                            <div>
+                                <div class="qa-title">Upload Marks</div>
+                                <div class="qa-desc">Coming Soon</div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom mini stats -->
+            <div class="mini-stats">
+                <div class="mini-card">
+                    <div class="mini-icon" style="background:#e8edff;">👥</div>
+                    <div>
+                        <div class="mini-label">Total Students</div>
+                        <div class="mini-value">{{ total_students|default:"48" }} <span class="mini-up">↑</span></div>
+                        <div class="mini-sub">In your batches</div>
+                    </div>
+                </div>
+                <div class="mini-card">
+                    <div class="mini-icon" style="background:#e5f7ea;">🎒</div>
+                    <div>
+                        <div class="mini-label">Attendance Taken</div>
+                        <div class="mini-value">{{ attendance_taken|default:"12" }}</div>
+                        <div class="mini-sub">This month</div>
+                    </div>
+                </div>
+                <div class="mini-card">
+                    <div class="mini-icon" style="background:#fef3e0;">📋</div>
+                    <div>
+                        <div class="mini-label">Tests Created</div>
+                        <div class="mini-value">{{ tests_created|default:"5" }}</div>
+                        <div class="mini-sub">Total tests</div>
+                    </div>
+                </div>
+                <div class="mini-card">
+                    <div class="mini-icon" style="background:#f3e8fd;">📄</div>
+                    <div>
+                        <div class="mini-label">Notes Shared</div>
+                        <div class="mini-value">{{ notes_added_count }}</div>
+                        <div class="mini-sub">This month</div>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
-        <!-- Right Sidebar -->
-        <div class="sd-col-right">
-            <div class="sd-panel">
-                <div class="sd-panel-header">
-                    <div class="sd-panel-title">Quick Actions</div>
-                </div>
-                <div class="sd-actions-grid">
-                    <a href="{% url 'attendance:attendance_dashboard' %}" class="sd-action-card"><div class="sd-action-icon">📅</div><div class="sd-action-text"><div class="sd-action-title">Take Attendance</div></div><div class="sd-action-arrow">→</div></a>
-                    <a href="{% url 'mcqs:faculty_select_semester' %}" class="sd-action-card"><div class="sd-action-icon">🎯</div><div class="sd-action-text"><div class="sd-action-title">Manage MCQs</div></div><div class="sd-action-arrow">→</div></a>
-                    <a href="{% url 'notes:select_semester' %}" class="sd-action-card"><div class="sd-action-icon">📚</div><div class="sd-action-text"><div class="sd-action-title">Digital Library</div></div><div class="sd-action-arrow">→</div></a>
-                    <a href="{% url 'mcqs:student_accuracy_report' %}" class="sd-action-card"><div class="sd-action-icon">📊</div><div class="sd-action-text"><div class="sd-action-title">Student Reports</div></div><div class="sd-action-arrow">→</div></a>
-                    <a href="{% url 'notices:upload_notice' %}" class="sd-action-card"><div class="sd-action-icon">📢</div><div class="sd-action-text"><div class="sd-action-title">Upload Notice</div></div><div class="sd-action-arrow">→</div></a>
-                    <a href="#" class="sd-action-card" style="opacity: 0.6; cursor: not-allowed;" onclick="return false;"><div class="sd-action-icon">🏆</div><div class="sd-action-text"><div class="sd-action-title">Upload Marks</div><div class="sd-action-desc">Coming Soon</div></div></a>
-                </div>
-            </div>
-        </div>
+        <footer class="footer">
+            <span>© 2026 ZDMS - Zoology Department Management System</span>
+            <span>Version 1.0.0 &nbsp;|&nbsp; All rights reserved</span>
+        </footer>
     </div>
 </div>
 
 <script>
 (function(){
+    var dayEl = document.getElementById('sdDay');
     var dateEl = document.getElementById('sdDate');
-    if (dateEl) {
-        var options = { weekday:'long', year:'numeric', month:'long', day:'numeric' };
-        dateEl.textContent = new Date().toLocaleDateString(undefined, options);
-    }
+    var now = new Date();
+    if (dayEl) dayEl.textContent = now.toLocaleDateString(undefined, { weekday: 'long' });
+    if (dateEl) dateEl.textContent = now.toLocaleDateString(undefined, { year:'numeric', month:'long', day:'numeric' });
+
+    var sidebar = document.getElementById('sidebar');
+    var overlay = document.getElementById('sidebarOverlay');
+    var btn = document.getElementById('hamburgerBtn');
+
+    function openSidebar() { sidebar.classList.add('open'); overlay.classList.add('show'); }
+    function closeSidebar() { sidebar.classList.remove('open'); overlay.classList.remove('show'); }
+
+    btn.addEventListener('click', function() {
+        if (sidebar.classList.contains('open')) closeSidebar(); else openSidebar();
+    });
+    overlay.addEventListener('click', closeSidebar);
 })();
 </script>
-{% endblock %}
+</body>
+</html>

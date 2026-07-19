@@ -1,7 +1,7 @@
 # apps/quiz/views.py
 
 from django.shortcuts import get_object_or_404, render, redirect
-from django.views.generic import ListView, CreateView, DetailView, View
+from django.views.generic import ListView, CreateView, DetailView, View, DeleteView
 from django.urls import reverse_lazy
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, AccessMixin
@@ -155,6 +155,15 @@ class QuizAttemptsView(HODFacultyRequiredMixin, DetailView):
         quiz = self.get_object()
         context['attempts'] = StudentQuizAttempt.objects.filter(quiz=quiz, is_submitted=True).select_related('student').order_by('-score')
         return context
+
+class QuizDeleteView(HODFacultyRequiredMixin, DeleteView):
+    model = Quiz
+    template_name = 'quiz/quiz_confirm_delete.html'
+    context_object_name = 'quiz'
+
+    def get_success_url(self):
+        messages.success(self.request, "Test has been deleted successfully.")
+        return reverse_lazy('quiz:quiz_list', kwargs={'subject_id': self.object.subject.id})
 
 
 # --- Student Views (To be built) ---
