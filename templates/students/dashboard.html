@@ -137,22 +137,30 @@
     <!-- ===== STATS ===== -->
     <div class="dv-stats">
         <div class="dv-stat">
-            <div class="dv-stat-icon dv-blue">📚</div>
+            <div class="dv-stat-icon dv-blue">
+                <img src="{% static 'images/logo/subject.png' %}" alt="Subjects" style="width: 100%; height: 100%; object-fit: contain;">
+            </div>
             <div class="dv-stat-value">{{ subjects|length }}</div>
             <div class="dv-stat-label">Total Subjects</div>
         </div>
         <div class="dv-stat">
-            <div class="dv-stat-icon dv-green">📝</div>
+            <div class="dv-stat-icon dv-green">
+                <img src="{% static 'images/logo/accuracy.png' %}" alt="Accuracy" style="width: 100%; height: 100%; object-fit: contain;">
+            </div>
             <div class="dv-stat-value">{{ mcq_accuracy|floatformat:1 }}%</div>
             <div class="dv-stat-label">MCQ Accuracy</div>
         </div>
         <div class="dv-stat">
-            <div class="dv-stat-icon dv-orange">🎯</div>
+            <div class="dv-stat-icon dv-orange">
+                <img src="{% static 'images/logo/mcq.png' %}" alt="MCQ Attempts" style="width: 100%; height: 100%; object-fit: contain;">
+            </div>
             <div class="dv-stat-value">{{ total_mcq_attempts }}</div>
             <div class="dv-stat-label">Total MCQ Attempts</div>
         </div>
         <div class="dv-stat">
-            <div class="dv-stat-icon dv-pink">📅</div>
+            <div class="dv-stat-icon dv-pink">
+                <img src="{% static 'images/logo/attendance take.png' %}" alt="Attendance" style="width: 100%; height: 100%; object-fit: contain;">
+            </div>
             <div class="dv-stat-value">{{ attendance_percentage|floatformat:1 }}%</div>
             <div class="dv-stat-label">Overall Attendance</div>
         </div>
@@ -195,7 +203,9 @@
                 </div>
                 <div class="dv-actions-grid">
                     <a href="{% url 'students:attendance' %}" class="dv-action-card">
-                        <div class="dv-action-icon dv-blue">📅</div>
+                        <div class="dv-action-icon dv-blue">
+                            <img src="{% static 'images/logo/calendar.png' %}" alt="Attendance" style="width: 100%; height: 100%; object-fit: contain;">
+                        </div>
                         <div>
                             <div class="dv-action-title">Attendance</div>
                             <div class="dv-action-desc">View records</div>
@@ -203,7 +213,9 @@
                         <div class="dv-action-arrow">→</div>
                     </a>
                     <a href="{% url 'results:my_results' %}" class="dv-action-card">
-                        <div class="dv-action-icon dv-green">🏆</div>
+                        <div class="dv-action-icon dv-green">
+                            <img src="{% static 'images/logo/result.png' %}" alt="Result" style="width: 100%; height: 100%; object-fit: contain;">
+                        </div>
                         <div>
                             <div class="dv-action-title">Results</div>
                             <div class="dv-action-desc">Check scores</div>
@@ -211,7 +223,9 @@
                         <div class="dv-action-arrow">→</div>
                     </a>
                     <a href="{% url 'mcqs:student_select_semester' %}" class="dv-action-card">
-                        <div class="dv-action-icon dv-orange">🎯</div>
+                        <div class="dv-action-icon dv-orange">
+                            <img src="{% static 'images/logo/mcq.png' %}" alt="Practice MCQs" style="width: 100%; height: 100%; object-fit: contain;">
+                        </div>
                         <div>
                             <div class="dv-action-title">Practice MCQs</div>
                             <div class="dv-action-desc">Sharpen skills</div>
@@ -219,7 +233,9 @@
                         <div class="dv-action-arrow">→</div>
                     </a>
                     <a href="{% url 'notices:notice_list' %}" class="dv-action-card">
-                        <div class="dv-action-icon dv-pink">📢</div>
+                        <div class="dv-action-icon dv-pink">
+                            <img src="{% static 'images/logo/notice.png' %}" alt="Notices" style="width: 100%; height: 100%; object-fit: contain;">
+                        </div>
                         <div>
                             <div class="dv-action-title">Notices</div>
                             <div class="dv-action-desc">Announcements</div>
@@ -227,7 +243,9 @@
                         <div class="dv-action-arrow">→</div>
                     </a>
                     <a href="{% url 'students:my_faculty' %}" class="dv-action-card">
-                        <div class="dv-action-icon dv-purple">👥</div>
+                        <div class="dv-action-icon dv-purple">
+                            <img src="{% static 'images/logo/virtual-class.png' %}" alt="My Faculty" style="width: 100%; height: 100%; object-fit: contain;">
+                        </div>
                         <div>
                             <div class="dv-action-title">My Faculty</div>
                             <div class="dv-action-desc">View your teachers</div>
@@ -235,7 +253,9 @@
                         <div class="dv-action-arrow">→</div>
                     </a>
                     <a href="{% url 'students:profile' %}" class="dv-action-card">
-                        <div class="dv-action-icon dv-blue">👤</div>
+                        <div class="dv-action-icon dv-blue">
+                            <img src="{% static 'images/logo/profile.png' %}" alt="Profile" style="width: 100%; height: 100%; object-fit: contain;">
+                        </div>
                         <div>
                             <div class="dv-action-title">Profile</div>
                             <div class="dv-action-desc">Manage account</div>
@@ -243,7 +263,9 @@
                         <div class="dv-action-arrow">→</div>
                     </a>
                     <a href="{% url 'quiz:student_quiz_list' %}" class="dv-action-card">
-                        <div class="dv-action-icon dv-green">⏱️</div>
+                        <div class="dv-action-icon dv-green">
+                            <img src="{% static 'images/logo/test.png' %}" alt="Live Tests" style="width: 100%; height: 100%; object-fit: contain;">
+                        </div>
                         <div>
                             <div class="dv-action-title">Live Tests</div>
                             <div class="dv-action-desc">Take online tests</div>
@@ -251,7 +273,9 @@
                         <div class="dv-action-arrow">→</div>
                     </a>
                     <a href="{% url 'threed_library:student_list' %}" class="dv-action-card">
-                        <div class="dv-action-icon dv-orange">🧊</div>
+                        <div class="dv-action-icon dv-orange">
+                            <img src="{% static 'images/logo/3d-model.png' %}" alt="3D Library" style="width: 100%; height: 100%; object-fit: contain;">
+                        </div>
                         <div>
                             <div class="dv-action-title">3D Library</div>
                             <div class="dv-action-desc">Explore 3D models</div>
@@ -317,7 +341,9 @@
                 <div class="dv-activity-list">
                     {% for activity in recent_activities %}
                     <div class="dv-activity-item">
-                        <div class="dv-activity-dot">📝</div>
+                        <div class="dv-activity-dot">
+                            <img src="{% static 'images/logo/mcq.png' %}" alt="MCQ" style="width: 60%; height: 60%; object-fit: contain;">
+                        </div>
                         <div>
                             <div class="dv-activity-title">MCQ Attempt in {{ activity.question.subject.name }}</div>
                             <div class="dv-activity-meta">{{ activity.created_at|timesince }} ago</div>
