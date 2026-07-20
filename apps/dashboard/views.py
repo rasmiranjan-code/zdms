@@ -11,6 +11,7 @@ from apps.notes.models import Note
 from apps.attendance.models import Attendance
 from apps.quiz.models import Quiz
 from apps.mcqs.models import StudentAttempt
+from apps.audit.models import AuditLog
 
 
 class HODDashboardView(HODRequiredMixin, TemplateView):
@@ -22,6 +23,7 @@ class HODDashboardView(HODRequiredMixin, TemplateView):
         context['faculty_count'] = User.objects.filter(role='FACULTY').count()
         context['subject_count'] = Subject.objects.count()
         context['batch_count'] = Batch.objects.count()
+        context['recent_activities'] = AuditLog.objects.select_related('actor').all()[:5]
         return context
 
 

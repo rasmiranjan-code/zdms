@@ -1,4 +1,4 @@
-# apps/threed_library/forms.py
+# d:/zdms/apps/threed_library/forms.py
 
 import os
 from django import forms
@@ -21,11 +21,22 @@ class ThreeDModelForm(forms.ModelForm):
             'model_file_glb': 'This .glb file will be used for the interactive web viewer.',
         }
 
+    def _validate_file_extension(self, file, valid_extensions):
+        """Helper function to validate file extension."""
+        if file:
+            ext = os.path.splitext(file.name)[1].lower()
+            if ext not in valid_extensions:
+                raise forms.ValidationError(f'Unsupported file type. Please upload a file with one of the following extensions: {", ".join(valid_extensions)}')
+        return file
+
     def clean_model_file_glb(self):
-        model_file = self.cleaned_data.get('model_file_glb', False)
-        if model_file:
-            ext = os.path.splitext(model_file.name)[1]
-            valid_extensions = ['.glb']
-            if not ext.lower() in valid_extensions:
-                raise forms.ValidationError('Unsupported file type. Please upload a .glb file for the viewer.')
-        return model_file
+        return self._validate_file_extension(self.cleaned_data.get('model_file_glb'), ['.glb'])
+
+    def clean_model_file_gltf(self):
+        return self._validate_file_extension(self.cleaned_data.get('model_file_gltf'), ['.gltf'])
+
+    def clean_model_file_usdz(self):
+        return self._validate_file_extension(self.cleaned_data.get('model_file_usdz'), ['.usdz'])
+
+    def clean_model_file_fbx(self):
+        return self._validate_file_extension(self.cleaned_data.get('model_file_fbx'), ['.fbx'])
