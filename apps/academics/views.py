@@ -6,6 +6,7 @@ from django.views.generic import ListView, CreateView
 from .models import AcademicSession, Batch, Semester, Subject
 from .forms import AcademicSessionForm, BatchForm, SemesterForm, SubjectForm
 from apps.core.mixins import HODRequiredMixin
+from apps.audit.services import log_action
 
 
 class AcademicSessionListView(HODRequiredMixin, ListView):
@@ -20,6 +21,10 @@ class AcademicSessionCreateView(HODRequiredMixin, CreateView):
     template_name = 'academics/session_form.html'
     success_url = reverse_lazy('academics:session_list')
 
+    def form_valid(self, form):
+        log_action(actor=self.request.user, action="CREATED_ACADEMIC_SESSION", target=form.instance)
+        return super().form_valid(form)
+
 
 class BatchListView(HODRequiredMixin, ListView):
     model = Batch
@@ -33,6 +38,10 @@ class BatchCreateView(HODRequiredMixin, CreateView):
     template_name = 'academics/batch_form.html'
     success_url = reverse_lazy('academics:batch_list')
 
+    def form_valid(self, form):
+        log_action(actor=self.request.user, action="CREATED_BATCH", target=form.instance)
+        return super().form_valid(form)
+
 
 class SemesterListView(HODRequiredMixin, ListView):
     model = Semester
@@ -45,6 +54,10 @@ class SemesterCreateView(HODRequiredMixin, CreateView):
     form_class = SemesterForm
     template_name = 'academics/semester_form.html'
     success_url = reverse_lazy('academics:semester_list')
+
+    def form_valid(self, form):
+        log_action(actor=self.request.user, action="CREATED_SEMESTER", target=form.instance)
+        return super().form_valid(form)
 
 
 class SubjectListView(HODRequiredMixin, ListView):
@@ -61,6 +74,10 @@ class SubjectCreateView(HODRequiredMixin, CreateView):
     form_class = SubjectForm
     template_name = 'academics/subject_form.html'
     success_url = reverse_lazy('academics:subject_list')
+
+    def form_valid(self, form):
+        log_action(actor=self.request.user, action="CREATED_SUBJECT", target=form.instance)
+        return super().form_valid(form)
 
 
 def get_semesters_for_batch(request):

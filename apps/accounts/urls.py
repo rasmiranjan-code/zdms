@@ -1,10 +1,9 @@
 # apps/accounts/urls.py
 
 from django.urls import path
-from django.contrib.auth import views as auth_views
 from apps.accounts.views import (
     RoleBasedLoginView, LandingPageView, HODCreateStudentView, FacultyAssignmentListView, 
-    FacultyAssignView, HODCreateFacultyView, HODSettingsView, FacultyDetailView, 
+    FacultyAssignView, HODCreateFacultyView, HODSettingsView, FacultyDetailView, CustomLogoutView,
     FacultyUpdateView, FacultyPasswordChangeView
 )
 
@@ -21,5 +20,5 @@ urlpatterns = [
     path('faculty/<int:pk>/edit/', FacultyUpdateView.as_view(), name='faculty_edit'),
     path('faculty/<int:pk>/change-password/', FacultyPasswordChangeView.as_view(), name='faculty_change_password'),
     path('login/', RoleBasedLoginView.as_view(), name='login'),
-    path('logout/', auth_views.LogoutView.as_view(next_page='accounts:landing'), name='logout'),
+    path('logout/', CustomLogoutView.as_view(next_page='accounts:landing'), name='logout'),
 ]

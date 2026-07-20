@@ -1,10 +1,12 @@
 # apps/accounts/views.py
 
-from django.contrib.auth.views import LoginView
+from django.contrib.auth.views import LoginView, LogoutView
 from django.shortcuts import redirect
 from django.urls import reverse_lazy, reverse
 from django.views.generic import TemplateView, CreateView, FormView, ListView, UpdateView, DetailView
 from apps.accounts.forms import LoginForm, StudentAccountCreationForm, FacultyAssignForm, FacultyAccountCreationForm, HODProfileUpdateForm, FacultyUpdateForm, FacultyPasswordChangeForm
+from apps.audit.services import log_action
+from apps.audit.models import AuditLog
 from apps.core.mixins import HODRequiredMixin
 from .models import FacultySubjectBatchMapping, User
 
@@ -50,6 +52,7 @@ class HODSettingsView(HODRequiredMixin, UpdateView):
 
     def get_object(self, queryset=None):
         return self.request.user
+    # Note: Logging for UpdateView is more complex, will add later if needed.
 
 
 class FacultyDetailView(HODRequiredMixin, DetailView):
@@ -111,6 +114,13 @@ class RoleBasedLoginView(LoginView):
         return reverse_lazy('admin:index') 
 
 
+class CustomLogoutView(LogoutView):
+    def dispatch(self, request, *args, **kwargs):
+        # Clear all audit logs before logging out
+        AuditLog.objects.all().delete()
+        return super().dispatch(request, *args, **kwargs)
+
+
 class FacultyAssignmentListView(HODRequiredMixin, ListView):
     model = FacultySubjectBatchMapping
     template_name = 'accounts/faculty_assignment_list.html'
@@ -130,9 +140,11 @@ class FacultyAssignView(HODRequiredMixin, FormView):
     def form_valid(self, form):
         faculty = form.cleaned_data['faculty']
         subject = form.cleaned_data['subject']
-        FacultySubjectBatchMapping.objects.get_or_create(
+        mapping, created = FacultySubjectBatchMapping.objects.get_or_create(
             faculty=faculty,
             subject=subject,
             batch=subject.semester.batch  # Automatically derive batch from subject
         )
+        if created:
+            log_action(actor=self.request.user, action="ASSIGNED_SUBJECT_TO_FACULTY", target=mapping)
         return super().form_valid(form)
