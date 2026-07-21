@@ -260,5 +260,21 @@
         </footer>
     {% endif %}
 
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        // Hero slider on the landing page
+        if (document.querySelector('.hero-slider')) {
+            const heroSlider = new Swiper('.hero-slider', {
+              loop: true,
+              effect: 'fade',
+              autoplay: { delay: 1000, disableOnInteraction: false },
+              pagination: { el: '.swiper-pagination', clickable: true },
+            });
+        }
+      });
+    </script>
+    {% block extra_script %}{% endblock %}
+
 </body>
 </html>
