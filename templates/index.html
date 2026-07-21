@@ -281,6 +281,7 @@
   background: var(--light-green-bg);
   border-radius: var(--radius-lg);
   display: flex;
+  padding: 20px;
   align-items: center;
   justify-content: center;
   font-size: 42px;
@@ -289,6 +290,12 @@
 .zd-page .zd-about-text { flex: 1; }
 
 .zd-page .zd-about-desc {
+  font-size: 13.5px;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin: 0 0 12px;
+}
+.zd-page .zd-about-icon-box img {
   font-size: 13.5px;
   color: var(--text-muted);
   line-height: 1.6;
@@ -575,7 +582,9 @@
 <section class="zd-about-section" id="about">
     <h2 class="zd-section-title" style="padding:0; margin-bottom:16px;">About the Department</h2>
     <div class="zd-about-inner">
-        <div class="zd-about-icon-box">🔬</div>
+        <div class="zd-about-icon-box">
+            <img src="{% static 'images/logo/microscope.png' %}" alt="Microscope Icon" style="width: 100%; height: 100%; object-fit: contain;">
+        </div>
         <div class="zd-about-text">
             <p class="zd-about-desc">
                 Established to advance the study of animal biology, the Department of Zoology
