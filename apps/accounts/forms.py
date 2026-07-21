@@ -141,7 +141,7 @@ class FacultyAssignForm(forms.Form):
 class FacultyAccountCreationForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ('username', 'first_name', 'last_name', 'email', 'password', 'profile_picture')
+        fields = ('username', 'first_name', 'last_name', 'email', 'password', 'profile_picture', 'specialization')
         widgets = {
             'password': forms.PasswordInput(),
         }
@@ -176,7 +176,7 @@ class HODProfileUpdateForm(forms.ModelForm):
 class FacultyUpdateForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ('first_name', 'last_name', 'email', 'phone_number', 'profile_picture')
+        fields = ('first_name', 'last_name', 'email', 'phone_number', 'profile_picture', 'specialization')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

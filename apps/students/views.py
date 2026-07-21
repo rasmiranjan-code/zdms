@@ -1,193 +1,40 @@
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
-from django.views.generic import UpdateView
-from django.db.models import Count, Q
+# apps/students/views.py
+
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
-from apps.academics.models import Enrollment, Subject, Batch, Semester
-from apps.accounts.models import FacultySubjectBatchMapping, User
-from django.db.models import Count, Q
-from apps.accounts.models import User
-from apps.core.decorators import hod_required
+from django.contrib import messages
 from apps.core.mixins import HODRequiredMixin
-from django.shortcuts import get_object_or_404 
-from apps.notices.models import Notice
-from apps.mcqs.models import StudentAttempt
-from apps.accounts.forms import StudentUpdateForm
-
-from apps.attendance.models import Attendance
-
-@hod_required
-def student_list(request):
-    # Get filter parameters from the request
-    batch_id = request.GET.get('batch')
-    semester_id = request.GET.get('semester')
-
-    # Base queryset for active enrollments
-    enrollments = Enrollment.objects.filter(is_active=True, student__role='STUDENT').select_related(
-        'student__studentprofile', 'batch__academic_session', 'current_semester'
-    ).order_by('student__first_name', 'student__last_name')
-
-    # Apply filters if they are provided
-    if batch_id:
-        enrollments = enrollments.filter(batch_id=batch_id)
-    if semester_id:
-        enrollments = enrollments.filter(current_semester_id=semester_id)
-
-    # Data for filter dropdowns
-    all_batches = Batch.objects.all().select_related('academic_session').order_by('-academic_session__start_year')
-    all_semesters = Semester.objects.all().order_by('number')
-
-    context = {
-        'enrollments': enrollments,
-        'all_batches': all_batches,
-        'all_semesters': all_semesters,
-        'selected_batch': int(batch_id) if batch_id else None,
-        'selected_semester': int(semester_id) if semester_id else None,
-    }
-    return render(request, "students/list.html", context)
-
-@hod_required
-def student_detail(request, pk):
-    student = get_object_or_404(User, pk=pk, role='STUDENT')
-    enrollment = Enrollment.objects.filter(student=student, is_active=True).first()
-    context = {'student': student, 'enrollment': enrollment}
-    return render(request, 'students/detail.html', context)
-
-class StudentUpdateView(HODRequiredMixin, UpdateView):
-    model = User
-    form_class = StudentUpdateForm
-    template_name = 'students/edit.html'
-    
-    def get_success_url(self):
-        return reverse_lazy('students:detail', kwargs={'pk': self.object.pk})
-
-@login_required
-def dashboard(request):
-    student = request.user
-    try:
-        enrollment = Enrollment.objects.select_related('batch', 'current_semester').get(student=student, is_active=True)
-    except Enrollment.DoesNotExist:
-        enrollment = None
-    
-    # Get subjects for the student's current semester to show on dashboard
-    subjects = []
-    if enrollment and enrollment.current_semester:
-        subjects = enrollment.current_semester.subjects.all()
-
-    # Calculate overall MCQ accuracy
-    mcq_attempts = StudentAttempt.objects.filter(student=student)
-    total_mcq_attempts = mcq_attempts.count()
-    correct_mcq_attempts = mcq_attempts.filter(is_correct=True).count()
-    mcq_accuracy = (correct_mcq_attempts / total_mcq_attempts * 100) if total_mcq_attempts > 0 else 0
-
-    # Calculate overall attendance
-    attendance_records = Attendance.objects.filter(student=student)
-    total_classes = attendance_records.count()
-    classes_attended = attendance_records.filter(is_present=True).count()
-    attendance_percentage = (classes_attended / total_classes * 100) if total_classes > 0 else 0
-
-    # Get latest notice
-    latest_notice = Notice.objects.order_by('-created_at').first()
-
-    # Get recent activities (e.g., last 3 MCQ attempts)
-    recent_activities = StudentAttempt.objects.filter(student=student).select_related(
-        'question__subject'
-    ).order_by('-created_at')[:3]
+from .models import AlumniStory
+from .forms import AlumniStoryForm
 
 
-    context = {
-        'enrollment': enrollment, 
-        'subjects': subjects,
-        # Stats
-        'mcq_accuracy': mcq_accuracy,
-        'total_mcq_attempts': total_mcq_attempts,
-        'attendance_percentage': attendance_percentage,
-        'total_classes': total_classes,
-        # Sidebar
-        'latest_notice': latest_notice,
-        # Recent Activity
-        'recent_activities': recent_activities,
-    }
-    return render(request, "students/dashboard.html", context)
+class AlumniStoryListView(HODRequiredMixin, ListView):
+    model = AlumniStory
+    template_name = 'students/alumni_story_list.html'
+    context_object_name = 'stories'
+    paginate_by = 10
 
-@login_required
-def profile_view(request):
-    student = request.user
-    if student.role != 'STUDENT':
-        return redirect('accounts:landing')
 
-    try:
-        enrollment = Enrollment.objects.get(student=student, is_active=True)
-    except Enrollment.DoesNotExist:
-        enrollment = None
+class AlumniStoryCreateView(HODRequiredMixin, CreateView):
+    model = AlumniStory
+    form_class = AlumniStoryForm
+    template_name = 'students/alumni_story_form.html'
+    success_url = reverse_lazy('students:alumni_story_list')
 
-    context = {'student': student, 'enrollment': enrollment}
-    return render(request, 'students/profile.html', context)
+    def form_valid(self, form):
+        messages.success(self.request, "Alumni story created successfully.")
+        return super().form_valid(form)
 
-@login_required
-def attendance_view(request):
-    student = request.user
-    attendance_records = []
-    total_attended = 0
-    total_classes = 0
 
-    try:
-        # Find the student's current enrollment and subjects
-        enrollment = Enrollment.objects.get(student=student, is_active=True)
-        subjects = enrollment.current_semester.subjects.all()
+class AlumniStoryUpdateView(HODRequiredMixin, UpdateView):
+    model = AlumniStory
+    form_class = AlumniStoryForm
+    template_name = 'students/alumni_story_form.html'
+    success_url = reverse_lazy('students:alumni_story_list')
 
-        for subject in subjects:
-            # Get attendance stats for each subject
-            stats = Attendance.objects.filter(
-                student=student, subject=subject
-            ).aggregate(
-                total=Count('id'),
-                attended=Count('id', filter=Q(is_present=True))
-            )
 
-            subject_total = stats.get('total', 0)
-            subject_attended = stats.get('attended', 0)
-
-            percentage = (subject_attended / subject_total * 100) if subject_total > 0 else 0
-
-            attendance_records.append({
-                'subject': subject.name,
-                'total': subject_total,
-                'attended': subject_attended,
-                'percentage': percentage,
-            })
-            total_classes += subject_total
-            total_attended += subject_attended
-
-    except Enrollment.DoesNotExist:
-        pass
-
-    overall_percentage = (total_attended / total_classes * 100) if total_classes > 0 else 0
-
-    context = {
-        'attendance_records': attendance_records,
-        'overall_percentage': overall_percentage,
-    }
-    return render(request, "students/attendance.html", context)
-
-def my_faculty_view(request):
-    student = request.user
-    assignments = []
-    current_semester = None
-    try:
-        enrollment = Enrollment.objects.get(student=student, is_active=True)
-        current_semester = enrollment.current_semester
-        # Find subjects for the student's current semester
-        subjects = current_semester.subjects.all()
-        # Find faculty assignments for those subjects
-        assignments = FacultySubjectBatchMapping.objects.filter(
-            subject__in=subjects
-        ).select_related('faculty', 'subject').order_by('subject__name')
-    except Enrollment.DoesNotExist:
-        pass # Handle case where student has no active enrollment
-
-    context = {
-        'assignments': assignments,
-        'current_semester': current_semester,
-    }
-    return render(request, 'students/my_faculty.html', context)
+class AlumniStoryDeleteView(HODRequiredMixin, DeleteView):
+    model = AlumniStory
+    template_name = 'students/alumni_story_confirm_delete.html'
+    success_url = reverse_lazy('students:alumni_story_list')
+    context_object_name = 'story'

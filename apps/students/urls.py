@@ -6,11 +6,11 @@ from . import views
 app_name = 'students'
 
 urlpatterns = [
-    path('list/', views.student_list, name='list'),
-    path('detail/<int:pk>/', views.student_detail, name='detail'),
-    path('edit/<int:pk>/', views.StudentUpdateView.as_view(), name='edit'),
-    path('dashboard/', views.dashboard, name='dashboard'),
-    path('attendance/', views.attendance_view, name='attendance'),
-    path('my-faculty/', views.my_faculty_view, name='my_faculty'),
-    path('profile/', views.profile_view, name='profile'),
+    # ... other student urls if any
+
+    # HOD management of Alumni Stories
+    path('alumni-stories/', views.AlumniStoryListView.as_view(), name='alumni_story_list'),
+    path('alumni-stories/add/', views.AlumniStoryCreateView.as_view(), name='alumni_story_add'),
+    path('alumni-stories/<int:pk>/edit/', views.AlumniStoryUpdateView.as_view(), name='alumni_story_edit'),
+    path('alumni-stories/<int:pk>/delete/', views.AlumniStoryDeleteView.as_view(), name='alumni_story_delete'),
 ]

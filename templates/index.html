@@ -31,15 +31,15 @@
 
         <section class="stats-strip">
             <div class="stat">
-                <span class="stat-num">32</span>
+                <span class="stat-num">30+</span>
                 <span class="stat-label">Years of teaching</span>
             </div>
             <div class="stat">
-                <span class="stat-num">640+</span>
+                <span class="stat-num">{{ student_count }}</span>
                 <span class="stat-label">Enrolled students</span>
             </div>
             <div class="stat">
-                <span class="stat-num">18</span>
+                <span class="stat-num">{{ faculty_count }}</span>
                 <span class="stat-label">Faculty members</span>
             </div>
             <div class="stat">
@@ -92,30 +92,20 @@
             <p class="alumni-sub">A small sample of the department's alumni, maintained as part of departmental records.</p>
 
             <div class="alumni-grid">
+                {% for story in alumni_stories %}
                 <div class="alumni-card">
-                    <span class="alumni-initial">A</span>
+                    <img src="{{ story.photo.url }}" alt="{{ story.student.get_full_name }}" class="alumni-photo">
                     <div>
-                        <h3>Ananya Mishra</h3>
-                        <p class="alumni-batch">Batch of 2019 &middot; M.Sc. Zoology</p>
-                        <p class="alumni-role">Wildlife Research Officer, State Forest Department</p>
+                        <h3>{{ story.student.get_full_name }}</h3>
+                        {% with enrollment=story.student.enrollments.first %}
+                        <p class="alumni-batch">Batch of {{ enrollment.batch.academic_session.end_year }}</p>
+                        {% endwith %}
+                        <p class="alumni-role">{{ story.current_role }}</p>
                     </div>
                 </div>
-                <div class="alumni-card">
-                    <span class="alumni-initial">R</span>
-                    <div>
-                        <h3>Rohit Sahoo</h3>
-                        <p class="alumni-batch">Batch of 2017 &middot; B.Sc. Zoology</p>
-                        <p class="alumni-role">PhD Scholar, Marine Biology</p>
-                    </div>
-                </div>
-                <div class="alumni-card">
-                    <span class="alumni-initial">P</span>
-                    <div>
-                        <h3>Priya Nayak</h3>
-                        <p class="alumni-batch">Batch of 2021 &middot; M.Sc. Zoology</p>
-                        <p class="alumni-role">Lecturer, Government Autonomous College</p>
-                    </div>
-                </div>
+                {% empty %}
+                <p>No alumni records found yet.</p>
+                {% endfor %}
             </div>
             <a href="#" class="text-link">View full alumni directory &rarr;</a>
         </section>
@@ -131,73 +121,20 @@
     </p>
 
     <div class="faculty-grid">
-
+        {% for member in faculty_list %}
+        {% if member %}
         <div class="faculty-card">
-            <span class="faculty-initial">B</span>
+            <span class="faculty-initial">{{ member.first_name|slice:":1" }}</span>
             <div>
-                <h3>Bijaynee Padhiyary</h3>
-                <p class="faculty-role">Professor &amp; Head of Department</p>
+                <h3>{{ member.get_full_name }}</h3>
+                <p class="faculty-role">{{ member.get_role_display }}</p>
                 <p class="faculty-specialization">
-                    Specialization: Animal Physiology
+                    Specialization: To be added
                 </p>
             </div>
         </div>
-
-        <div class="faculty-card">
-            <span class="faculty-initial">S</span>
-            <div>
-                <h3>Sarojini Sahu</h3>
-                <p class="faculty-role">Associate Professor</p>
-                <p class="faculty-specialization">
-                    Specialization: Ecology and Conservation
-                </p>
-            </div>
-        </div>
-
-        <div class="faculty-card">
-            <span class="faculty-initial">D</span>
-            <div>
-                <h3>Debasish Das</h3>
-                <p class="faculty-role">Assistant Professor</p>
-                <p class="faculty-specialization">
-                    Specialization: Genetics &amp; Molecular Biology
-                </p>
-            </div>
-        </div>
-
-        <div class="faculty-card">
-            <span class="faculty-initial">M</span>
-            <div>
-                <h3>Madhusmita Rout</h3>
-                <p class="faculty-role">Assistant Professor</p>
-                <p class="faculty-specialization">
-                    Specialization: Entomology
-                </p>
-            </div>
-        </div>
-
-        <div class="faculty-card">
-            <span class="faculty-initial">A</span>
-            <div>
-                <h3>Anita Mohanty</h3>
-                <p class="faculty-role">Guest Faculty</p>
-                <p class="faculty-specialization">
-                    Specialization: Environmental Biology
-                </p>
-            </div>
-        </div>
-
-        <div class="faculty-card">
-            <span class="faculty-initial">R</span>
-            <div>
-                <h3>Rakesh Kumar</h3>
-                <p class="faculty-role">Lab Demonstrator</p>
-                <p class="faculty-specialization">
-                    Specialization: Practical Zoology
-                </p>
-            </div>
-        </div>
-
+        {% endif %}
+        {% endfor %}
     </div>
 
     <a href="#" class="text-link">View complete faculty directory &rarr;</a>

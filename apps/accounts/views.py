@@ -9,6 +9,8 @@ from apps.audit.services import log_action
 from apps.audit.models import AuditLog
 from apps.core.mixins import HODRequiredMixin
 from .models import FacultySubjectBatchMapping, User
+from apps.students.models import StudentProfile, AlumniStory
+from apps.notices.models import Notice
 
 
 class LandingPageView(TemplateView):
@@ -22,6 +24,24 @@ class LandingPageView(TemplateView):
                 return redirect('students:dashboard')
             # Add other roles here in the future
         return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Stats
+        context['student_count'] = User.objects.filter(role='STUDENT', is_active=True).count()
+        context['faculty_count'] = User.objects.filter(role__in=['FACULTY', 'HOD'], is_active=True).count()
+
+        # Faculty List (HOD first, then others)
+        hod = User.objects.filter(role='HOD').first()
+        other_faculty = User.objects.filter(role='FACULTY').order_by('?')[:5]
+        context['faculty_list'] = [hod] + list(other_faculty) if hod else list(other_faculty)
+
+        # Alumni List (Students from inactive batches)
+        context['alumni_stories'] = AlumniStory.objects.filter(is_featured=True).select_related('student')
+
+        # Latest Notices
+        context['latest_notices'] = Notice.objects.all().order_by('-created_at')[:3]
+        return context
 
 
 class HODCreateStudentView(HODRequiredMixin, CreateView):

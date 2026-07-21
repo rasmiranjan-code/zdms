@@ -11,6 +11,7 @@ class User(AbstractUser, TimeStampedModel):
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='STUDENT')
     phone_number = models.CharField(max_length=15, blank=True)
     profile_picture = models.ImageField(upload_to='profile_pictures/', null=True, blank=True)
+    specialization = models.CharField(max_length=100, blank=True, help_text="For HOD/Faculty roles")
     created_by = models.ForeignKey(
         'self', null=True, blank=True, on_delete=models.SET_NULL, related_name='created_users'
     )
