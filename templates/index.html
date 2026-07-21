@@ -1,6 +1,9 @@
 <!-- templates/index.html -->
 {% extends "base.html" %}
 {% load static %}
+{% block extra_head %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+{% endblock %}
 
 {% block title %}Zoology Department Management System{% endblock %}
 
@@ -91,22 +94,20 @@
             <h2>Where our graduates went next.</h2>
             <p class="alumni-sub">A small sample of the department's alumni, maintained as part of departmental records.</p>
 
-            <div class="alumni-grid">
-                {% for story in alumni_stories %}
-                <div class="alumni-card">
-                    <img src="{{ story.photo.url }}" alt="{{ story.student.get_full_name }}" class="alumni-photo">
+            <div class="alumni-stats-grid">
+                {% for story in alumni_stories|slice:":4" %}
+                <div class="alumni-stat-card">
+                    <img src="{{ story.photo.url }}" alt="{{ story.student_name }}" class="alumni-stat-photo">
                     <div>
-                        <h3>{{ story.student.get_full_name }}</h3>
-                        {% with enrollment=story.student.enrollments.first %}
-                        <p class="alumni-batch">Batch of {{ enrollment.batch.academic_session.end_year }}</p>
-                        {% endwith %}
-                        <p class="alumni-role">{{ story.current_role }}</p>
+                        <span class="alumni-stat-name">{{ story.student_name }}</span>
+                        <span class="alumni-stat-role">{{ story.current_role }}</span>
                     </div>
                 </div>
                 {% empty %}
-                <p>No alumni records found yet.</p>
+                    <p>No alumni records found yet.</p>
                 {% endfor %}
             </div>
+
             <a href="#" class="text-link">View full alumni directory &rarr;</a>
         </section>
     </main>
@@ -138,5 +139,23 @@
     </div>
 
     <a href="#" class="text-link">View complete faculty directory &rarr;</a>
+</section>
+
+<!-- Gallery Section -->
+<section class="gallery-section" id="gallery">
+    <p class="section-eyebrow">Department Workspace</p>
+    <h2>A Glimpse Into Our Department</h2>
+    <p class="gallery-sub">
+        Moments from our labs, field trips, and academic events.
+    </p>
+    <div class="gallery-grid">
+        {% for image in gallery_images %}
+        <div class="gallery-item">
+            <img src="{{ image.image.url }}" alt="{{ image.caption|default:'Department photo' }}" loading="lazy">
+        </div>
+        {% empty %}
+        <p>No gallery images uploaded yet.</p>
+        {% endfor %}
+    </div>
 </section>
 {% endblock %}

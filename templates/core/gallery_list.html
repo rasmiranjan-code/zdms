@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Department Gallery{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 1240px; margin: 40px auto; padding: 0 32px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+        <div>
+            <h1 style="font-family: 'Source Serif 4', serif; font-size: 28px; font-weight: 600;">Manage Department Gallery</h1>
+            <p style="color: var(--muted); margin-top: 4px;">Upload or remove images from the landing page gallery.</p>
+        </div>
+        <a href="{% url 'core:gallery_upload' %}" class="nav-login">Upload New Image</a>
+    </div>
+
+    <div style="background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px;">
+        <div class="gallery-grid">
+            {% for image in images %}
+            <div class="gallery-item" style="position: relative;">
+                <img src="{{ image.image.url }}" alt="{{ image.caption|default:'Gallery image' }}" loading="lazy">
+                <div style="position: absolute; top: 8px; right: 8px;">
+                    <a href="{% url 'core:gallery_delete' image.pk %}" class="table-btn" style="background: rgba(239, 68, 68, 0.8); border-color: transparent; color: white !important;">Delete</a>
+                </div>
+                {% if image.caption %}
+                <p style="font-size: 13px; color: var(--muted); margin-top: 8px; text-align: center;">{{ image.caption }}</p>
+                {% endif %}
+            </div>
+            {% empty %}
+                <p style="grid-column: 1 / -1; text-align: center; padding: 40px 0; color: var(--muted);">No images have been uploaded to the gallery yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Pagination logic can be added here later -->
+
+</div>
+{% endblock %}

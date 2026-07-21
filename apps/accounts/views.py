@@ -11,6 +11,7 @@ from apps.core.mixins import HODRequiredMixin
 from .models import FacultySubjectBatchMapping, User
 from apps.students.models import StudentProfile, AlumniStory
 from apps.notices.models import Notice
+from apps.core.models import GalleryImage
 
 
 class LandingPageView(TemplateView):
@@ -37,10 +38,13 @@ class LandingPageView(TemplateView):
         context['faculty_list'] = [hod] + list(other_faculty) if hod else list(other_faculty)
 
         # Alumni List (Students from inactive batches)
-        context['alumni_stories'] = AlumniStory.objects.filter(is_featured=True).select_related('student')
+        context['alumni_stories'] = AlumniStory.objects.filter(is_featured=True)
 
         # Latest Notices
         context['latest_notices'] = Notice.objects.all().order_by('-created_at')[:3]
+
+        # Gallery Images
+        context['gallery_images'] = GalleryImage.objects.all().order_by('-created_at')[:9]
         return context
 
 

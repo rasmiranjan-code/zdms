@@ -8,6 +8,6 @@ class StudentProfileAdmin(admin.ModelAdmin):
 
 @admin.register(AlumniStory)
 class AlumniStoryAdmin(admin.ModelAdmin):
-    list_display = ('student', 'current_role', 'is_featured')
-    list_filter = ('is_featured',)
-    search_fields = ('student__first_name', 'student__last_name', 'current_role')
+    list_display = ('student_name', 'batch_year', 'current_role', 'is_featured')
+    list_filter = ('is_featured', 'batch_year')
+    search_fields = ('student_name', 'current_role')

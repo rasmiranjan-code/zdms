@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {% if form.instance.pk %}Edit Alumni Story{% else %}Add New Alumni Story{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 800px; margin: 40px auto; padding: 0 32px;">
+    <div style="margin-bottom: 24px;">
+        <h1 style="font-family: 'Source Serif 4', serif; font-size: 28px; font-weight: 600;">
+            {% if form.instance.pk %}Edit Alumni Story{% else %}Add New Alumni Story{% endif %}
+        </h1>
+        <p style="color: var(--muted); margin-top: 4px;">
+            {% if form.instance.pk %}Update the details for this alumni success story.{% else %}Fill in the details to add a new alumni success story.{% endif %}
+        </p>
+    </div>
+
+    <div style="background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px;">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px;">
+                <a href="{% url 'students:alumni_story_list' %}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">
+                    {% if form.instance.pk %}Update Story{% else %}Add Story{% endif %}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}All Students{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 1040px; margin: 40px auto; padding: 0 32px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+        <div>
+            <h1 style="font-family: 'Source Serif 4', serif; font-size: 28px; font-weight: 600;">All Students</h1>
+            <p style="color: var(--muted); margin-top: 4px;">List of all enrolled students in the department.</p>
+        </div>
+        <a href="{% url 'accounts:hod_add_student' %}" class="nav-login">Add New Student</a>
+    </div>
+
+    <div class="table-responsive" style="background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; overflow-x: auto;">
+        <table class="data-table" style="margin-top: 0;">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Batch</th>
+                    <th style="text-align: right;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in students %}
+                    <tr>
+                        <td>{{ student.get_full_name }}</td>
+                        <td>{{ student.username }}</td>
+                        <td>{{ student.email|default:"-" }}</td>
+                        <td>{{ student.enrollments.first.batch|default:"N/A" }}</td>
+                        <td style="text-align: right;">
+                            <a href="#" class="table-btn">Edit</a>
+                            <a href="#" class="table-btn" style="border-color: var(--danger); color: var(--danger);">Delete</a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="5" style="text-align: center; padding: 20px;">No students found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

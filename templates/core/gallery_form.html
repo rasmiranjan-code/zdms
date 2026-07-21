@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Image to Gallery{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 800px; margin: 40px auto; padding: 0 32px;">
+    <div style="margin-bottom: 24px;">
+        <h1 style="font-family: 'Source Serif 4', serif; font-size: 28px; font-weight: 600;">
+            Upload New Image
+        </h1>
+        <p style="color: var(--muted); margin-top: 4px;">
+            Select an image to add to the department gallery on the landing page.
+        </p>
+    </div>
+
+    <div style="background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px;">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px;">
+                <a href="{% url 'core:gallery_list' %}" class="table-btn" style="text-decoration: none;">Cancel</a>
+                <button type="submit" class="nav-login" style="border-radius: 8px;">Upload Image</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

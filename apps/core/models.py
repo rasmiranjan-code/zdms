@@ -1,6 +1,7 @@
 # apps/core/models.py
 
 from django.db import models
+from django.conf import settings
 
 
 class TimeStampedModel(models.Model):
@@ -9,6 +10,18 @@ class TimeStampedModel(models.Model):
 
     class Meta:
         abstract = True
+        
+class GalleryImage(TimeStampedModel):
+    image = models.ImageField(upload_to='gallery/')
+    caption = models.CharField(max_length=200, blank=True, help_text="Optional caption for the image.")
+    uploaded_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return self.caption or f"Image {self.id}"
+
 
 
 class SoftDeleteManager(models.Manager):

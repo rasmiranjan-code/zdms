@@ -6,6 +6,17 @@ from django.contrib import messages
 from apps.core.mixins import HODRequiredMixin
 from .models import AlumniStory
 from .forms import AlumniStoryForm
+from apps.accounts.models import User
+
+
+class StudentListView(HODRequiredMixin, ListView):
+    model = User
+    template_name = 'students/student_list.html'
+    context_object_name = 'students'
+    paginate_by = 20
+
+    def get_queryset(self):
+        return User.objects.filter(role='STUDENT').order_by('first_name', 'last_name')
 
 
 class AlumniStoryListView(HODRequiredMixin, ListView):

@@ -275,6 +275,8 @@
                 <a href="{% url 'dashboard:hod_analytics' %}" class="dv-mgmt-card"><div class="dv-mgmt-icon dv-pink"><img src="{% static 'images/logo/analytics.png' %}" alt="Analytics" style="width: 100%; height: 100%; object-fit: contain;"></div><div><div class="dv-mgmt-name">Department Analytics</div><div class="dv-mgmt-desc">View department metrics</div></div><span class="dv-mgmt-arrow">›</span></a>
                 <a href="{% url 'quiz:select_semester' %}" class="dv-mgmt-card"><div class="dv-mgmt-icon dv-orange"><img src="{% static 'images/logo/test.png' %}" alt="Tests" style="width: 100%; height: 100%; object-fit: contain;"></div><div><div class="dv-mgmt-name">Manage Tests</div><div class="dv-mgmt-desc">Create and manage tests</div></div><span class="dv-mgmt-arrow">›</span></a>
                 <a href="{% url 'threed_library:manage_list' %}" class="dv-mgmt-card"><div class="dv-mgmt-icon dv-green"><img src="{% static 'images/logo/3d-model.png' %}" alt="3D Library" style="width: 100%; height: 100%; object-fit: contain;"></div><div><div class="dv-mgmt-name">3D Library</div><div class="dv-mgmt-desc">Manage 3D models</div></div><span class="dv-mgmt-arrow">›</span></a>
+                <a href="{% url 'students:alumni_story_list' %}" class="dv-mgmt-card"><div class="dv-mgmt-icon dv-pink"><img src="{% static 'images/logo/alumni.png' %}" alt="Alumni" style="width: 100%; height: 100%; object-fit: contain;"></div><div><div class="dv-mgmt-name">Manage Alumni Stories</div><div class="dv-mgmt-desc">Showcase graduate success</div></div><span class="dv-mgmt-arrow">›</span></a>
+                <a href="{% url 'core:gallery_list' %}" class="dv-mgmt-card"><div class="dv-mgmt-icon dv-purple"><img src="{% static 'images/logo/gallery.png' %}" alt="Gallery" style="width: 100%; height: 100%; object-fit: contain;"></div><div><div class="dv-mgmt-name">Manage Gallery</div><div class="dv-mgmt-desc">Update department photos</div></div><span class="dv-mgmt-arrow">›</span></a>
             </div>
         </div>
 
@@ -1152,6 +1154,8 @@
             <a href="{% url 'dashboard:hod_analytics' %}" class="mv-mgmt-card"><div class="mv-mgmt-icon dv-pink"><img src="{% static 'images/logo/analytics.png' %}" alt="Analytics" style="width: 100%; height: 100%; object-fit: contain;"></div><div class="mv-mgmt-name">Dept. Analytics</div></a>
             <a href="{% url 'quiz:select_semester' %}" class="mv-mgmt-card"><div class="mv-mgmt-icon dv-orange"><img src="{% static 'images/logo/test.png' %}" alt="Tests" style="width: 100%; height: 100%; object-fit: contain;"></div><div class="mv-mgmt-name">Manage Tests</div></a>
             <a href="{% url 'threed_library:manage_list' %}" class="mv-mgmt-card"><div class="mv-mgmt-icon dv-blue"><img src="{% static 'images/logo/3d-model.png' %}" alt="3D Library" style="width: 100%; height: 100%; object-fit: contain;"></div><div class="mv-mgmt-name">3D Library</div></a>
+            <a href="{% url 'students:alumni_story_list' %}" class="mv-mgmt-card"><div class="mv-mgmt-icon dv-pink"><img src="{% static 'images/logo/alumni.png' %}" alt="Alumni" style="width: 100%; height: 100%; object-fit: contain;"></div><div class="mv-mgmt-name">Alumni Stories</div></a>
+            <a href="{% url 'core:gallery_list' %}" class="mv-mgmt-card"><div class="mv-mgmt-icon dv-purple"><img src="{% static 'images/logo/gallery.png' %}" alt="Gallery" style="width: 100%; height: 100%; object-fit: contain;"></div><div class="mv-mgmt-name">Manage Gallery</div></a>
         </div>
     </div>
 
@@ -1207,5 +1211,4 @@
 
 
 <!-- ============ END SECTION B — MOBILE ============ -->
-
 {% endblock %}

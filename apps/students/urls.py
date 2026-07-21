@@ -6,7 +6,8 @@ from . import views
 app_name = 'students'
 
 urlpatterns = [
-    # ... other student urls if any
+    # HOD management of Students
+    path('list/', views.StudentListView.as_view(), name='list'),
 
     # HOD management of Alumni Stories
     path('alumni-stories/', views.AlumniStoryListView.as_view(), name='alumni_story_list'),
