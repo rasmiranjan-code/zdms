@@ -136,12 +136,16 @@
 
     /* ---------- RESPONSIVE ---------- */
     @media (max-width: 600px) {
-        .site-nav .nav-link,
-        .site-nav .nav-login,
-        .site-nav form {
+        /* Hide only for unauthenticated users on mobile */
+        .site-nav.unauthenticated .nav-link,
+        .site-nav.unauthenticated .nav-login {
             display: none;
         }
-        .mobile-toggle { display: block; }
+        /* Hide hamburger menu */
+        .mobile-toggle {
+            display: none;
+        }
+        /* Show bottom nav for unauthenticated users */
         .bottom-nav { display: block; }
     }
 
@@ -163,7 +167,7 @@
                 </span>
             </a>
         </div>
-        <nav class="site-nav">
+        <nav class="site-nav {% if not user.is_authenticated %}unauthenticated{% endif %}">
             {% if user.is_authenticated %}
                 {% if user.role == 'HOD' %}
                     <a href="{% url 'dashboard:hod_dashboard' %}" class="nav-link">Dashboard</a>
@@ -175,7 +179,7 @@
                 <div style="display: flex; align-items: center; gap: 16px;">
                     <form action="{% url 'accounts:logout' %}" method="post" style="display: inline;">
                         {% csrf_token %}
-                        <button type="submit" class="nav-login" style="border: none; background: transparent; cursor: pointer; font-family: inherit; font-size: 14px; font-weight: 500; color: var(--ink);">Sign out</button>
+                        <button type="submit" class="nav-link" style="border: none; background: transparent; cursor: pointer; font-family: inherit; font-size: 14px; font-weight: 500;">Sign out</button>
                     </form>
                     <a {% if user.role == 'STUDENT' %}href="{% url 'students:profile' %}"{% endif %} title="My Profile">
                         {% if user.profile_picture %}
@@ -191,7 +195,6 @@
                 <a href="{% url 'accounts:login' %}" class="nav-login">Sign in</a>
             {% endif %}
         </nav>
-        <button class="mobile-toggle" aria-label="Menu">&#9776;</button>
     </header>
 
     <main>

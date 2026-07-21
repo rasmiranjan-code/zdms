@@ -47,6 +47,7 @@
   background: linear-gradient(180deg, #eaf4ee 0%, #d9ebe0 100%);
   padding: 26px 20px 30px;
   display: flex;
+  position: relative;
   align-items: center;
   gap: 16px;
   overflow: hidden;
@@ -54,19 +55,22 @@
 
 .zd-page .zd-hero-text { flex: 1 1 60%; }
 
+.zd-page .zd-hero-text { z-index: 2; position: relative; }
 .zd-page .zd-hero h1 {
   font-size: 24px;
   line-height: 1.25;
   font-weight: 800;
-  color: var(--dark-green);
+  color: var(--white);
   margin: 0 0 12px;
+  text-shadow: 0 1px 3px rgb(10, 6, 6);
 }
 
 .zd-page .zd-hero-sub {
   font-size: 13.5px;
   line-height: 1.5;
-  color: var(--text-muted);
+  color: var(--white);
   margin: 0;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
 .zd-page .zd-hero-image {
@@ -76,6 +80,36 @@
   align-items: center;
   font-size: 64px;
   line-height: 1;
+}
+.zd-page .hero-slider {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+.zd-page .hero-slider .swiper-slide {
+    background-size: cover;
+    background-position: center;
+}
+.zd-page .hero-slider .swiper-slide::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(22, 58, 43, 0.3); /* Dark overlay for text readability */
+}
+
+/* Swiper pagination bullets */
+.zd-page .swiper-pagination-bullet {
+    background: rgba(255, 255, 255, 0.7);
+    width: 10px;
+    height: 10px;
+    opacity: 1;
+}
+
+.zd-page .swiper-pagination-bullet-active {
+    background: #fff;
+    transform: scale(1.2);
 }
 
 /* ---------- SECTION TITLES ---------- */
@@ -457,13 +491,23 @@
 
 {% block content %}
 <div class="zd-page">
-
 <section class="zd-hero">
+    <!-- Slider Background -->
+    <div class="swiper hero-slider">
+        <div class="swiper-wrapper">
+            <div class="swiper-slide" style="background-image: url({% static 'images/logo/hero-1.jpg' %});"></div>
+            <div class="swiper-slide" style="background-image: url({% static 'images/logo/hero-2.jpg' %});"></div>
+            <div class="swiper-slide" style="background-image: url({% static 'images/logo/hero-3.jpg' %});"></div>
+            <div class="swiper-slide" style="background-image: url({% static 'images/logo/hero-4.jpg' %});"></div>
+            <div class="swiper-slide" style="background-image: url({% static 'images/logo/hero-5.jpg' %});"></div>
+        </div>
+        <div class="swiper-pagination"></div>
+    </div>
+    <!-- Hero Text Content -->
     <div class="zd-hero-text">
         <h1>One system for the department's academic work.</h1>
         <p class="zd-hero-sub">Attendance, results, coursework and department records, organized by batch and semester.</p>
     </div>
-    <div class="zd-hero-image">🐦</div>
 </section>
 
 <div class="zd-portal-select-wrap">
@@ -614,4 +658,21 @@
 </section>
 
 </div>
+{% endblock %}
+
+{% block extra_script %}
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const heroSlider = new Swiper('.hero-slider', {
+      loop: true,
+      effect: 'fade',
+      autoplay: {
+        delay: 4000,
+        disableOnInteraction: false,
+      },
+      pagination: { el: '.swiper-pagination', clickable: true },
+    });
+  });
+</script>
 {% endblock %}
