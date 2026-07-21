@@ -1,135 +1,592 @@
 <!-- templates/index.html -->
 {% extends "base.html" %}
 {% load static %}
+
 {% block extra_head %}
+<style>
+.zd-page * { box-sizing: border-box; }
+
+.zd-page {
+  --dark-green: #163a2b;
+  --mid-green: #1e6b45;
+  --accent-green: #1f7a4d;
+  --light-green-bg: #d9ecdf;
+  --pale-green: #f3f8f4;
+  --text-dark: #1a2b22;
+  --text-muted: #5b6b62;
+  --white: #ffffff;
+  --border-soft: #eef2ef;
+  --radius-lg: 18px;
+  --radius-md: 14px;
+  --shadow-card: 0 4px 14px rgba(22, 58, 43, 0.07);
+
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  color: var(--text-dark);
+  background: var(--white);
+}
+
+.zd-page a { text-decoration: none; color: inherit; }
+
+/* Shared container so desktop content doesn't stretch edge-to-edge */
+.zd-page .zd-hero,
+.zd-page .zd-portal-select,
+.zd-page .zd-stats-strip,
+.zd-page .zd-about-section,
+.zd-page .zd-alumni-section,
+.zd-page .zd-faculty-section,
+.zd-page .zd-gallery-section,
+.zd-page .zd-section-title,
+.zd-page .zd-section-head-row {
+  max-width: 1100px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ---------- HERO ---------- */
+.zd-page .zd-hero {
+  background: linear-gradient(180deg, #eaf4ee 0%, #d9ebe0 100%);
+  padding: 26px 20px 30px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  overflow: hidden;
+}
+
+.zd-page .zd-hero-text { flex: 1 1 60%; }
+
+.zd-page .zd-hero h1 {
+  font-size: 24px;
+  line-height: 1.25;
+  font-weight: 800;
+  color: var(--dark-green);
+  margin: 0 0 12px;
+}
+
+.zd-page .zd-hero-sub {
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.zd-page .zd-hero-image {
+  flex: 1 1 40%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 64px;
+  line-height: 1;
+}
+
+/* ---------- SECTION TITLES ---------- */
+.zd-page .zd-section-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--dark-green);
+  margin-top: 0;
+  margin-bottom: 16px;
+  padding: 0 20px;
+}
+
+.zd-page .zd-section-head-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  margin-bottom: 14px;
+}
+
+.zd-page .zd-section-head-row .zd-section-title {
+  padding: 0;
+  margin: 0;
+}
+
+.zd-page .zd-view-all-link {
+  color: var(--accent-green);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* ---------- PORTAL SELECT CARDS ---------- */
+.zd-page .zd-portal-select-wrap { padding: 24px 0 8px; }
+
+.zd-page .zd-portal-select {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  padding: 0 20px;
+}
+
+.zd-page .zd-portal-card {
+  flex: 1;
+  min-width: 0;
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  border: 1px solid var(--border-soft);
+  padding: 14px 10px 40px;
+  position: relative;
+  display: block;
+}
+
+.zd-page .zd-portal-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--light-green-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  margin-bottom: 10px;
+}
+
+.zd-page .zd-portal-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--dark-green);
+  margin-bottom: 4px;
+}
+
+.zd-page .zd-portal-desc {
+  display: block;
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.35;
+  max-width: 100%;
+}
+
+.zd-page .zd-portal-arrow {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  width: 26px;
+  height: 26px;
+  background: var(--dark-green);
+  color: var(--white);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+}
+
+/* ---------- STATS / DEPARTMENT OVERVIEW ---------- */
+.zd-page .zd-stats-strip-wrap { padding: 24px 0 8px; }
+
+.zd-page .zd-stats-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  padding: 0 20px;
+}
+
+.zd-page .zd-stat {
+  background: var(--white);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  padding: 14px 6px;
+  text-align: center;
+}
+
+.zd-page .zd-stat-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--light-green-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  margin: 0 auto 8px;
+}
+
+.zd-page .zd-stat-num {
+  display: block;
+  font-size: 19px;
+  font-weight: 800;
+  color: var(--accent-green);
+  margin-bottom: 4px;
+}
+
+.zd-page .zd-stat-label {
+  display: block;
+  font-size: 10.5px;
+  color: var(--text-muted);
+  line-height: 1.3;
+}
+
+/* ---------- ABOUT SECTION ---------- */
+.zd-page .zd-about-section { padding: 28px 20px; display: block; }
+
+.zd-page .zd-about-inner {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.zd-page .zd-about-icon-box {
+  flex: 0 0 100px;
+  width: 100px;
+  height: 100px;
+  background: var(--light-green-bg);
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 42px;
+}
+
+.zd-page .zd-about-text { flex: 1; }
+
+.zd-page .zd-about-desc {
+  font-size: 13.5px;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin: 0 0 12px;
+}
+
+.zd-page .zd-text-link {
+  color: var(--accent-green);
+  font-weight: 600;
+  font-size: 13.5px;
+  display: inline-block;
+}
+
+.zd-page .zd-about-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 20px;
+}
+
+.zd-page .zd-about-item {
+  display: flex;
+  gap: 12px;
+  background: var(--pale-green);
+  border-radius: var(--radius-md);
+  padding: 14px;
+}
+
+.zd-page .zd-about-item-mark {
+  font-weight: 800;
+  color: var(--accent-green);
+  font-size: 14px;
+}
+
+.zd-page .zd-about-item h3 {
+  font-size: 14px;
+  margin: 0 0 4px;
+  color: var(--dark-green);
+}
+
+.zd-page .zd-about-item p {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* ---------- ALUMNI / FACULTY / GALLERY WRAPPERS ---------- */
+.zd-page .zd-alumni-section,
+.zd-page .zd-faculty-section,
+.zd-page .zd-gallery-section { padding: 24px 0; }
+
+.zd-page .zd-alumni-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  padding: 0 20px;
+}
+
+.zd-page .zd-alumni-stat-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+}
+
+.zd-page .zd-alumni-stat-photo {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--light-green-bg);
+}
+
+.zd-page .zd-alumni-stat-name {
+  display: block;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--dark-green);
+  line-height: 1.3;
+}
+
+.zd-page .zd-alumni-stat-role {
+  display: block;
+  font-size: 10px;
+  color: var(--text-muted);
+  line-height: 1.3;
+}
+
+/* ---------- FACULTY GRID ---------- */
+.zd-page .zd-faculty-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  padding: 0 20px;
+}
+
+.zd-page .zd-faculty-card {
+  background: var(--white);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  padding: 14px 8px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.zd-page .zd-faculty-initial {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--light-green-bg);
+  color: var(--accent-green);
+  font-weight: 800;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.zd-page .zd-faculty-card h3 {
+  font-size: 11.5px;
+  margin: 0;
+  color: var(--dark-green);
+  line-height: 1.3;
+}
+
+.zd-page .zd-faculty-role {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.zd-page .zd-faculty-specialization { display: none; }
+
+/* ---------- GALLERY GRID ---------- */
+.zd-page .zd-gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  padding: 0 20px;
+}
+
+.zd-page .zd-gallery-item {
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  aspect-ratio: 4 / 3;
+}
+
+.zd-page .zd-gallery-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* =========================================================
+   DESKTOP / TABLET — everything scales up from here
+   ========================================================= */
+@media (min-width: 768px) {
+  .zd-page .zd-hero { padding: 40px 30px 44px; gap: 30px; }
+  .zd-page .zd-hero h1 { font-size: 32px; }
+  .zd-page .zd-hero-sub { font-size: 15px; }
+  .zd-page .zd-hero-image { font-size: 90px; }
+
+  .zd-page .zd-section-title { font-size: 22px; padding: 0 30px; }
+  .zd-page .zd-section-head-row { padding: 0 30px; }
+
+  .zd-page .zd-portal-select { padding: 0 30px; gap: 20px; }
+  .zd-page .zd-portal-card { padding: 22px 20px 48px; }
+  .zd-page .zd-portal-icon { width: 48px; height: 48px; font-size: 22px; margin-bottom: 14px; }
+  .zd-page .zd-portal-label { font-size: 18px; }
+  .zd-page .zd-portal-desc { font-size: 14px; }
+  .zd-page .zd-portal-arrow { width: 34px; height: 34px; right: 20px; bottom: 20px; font-size: 16px; }
+
+  .zd-page .zd-stats-strip { padding: 0 30px; gap: 16px; }
+  .zd-page .zd-stat { padding: 18px 12px; }
+  .zd-page .zd-stat-icon { width: 38px; height: 38px; font-size: 18px; }
+  .zd-page .zd-stat-num { font-size: 24px; }
+  .zd-page .zd-stat-label { font-size: 12px; }
+
+  .zd-page .zd-about-section { padding: 40px 30px; }
+  .zd-page .zd-about-icon-box { flex: 0 0 130px; width: 130px; height: 130px; font-size: 56px; }
+  .zd-page .zd-about-desc { font-size: 15px; }
+
+  .zd-page .zd-alumni-stats-grid,
+  .zd-page .zd-gallery-grid { padding: 0 30px; }
+
+  .zd-page .zd-faculty-grid { padding: 0 30px; gap: 16px; }
+  .zd-page .zd-faculty-card { padding: 18px 12px; }
+  .zd-page .zd-faculty-initial { width: 48px; height: 48px; font-size: 15px; }
+  .zd-page .zd-faculty-card h3 { font-size: 13px; }
+  .zd-page .zd-faculty-role { font-size: 11px; }
+
+  .zd-page .zd-gallery-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+@media (min-width: 1024px) {
+  .zd-page .zd-hero h1 { font-size: 36px; }
+  .zd-page .zd-about-inner { gap: 26px; }
+}
+</style>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
 {% endblock %}
 
 {% block title %}Zoology Department Management System{% endblock %}
 
 {% block content %}
-        <section class="hero">
-            <p class="eyebrow">Zoology Department &middot; Management System</p>
-            <h1>One system for the department's academic work.</h1>
-            <p class="hero-sub">Attendance, results, coursework and department records, organized by batch and semester.</p>
-        </section>
+<div class="zd-page">
 
-        <section class="portal-select">
-            <a href="{% url 'accounts:login' %}" class="portal-card">
-                <span class="portal-label">Student</span>
-                <span class="portal-desc">Attendance, results, coursework and notices</span>
-                <span class="portal-arrow">&rarr;</span>
-            </a>
-            <a href="{% url 'accounts:login' %}" class="portal-card">
-                <span class="portal-label">Faculty</span>
-                <span class="portal-desc">Attendance, marks entry and assignments</span>
-                <span class="portal-arrow">&rarr;</span>
-            </a>
-            <a href="{% url 'accounts:login' %}" class="portal-card">
-                <span class="portal-label">HOD</span>
-                <span class="portal-desc">Department-wide records and approvals</span>
-                <span class="portal-arrow">&rarr;</span>
-            </a>
-        </section>
+<section class="zd-hero">
+    <div class="zd-hero-text">
+        <h1>One system for the department's academic work.</h1>
+        <p class="zd-hero-sub">Attendance, results, coursework and department records, organized by batch and semester.</p>
+    </div>
+    <div class="zd-hero-image">🐦</div>
+</section>
 
-        <section class="stats-strip">
-            <div class="stat">
-                <span class="stat-num">30+</span>
-                <span class="stat-label">Years of teaching</span>
+<div class="zd-portal-select-wrap">
+    <h2 class="zd-section-title">Access Your Portal</h2>
+    <section class="zd-portal-select">
+        <a href="{% url 'accounts:login' %}" class="zd-portal-card">
+            <span class="zd-portal-icon">🎓</span>
+            <span class="zd-portal-label">Student</span>
+            <span class="zd-portal-desc">Attendance, results, coursework and notices</span>
+            <span class="zd-portal-arrow">&rarr;</span>
+        </a>
+        <a href="{% url 'accounts:login' %}" class="zd-portal-card">
+            <span class="zd-portal-icon">💼</span>
+            <span class="zd-portal-label">Faculty</span>
+            <span class="zd-portal-desc">Attendance, marks entry and assignments</span>
+            <span class="zd-portal-arrow">&rarr;</span>
+        </a>
+        <a href="{% url 'accounts:login' %}" class="zd-portal-card">
+            <span class="zd-portal-icon">🛡️</span>
+            <span class="zd-portal-label">HOD</span>
+            <span class="zd-portal-desc">Department-wide records and approvals</span>
+            <span class="zd-portal-arrow">&rarr;</span>
+        </a>
+    </section>
+</div>
+
+<div class="zd-stats-strip-wrap">
+    <h2 class="zd-section-title">Department Overview</h2>
+    <section class="zd-stats-strip">
+        <div class="zd-stat">
+            <span class="zd-stat-icon">📅</span>
+            <span class="zd-stat-num">30+</span>
+            <span class="zd-stat-label">Years of teaching</span>
+        </div>
+        <div class="zd-stat">
+            <span class="zd-stat-icon">👥</span>
+            <span class="zd-stat-num">{{ student_count }}</span>
+            <span class="zd-stat-label">Enrolled students</span>
+        </div>
+        <div class="zd-stat">
+            <span class="zd-stat-icon">👤</span>
+            <span class="zd-stat-num">{{ faculty_count }}</span>
+            <span class="zd-stat-label">Faculty members</span>
+        </div>
+        <div class="zd-stat">
+            <span class="zd-stat-icon">👥</span>
+            <span class="zd-stat-num">1,200+</span>
+            <span class="zd-stat-label">Alumni on record</span>
+        </div>
+    </section>
+</div>
+
+<section class="zd-about-section" id="about">
+    <h2 class="zd-section-title" style="padding:0; margin-bottom:16px;">About the Department</h2>
+    <div class="zd-about-inner">
+        <div class="zd-about-icon-box">🔬</div>
+        <div class="zd-about-text">
+            <p class="zd-about-desc">
+                Established to advance the study of animal biology, the Department of Zoology
+                runs undergraduate and postgraduate programmes covering taxonomy, physiology,
+                ecology, and conservation. This system supports day-to-day academic
+                administration, from batch-wise attendance to semester results and
+                departmental approvals.
+            </p>
+            <a href="#" class="zd-text-link">Read the department handbook &rarr;</a>
+        </div>
+    </div>
+
+    <div class="zd-about-list">
+        <div class="zd-about-item">
+            <span class="zd-about-item-mark">01</span>
+            <div>
+                <h3>Undergraduate programme</h3>
+                <p>B.Sc. Zoology, six semesters, with lab-based practical coursework.</p>
             </div>
-            <div class="stat">
-                <span class="stat-num">{{ student_count }}</span>
-                <span class="stat-label">Enrolled students</span>
+        </div>
+
+        <div class="zd-about-item">
+            <span class="zd-about-item-mark">02</span>
+            <div>
+                <h3>Research &amp; field studies</h3>
+                <p>Ongoing field research supervised by faculty across active study sites.</p>
             </div>
-            <div class="stat">
-                <span class="stat-num">{{ faculty_count }}</span>
-                <span class="stat-label">Faculty members</span>
+        </div>
+    </div>
+</section>
+
+<section class="zd-alumni-section" id="alumni">
+    <div class="zd-section-head-row">
+        <h2 class="zd-section-title">Alumni Spotlight</h2>
+        <a href="#" class="zd-view-all-link">View all &rarr;</a>
+    </div>
+
+    <div class="zd-alumni-stats-grid">
+        {% for story in alumni_stories|slice:":4" %}
+        <div class="zd-alumni-stat-card">
+            <img src="{{ story.photo.url }}" alt="{{ story.student_name }}" class="zd-alumni-stat-photo">
+            <div>
+                <span class="zd-alumni-stat-name">{{ story.student_name }}</span>
+                <span class="zd-alumni-stat-role">{{ story.current_role }}</span>
             </div>
-            <div class="stat">
-                <span class="stat-num">1,200+</span>
-                <span class="stat-label">Alumni on record</span>
-            </div>
-        </section>
+        </div>
+        {% empty %}
+            <p style="padding:0 20px;">No alumni records found yet.</p>
+        {% endfor %}
+    </div>
+</section>
 
-        <section class="about-section" id="about">
-            <div class="about-text">
-                <p class="section-eyebrow">About the department</p>
-                <h2>Field research, laboratory training, and academic records in one place.</h2>
-                <p class="about-desc">
-                    Established to advance the study of animal biology, the Department of Zoology
-                    runs undergraduate and postgraduate programmes covering taxonomy, physiology,
-                    ecology, and conservation. This system supports day-to-day academic
-                    administration, from batch-wise attendance to semester results and
-                    departmental approvals.
-                </p>
-                <a href="#" class="text-link">Read the department handbook &rarr;</a>
-            </div>
-            <div class="about-list">
-                <div class="about-item">
-                    <span class="about-item-mark">01</span>
-                    <div>
-                        <h3>Undergraduate programme</h3>
-                        <p>B.Sc. Zoology, six semesters, with lab-based practical coursework.</p>
-                    </div>
-                </div>
-                <div class="about-item">
-                    <span class="about-item-mark">02</span>
-                    <div>
-                        <h3>Postgraduate programme</h3>
-                        <p>M.Sc. Zoology with specialisation tracks in ecology and physiology.</p>
-                    </div>
-                </div>
-                <div class="about-item">
-                    <span class="about-item-mark">03</span>
-                    <div>
-                        <h3>Research &amp; field studies</h3>
-                        <p>Ongoing field research supervised by faculty across active study sites.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
+<section class="zd-faculty-section" id="faculty">
+    <div class="zd-section-head-row">
+        <h2 class="zd-section-title">Faculty Directory</h2>
+        <a href="#" class="zd-view-all-link">View all &rarr;</a>
+    </div>
 
-        <section class="alumni-section" id="alumni">
-            <p class="section-eyebrow">Alumni records</p>
-            <h2>Where our graduates went next.</h2>
-            <p class="alumni-sub">A small sample of the department's alumni, maintained as part of departmental records.</p>
-
-            <div class="alumni-stats-grid">
-                {% for story in alumni_stories|slice:":4" %}
-                <div class="alumni-stat-card">
-                    <img src="{{ story.photo.url }}" alt="{{ story.student_name }}" class="alumni-stat-photo">
-                    <div>
-                        <span class="alumni-stat-name">{{ story.student_name }}</span>
-                        <span class="alumni-stat-role">{{ story.current_role }}</span>
-                    </div>
-                </div>
-                {% empty %}
-                    <p>No alumni records found yet.</p>
-                {% endfor %}
-            </div>
-
-            <a href="#" class="text-link">View full alumni directory &rarr;</a>
-        </section>
-    </main>
-
-<!-- Faculty Section -->
-<section class="faculty-section" id="faculty">
-    <p class="section-eyebrow">Faculty directory</p>
-    <h2>Meet the department's faculty.</h2>
-
-    <p class="faculty-sub">
-        A small sample of the department's faculty, maintained as part of departmental records.
-    </p>
-
-    <div class="faculty-grid">
+    <div class="zd-faculty-grid">
         {% for member in faculty_list %}
         {% if member %}
-        <div class="faculty-card">
-            <span class="faculty-initial">{{ member.first_name|slice:":1" }}</span>
+        <div class="zd-faculty-card">
+            <span class="zd-faculty-initial">{{ member.first_name|slice:":1" }}</span>
             <div>
                 <h3>{{ member.get_full_name }}</h3>
-                <p class="faculty-role">{{ member.get_role_display }}</p>
-                <p class="faculty-specialization">
+                <p class="zd-faculty-role">{{ member.get_role_display }}</p>
+                <p class="zd-faculty-specialization">
                     Specialization: To be added
                 </p>
             </div>
@@ -137,25 +594,24 @@
         {% endif %}
         {% endfor %}
     </div>
-
-    <a href="#" class="text-link">View complete faculty directory &rarr;</a>
 </section>
 
-<!-- Gallery Section -->
-<section class="gallery-section" id="gallery">
-    <p class="section-eyebrow">Department Workspace</p>
-    <h2>A Glimpse Into Our Department</h2>
-    <p class="gallery-sub">
-        Moments from our labs, field trips, and academic events.
-    </p>
-    <div class="gallery-grid">
+<section class="zd-gallery-section" id="gallery">
+    <div class="zd-section-head-row">
+        <h2 class="zd-section-title">Department Gallery</h2>
+        <a href="#" class="zd-view-all-link">View all &rarr;</a>
+    </div>
+
+    <div class="zd-gallery-grid">
         {% for image in gallery_images %}
-        <div class="gallery-item">
+        <div class="zd-gallery-item">
             <img src="{{ image.image.url }}" alt="{{ image.caption|default:'Department photo' }}" loading="lazy">
         </div>
         {% empty %}
-        <p>No gallery images uploaded yet.</p>
+        <p style="padding:0 20px;">No gallery images uploaded yet.</p>
         {% endfor %}
     </div>
 </section>
+
+</div>
 {% endblock %}
