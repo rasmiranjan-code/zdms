@@ -168,12 +168,18 @@
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: var(--light-green-bg);
+  background: var(--white-bg);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 17px;
   margin-bottom: 10px;
+  padding: 6px; /* Add padding for images */
+}
+
+.zd-page .zd-portal-icon img {
+    width: 100%;
+    height: 100%;
 }
 
 .zd-page .zd-portal-label {
@@ -227,15 +233,21 @@
 }
 
 .zd-page .zd-stat-icon {
-  width: 30px;
-  height: 30px;
+  width: 35px;
+  height: 35px;
   border-radius: 50%;
-  background: var(--light-green-bg);
+  background: var(--white-bg);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 14px;
   margin: 0 auto 8px;
+  padding: 5px; /* Add padding for images */
+}
+
+.zd-page .zd-stat-icon img {
+    width: 100%;
+    height: 100%;
 }
 
 .zd-page .zd-stat-num {
@@ -514,19 +526,19 @@
     <h2 class="zd-section-title">Access Your Portal</h2>
     <section class="zd-portal-select">
         <a href="{% url 'accounts:login' %}" class="zd-portal-card">
-            <span class="zd-portal-icon">🎓</span>
+            <span class="zd-portal-icon"><img src="{% static 'images/logo/attendance take.png' %}" alt="Student"></span>
             <span class="zd-portal-label">Student</span>
             <span class="zd-portal-desc">Attendance, results, coursework and notices</span>
             <span class="zd-portal-arrow">&rarr;</span>
         </a>
         <a href="{% url 'accounts:login' %}" class="zd-portal-card">
-            <span class="zd-portal-icon">💼</span>
+            <span class="zd-portal-icon"><img src="{% static 'images/logo/classroom.png' %}" alt="Faculty"></span>
             <span class="zd-portal-label">Faculty</span>
             <span class="zd-portal-desc">Attendance, marks entry and assignments</span>
             <span class="zd-portal-arrow">&rarr;</span>
         </a>
         <a href="{% url 'accounts:login' %}" class="zd-portal-card">
-            <span class="zd-portal-icon">🛡️</span>
+            <span class="zd-portal-icon"><img src="{% static 'images/logo/admin.png' %}" alt="HOD"></span>
             <span class="zd-portal-label">HOD</span>
             <span class="zd-portal-desc">Department-wide records and approvals</span>
             <span class="zd-portal-arrow">&rarr;</span>
@@ -538,22 +550,22 @@
     <h2 class="zd-section-title">Department Overview</h2>
     <section class="zd-stats-strip">
         <div class="zd-stat">
-            <span class="zd-stat-icon">📅</span>
+            <span class="zd-stat-icon"><img src="{% static 'images/logo/calendar.png' %}" alt="Calendar"></span>
             <span class="zd-stat-num">30+</span>
             <span class="zd-stat-label">Years of teaching</span>
         </div>
         <div class="zd-stat">
-            <span class="zd-stat-icon">👥</span>
+            <span class="zd-stat-icon"><img src="{% static 'images/logo/student.png' %}" alt="Students"></span>
             <span class="zd-stat-num">{{ student_count }}</span>
             <span class="zd-stat-label">Enrolled students</span>
         </div>
         <div class="zd-stat">
-            <span class="zd-stat-icon">👤</span>
+            <span class="zd-stat-icon"><img src="{% static 'images/logo/team.png' %}" alt="Faculty"></span>
             <span class="zd-stat-num">{{ faculty_count }}</span>
             <span class="zd-stat-label">Faculty members</span>
         </div>
         <div class="zd-stat">
-            <span class="zd-stat-icon">👥</span>
+            <span class="zd-stat-icon"><img src="{% static 'images/logo/alumni.png' %}" alt="Alumni"></span>
             <span class="zd-stat-num">1,200+</span>
             <span class="zd-stat-label">Alumni on record</span>
         </div>
