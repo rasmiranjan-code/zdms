@@ -65,6 +65,11 @@ body {
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+body.has-mobile-nav {
+    /* space for fixed bottom nav on mobile */
+    padding-bottom: 70px;
+}
+
 header, main, footer { position: relative; z-index: 1; }
 
 a { color: inherit; }
@@ -798,18 +803,19 @@ a { color: inherit; }
 
 /* ---------- footer ---------- */
 
-.site-footer {
-    border-top: 1px solid var(--line);
-    color: var(--muted);
-    font-size: 13px;
-    padding: 50px 32px 0;
+.site-footer{
+    background: rgba(22,58,43,.85);
+    backdrop-filter: blur(10px);
+    color:#fff;
+    border:none;
+    margin:0;
+    padding:60px 32px 0;
 }
-
 .footer-grid {
     max-width: 1040px;
     margin: 0 auto;
     display: grid;
-    grid-template-columns: 1.6fr 1fr 1fr 1fr;
+    grid-template-columns: 1.5fr 1fr 1fr 1.2fr;
     gap: 32px;
     padding-bottom: 40px;
 }
@@ -819,16 +825,16 @@ a { color: inherit; }
 }
 
 .footer-about {
-    font-size: 13px;
-    color: var(--muted);
+    font-size: 13.5px;
+    color: rgba(255, 255, 255, 0.7);
     line-height: 1.6;
     max-width: 260px;
 }
 
 .footer-col h4 {
     font-size: 12px;
-    font-weight: 600;
-    color: var(--ink);
+    font-weight: 700;
+    color: #fff;
     text-transform: uppercase;
     letter-spacing: 0.06em;
     margin-bottom: 14px;
@@ -836,7 +842,7 @@ a { color: inherit; }
 
 .footer-col a {
     display: block;
-    color: var(--muted);
+    color: rgba(255, 255, 255, 0.7);
     text-decoration: none;
     font-size: 13.5px;
     margin-bottom: 10px;
@@ -844,7 +850,7 @@ a { color: inherit; }
 }
 
 .footer-col a:hover {
-    color: var(--field);
+    color: #fff;
 }
 
 .footer-address {
@@ -855,7 +861,7 @@ a { color: inherit; }
 .footer-bottom {
     max-width: 1040px;
     margin: 0 auto;
-    padding-top: 22px;
+    padding: 22px 0;
     border-top: 1px solid var(--line);
     display: flex;
     justify-content: space-between;
@@ -869,12 +875,12 @@ a { color: inherit; }
 }
 
 .footer-bottom-links a {
-    color: var(--muted);
+    color: rgba(255, 255, 255, 0.7);
     text-decoration: none;
 }
 
 .footer-bottom-links a:hover {
-    color: var(--field);
+    color: #fff;
 }
 
 /* ---------- dashboard ---------- */

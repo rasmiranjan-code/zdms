@@ -29,7 +29,8 @@
         align-items: center;
         justify-content: space-between;
         padding: 14px 20px;
-        background: #ffffff;
+        background: rgba(255, 255, 255, 0.9); /* Semi-transparent white */
+        backdrop-filter: blur(5px); /* Frosted glass effect */
         border-bottom: 1px solid var(--border-soft);
         position: sticky;
         top: 0;
@@ -152,11 +153,15 @@
     @media (min-width: 601px) {
         .bottom-nav { display: none; }
     }
+
+    body { display: flex; flex-direction: column; }
+    main { flex-grow: 1; }
+
     </style>
 
     {% block extra_head %}{% endblock %}
 </head>
-<body>
+<body class="{% if not user.is_authenticated %}has-mobile-nav{% endif %}">
     <header class="site-header">
         <div class="brand">
             <a href="{% if user.is_authenticated %}{% if user.role == 'HOD' %}{% url 'dashboard:hod_dashboard' %}{% elif user.role == 'FACULTY' %}{% url 'dashboard:faculty_dashboard' %}{% elif user.role == 'STUDENT' %}{% url 'students:dashboard' %}{% else %}{% url 'accounts:landing' %}{% endif %}{% else %}{% url 'accounts:landing' %}{% endif %}" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 12px;">
@@ -270,6 +275,26 @@
               effect: 'fade',
               autoplay: { delay: 1000, disableOnInteraction: false },
               pagination: { el: '.swiper-pagination', clickable: true },
+            });
+        }
+
+        // Gallery slider on the landing page
+        if (document.querySelector('.gallery-slider')) {
+            const gallerySlider = new Swiper('.gallery-slider', {
+                loop: true,
+                slidesPerView: 3,
+                spaceBetween: 10,
+                autoplay: { delay: 2500, disableOnInteraction: false },
+                breakpoints: {
+                    768: {
+                        slidesPerView: 5,
+                        spaceBetween: 15,
+                    },
+                    1024: {
+                        slidesPerView: 7,
+                        spaceBetween: 15,
+                    },
+                }
             });
         }
       });
