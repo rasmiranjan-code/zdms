@@ -8,6 +8,7 @@ from django.db import transaction
 from django.db.models import Count, Q
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from apps.core.mixins import FacultyRequiredMixin
+from apps.core.mixins import HODFacultyRequiredMixin, StudentRequiredMixin, FacultyRequiredMixin
 from apps.academics.models import Semester, Subject, Batch, Enrollment
 from apps.accounts.models import User
 from .models import Question, QuestionEditHistory, StudentAttempt, Answer
@@ -18,23 +19,14 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 import json
 
-
-class HODFacultyRequiredMixin(UserPassesTestMixin):
-    def test_func(self):
-        return self.request.user.is_authenticated and self.request.user.role in ['HOD', 'FACULTY']
-
-
-
-# --- Faculty Views ---
-
-class FacultySelectSemesterView(FacultyRequiredMixin, ListView):
+class FacultySelectSemesterView(HODFacultyRequiredMixin, ListView):
     model = Semester
     template_name = 'mcqs/faculty_select_semester.html'
     context_object_name = 'semesters'
     queryset = Semester.objects.select_related('batch__academic_session').order_by('-batch__academic_session__start_year', 'number')
 
 
-class FacultySelectSubjectView(FacultyRequiredMixin, ListView):
+class FacultySelectSubjectView(HODFacultyRequiredMixin, ListView):
     model = Subject
     template_name = 'mcqs/faculty_select_subject.html'
     context_object_name = 'subjects'
@@ -48,7 +40,7 @@ class FacultySelectSubjectView(FacultyRequiredMixin, ListView):
         context['semester'] = self.semester
         return context
 
-class QuestionListView(FacultyRequiredMixin, ListView):
+class QuestionListView(HODFacultyRequiredMixin, ListView):
     model = Question
     template_name = 'mcqs/question_list.html'
     context_object_name = 'questions'
@@ -62,7 +54,7 @@ class QuestionListView(FacultyRequiredMixin, ListView):
         context['subject'] = self.subject
         return context
 
-class QuestionCreateView(FacultyRequiredMixin, View):
+class QuestionCreateView(HODFacultyRequiredMixin, View):
     template_name = 'mcqs/question_form.html'
 
     def get(self, request, subject_id):
@@ -93,7 +85,7 @@ class QuestionCreateView(FacultyRequiredMixin, View):
 
         return render(request, self.template_name, {'subject': subject, 'question_form': question_form, 'answer_formset': answer_formset})
 
-class QuestionUpdateView(FacultyRequiredMixin, View):
+class QuestionUpdateView(HODFacultyRequiredMixin, View):
     template_name = 'mcqs/question_form.html'
 
     def get(self, request, pk):
@@ -132,7 +124,7 @@ class QuestionUpdateView(FacultyRequiredMixin, View):
         }
         return render(request, self.template_name, context)
 
-class QuestionDeleteView(FacultyRequiredMixin, DeleteView):
+class QuestionDeleteView(HODFacultyRequiredMixin, DeleteView):
     model = Question
     template_name = 'mcqs/question_confirm_delete.html'
     context_object_name = 'question'
@@ -199,15 +191,14 @@ class StudentAttemptHistoryView(HODFacultyRequiredMixin, View):
         }
         return render(request, self.template_name, context)
 # --- Student Views ---
-
-class StudentSelectSemesterView(LoginRequiredMixin, ListView):
+class StudentSelectSemesterView(StudentRequiredMixin, ListView):
     model = Semester
     template_name = 'mcqs/student_select_semester.html'
     context_object_name = 'semesters'
     queryset = Semester.objects.select_related('batch__academic_session').order_by('-batch__academic_session__start_year', 'number')
 
 
-class StudentSelectSubjectView(LoginRequiredMixin, ListView):
+class StudentSelectSubjectView(StudentRequiredMixin, ListView):
     model = Subject
     template_name = 'mcqs/student_select_subject.html'
     context_object_name = 'subjects'
@@ -222,7 +213,7 @@ class StudentSelectSubjectView(LoginRequiredMixin, ListView):
         return context
 
 
-class PracticeQuestionsView(LoginRequiredMixin, View):
+class PracticeQuestionsView(StudentRequiredMixin, View):
     template_name = 'mcqs/practice_questions.html'
 
     def get(self, request, subject_id):
@@ -233,6 +224,50 @@ class PracticeQuestionsView(LoginRequiredMixin, View):
             'questions': questions
         }
         return render(request, self.template_name, context)
+
+class SubmitPracticeView(StudentRequiredMixin, View):
+    def post(self, request, subject_id):
+        subject = get_object_or_404(Subject, pk=subject_id)
+        question_ids = request.POST.getlist('question_id')
+
+        total_questions = len(question_ids)
+        correct_answers = 0
+        total_time_seconds = 0
+        question_times = []
+
+        for q_id in question_ids:
+            selected_answer_id = request.POST.get(f'question_{q_id}')
+            time_spent = int(request.POST.get(f'time_{q_id}', 0))
+            total_time_seconds += time_spent
+
+            if selected_answer_id:
+                try:
+                    answer = Answer.objects.get(pk=selected_answer_id)
+                    question_times.append({
+                        'question': answer.question,
+                        'time': time_spent
+                    })
+                    if answer.is_correct:
+                        correct_answers += 1
+                except Answer.DoesNotExist:
+                    continue
+
+        score_percentage = (correct_answers / total_questions * 100) if total_questions > 0 else 0
+        incorrect_answers = total_questions - correct_answers
+        
+        # Sort questions by time taken, descending
+        detailed_time_report = sorted(question_times, key=lambda x: x['time'], reverse=True)
+
+        context = {
+            'subject': subject,
+            'total_questions': total_questions,
+            'correct_answers': correct_answers,
+            'incorrect_answers': incorrect_answers,
+            'score_percentage': score_percentage,
+            'total_time_seconds': total_time_seconds,
+            'detailed_time_report': detailed_time_report,
+        }
+        return render(request, 'mcqs/practice_result.html', context)
 
 @login_required
 def log_student_attempt(request):

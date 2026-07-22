@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Practice Result: {{ subject.name }}{% endblock %}
+
+{% block content %}
+<style>
+    .result-container {
+        max-width: 700px;
+        margin: 60px auto;
+        padding: 40px;
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        text-align: center;
+    }
+    .result-header { font-size: 24px; font-weight: 600; margin-bottom: 8px; }
+    .result-subject { color: var(--muted); margin-bottom: 24px; }
+    .score-circle {
+        width: 140px; height: 140px; border-radius: 50%;
+        margin: 0 auto 24px; display: grid; place-items: center;
+        background: conic-gradient(var(--primary) calc({{ score_percentage }} * 1%), var(--paper-2) 0);
+    }
+    .score-circle-inner {
+        width: 110px; height: 110px; background: var(--card);
+        border-radius: 50%; display: grid; place-items: center;
+    }
+    .score-value { font-size: 32px; font-weight: 700; }
+    .score-summary { display: flex; justify-content: center; gap: 24px; font-size: 15px; font-weight: 500; margin-bottom: 32px; }
+    .summary-item { display: flex; flex-direction: column; }
+    .summary-item span:first-child { font-size: 20px; font-weight: 700; }
+    .summary-item .correct { color: var(--success); }
+    .summary-item .incorrect { color: var(--danger); }
+    .time-analysis { text-align: left; margin-top: 32px; border-top: 1px solid var(--line); padding-top: 24px; }
+    .time-analysis h3 { font-size: 16px; font-weight: 600; margin-bottom: 12px; }
+    .time-item { display: flex; justify-content: space-between; font-size: 14px; padding: 8px 0; border-bottom: 1px solid var(--line); }
+    .time-item.total { font-weight: 600; }
+</style>
+
+<div class="result-container">
+    <h1 class="result-header">Practice Complete!</h1>
+    <p class="result-subject">Subject: {{ subject.name }}</p>
+    
+    <div class="score-circle">
+        <div class="score-circle-inner">
+            <span class="score-value">{{ score_percentage|floatformat:0 }}%</span>
+        </div>
+    </div>
+
+    <div class="score-summary">
+        <div class="summary-item">
+            <span class="correct">{{ correct_answers }}</span>
+            <span>Correct</span>
+        </div>
+        <div class="summary-item">
+            <span class="incorrect">{{ incorrect_answers }}</span>
+            <span>Incorrect</span>
+        </div>
+        <div class="summary-item">
+            <span>{{ total_questions }}</span>
+            <span>Total</span>
+        </div>
+    </div>
+
+    <div class="time-analysis">
+        <h3>Time Analysis</h3>
+        <div class="time-item total"><span>Total Time Taken:</span> <strong>{{ total_time_seconds }} seconds</strong></div>
+        {% if detailed_time_report %}
+            <h4 style="font-size: 14px; font-weight: 600; margin-top: 16px; margin-bottom: 8px;">Time per Question:</h4>
+            {% for item in detailed_time_report %}
+                <div class="time-item">
+                    <span style="max-width: 80%;">"{{ item.question.question_text|truncatechars:60 }}"</span> <strong>{{ item.time }}s</strong>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <a href="{% url 'mcqs:student_select_semester' %}" class="nav-login">Practice Another Subject</a>
+</div>
+{% endblock %}

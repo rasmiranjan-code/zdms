@@ -27,5 +27,6 @@ urlpatterns = [
     path('practice/', views.StudentSelectSemesterView.as_view(), name='student_select_semester'),
     path('practice/semesters/<int:semester_id>/subjects/', views.StudentSelectSubjectView.as_view(), name='student_select_subject'),
     path('practice/subjects/<int:subject_id>/', views.PracticeQuestionsView.as_view(), name='practice_questions'),
+    path('practice/subjects/<int:subject_id>/submit/', views.SubmitPracticeView.as_view(), name='submit_practice'),
     path('practice/log-attempt/', views.log_student_attempt, name='log_attempt'),
 ]

@@ -347,34 +347,59 @@ body {
   margin-top: 8px;
 }
 
-.zd-page .zd-about-list {
+.zd-page .zd-notices-list {
   display: flex;
   flex-direction: column;
-  gap: 14px;
   margin-top: 20px;
+  height: 220px; /* Fixed height for scrolling */
+  overflow: hidden;
+  position: relative;
+  background: rgb(255, 255, 255);
+  padding: 16px;
+  border-radius: var(--radius-lg);
 }
 
-.zd-page .zd-about-item {
+.zd-page .zd-notices-scroll-container {
+  /* This will scroll if there are more than 4 items */
+  animation: scroll-up 25s linear infinite;
+}
+
+.zd-page .zd-notice-item {
   display: flex;
   gap: 12px;
-  background: var(--pale-green);
+  background: rgba(255, 255, 255, 0.85);
   border-radius: var(--radius-md);
   padding: 14px;
+  position: relative;
+  overflow: hidden;
 }
 
-.zd-page .zd-about-item-mark {
-  font-weight: 800;
-  color: var(--accent-green);
-  font-size: 14px;
+.zd-page .zd-notice-badge {
+    position: absolute;
+    top: -1px;
+    right: -1px;
+    width: 40px;
+    height: 40px;
 }
 
-.zd-page .zd-about-item h3 {
+.zd-page .zd-notice-icon {
+    width: 38px;
+    height: 38px;
+    flex-shrink: 0;
+    background: var(--light-green-bg);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.zd-page .zd-notice-item h3 {
   font-size: 14px;
   margin: 0 0 4px;
   color: var(--dark-green);
 }
 
-.zd-page .zd-about-item p {
+.zd-page .zd-notice-item p {
   font-size: 13px;
   color: var(--text-muted);
   margin: 0;
@@ -665,21 +690,22 @@ body {
         </div>
     </div>
 
-    <div class="zd-about-list">
-        <div class="zd-about-item">
-            <span class="zd-about-item-mark">01</span>
-            <div>
-                <h3>Undergraduate programme</h3>
-                <p>B.Sc. Zoology, six semesters, with lab-based practical coursework.</p>
+    <div class="zd-notices-list">
+        <div {% if notices|length > 4 %}class="zd-notices-scroll-container"{% endif %}>
+            {% for notice in notices %}
+            <div class="zd-notice-item" style="margin-bottom: 14px;">
+                <img src="{% static 'images/logo/new-badge.png' %}" alt="New" class="zd-notice-badge">
+                <div class="zd-notice-icon">
+                    <img src="{% static 'images/logo/notice.png' %}" alt="Notice Icon" style="width: 60%; height: 60%; object-fit: contain;">
+                </div>
+                <div>
+                    <h3>{{ notice.title }}</h3>
+                    <p>Posted on: {{ notice.created_at|date:"d M, Y" }}</p>
+                </div>
             </div>
-        </div>
-
-        <div class="zd-about-item">
-            <span class="zd-about-item-mark">02</span>
-            <div>
-                <h3>Research &amp; field studies</h3>
-                <p>Ongoing field research supervised by faculty across active study sites.</p>
-            </div>
+            {% empty %}
+            <p style="color: white; text-align: center; padding: 20px;">No recent notices.</p>
+            {% endfor %}
         </div>
     </div>
 </section>

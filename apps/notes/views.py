@@ -9,7 +9,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from .models import Note
 from .forms import NoteForm
 from apps.academics.models import Semester, Subject
-from apps.mcqs.views import HODFacultyRequiredMixin
+from apps.core.mixins import HODFacultyRequiredMixin, StudentRequiredMixin
 
 # --- Faculty/HOD Views ---
 
@@ -97,13 +97,13 @@ class NoteDeleteView(NoteAuthorOrHODMixin, DeleteView):
 
 # --- Student Views ---
 
-class StudentSelectSemesterForNotesView(LoginRequiredMixin, ListView):
+class StudentSelectSemesterForNotesView(StudentRequiredMixin, ListView):
     model = Semester
     template_name = 'notes/student_select_semester.html'
     context_object_name = 'semesters'
     queryset = Semester.objects.select_related('batch__academic_session').order_by('-batch__academic_session__start_year', 'number')
 
-class StudentSelectSubjectForNotesView(LoginRequiredMixin, ListView):
+class StudentSelectSubjectForNotesView(StudentRequiredMixin, ListView):
     model = Subject
     template_name = 'notes/student_select_subject.html'
     context_object_name = 'subjects'
@@ -117,10 +117,10 @@ class StudentSelectSubjectForNotesView(LoginRequiredMixin, ListView):
         context['semester'] = self.semester
         return context
 
-class StudentNoteListView(LoginRequiredMixin, NoteListView):
+class StudentNoteListView(StudentRequiredMixin, NoteListView):
     template_name = 'notes/student_note_list.html'
 
-class PDFViewerView(LoginRequiredMixin, View):
+class PDFViewerView(StudentRequiredMixin, View):
     def get(self, request, note_id):
         note = get_object_or_404(Note, pk=note_id)
         context = {

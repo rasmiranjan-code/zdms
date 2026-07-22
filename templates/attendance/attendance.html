@@ -63,9 +63,16 @@
                     <td>{{ record.total }}</td>
                     <td>{{ record.attended }}</td>
                     <td>
-                        <div class="progress-bar-container" title="{{ record.percentage|floatformat:2 }}%">
-                            <div class="progress-bar {% if record.percentage < 75 %}low-attendance{% endif %}" style="width: {{ record.percentage }}%;"></div>
-                        </div>
+                        <div class="progress-bar-container"
+     title="{{ record.percentage|floatformat:2 }}%">
+    <div class="progress-bar {% if record.percentage < 75 %}low-attendance{% endif %}"
+         style="width: {{ record.percentage }}%;">
+    </div>
+</div>
+
+<div style="margin-top:6px;">
+    {{ record.percentage|floatformat:2 }}%
+</div>
                     </td>
                 </tr>
                 {% endfor %}

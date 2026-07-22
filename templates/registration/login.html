@@ -10,7 +10,7 @@
     </div>
 
     <form method="post" novalidate>
-        {% csrf_token %}
+        {% csrf_token %} {# Added missing CSRF token #}
 
         {% if form.non_field_errors %}
             <div style="background: #ffefef; color: #e53e3e; padding: 10px 14px; border-radius: 6px; margin-bottom: 16px; font-size: 14px;">

@@ -14,7 +14,7 @@ from .models import Quiz, QuizQuestion, StudentQuizAttempt, StudentAnswer, Answe
 from .forms import QuizForm, AddQuestionToQuizForm, ManualQuestionForm, AnswerFormSet
 from apps.academics.models import Semester, Subject, Enrollment, Batch
 from apps.mcqs.models import Question 
-from apps.mcqs.views import HODFacultyRequiredMixin
+from apps.core.mixins import HODFacultyRequiredMixin, StudentRequiredMixin
 
 # --- Faculty/HOD Views ---
 
@@ -168,7 +168,7 @@ class QuizDeleteView(HODFacultyRequiredMixin, DeleteView):
 
 # --- Student Views (To be built) ---
 
-class StudentQuizAccessMixin(AccessMixin):
+class StudentQuizAccessMixin(StudentRequiredMixin):
     """Verify that the current user is the student who owns the attempt."""
     def dispatch(self, request, *args, **kwargs):
         attempt = get_object_or_404(StudentQuizAttempt, pk=self.kwargs['pk'])
@@ -183,7 +183,7 @@ class StudentQuizAccessMixin(AccessMixin):
 
         return super().dispatch(request, *args, **kwargs)
 
-class StudentQuizListView(LoginRequiredMixin, View):
+class StudentQuizListView(StudentRequiredMixin, View):
     template_name = 'quiz/student_quiz_list.html'
 
     def get(self, request, *args, **kwargs):
@@ -216,7 +216,7 @@ class StudentQuizListView(LoginRequiredMixin, View):
             messages.warning(request, "You are not enrolled in any active batch.")
             return redirect('students:dashboard')
 
-class StartQuizView(LoginRequiredMixin, View):
+class StartQuizView(StudentRequiredMixin, View):
     def get(self, request, pk):
         quiz = get_object_or_404(Quiz, pk=pk)
         now = timezone.now()
@@ -305,7 +305,7 @@ class SubmitQuizView(StudentQuizAccessMixin, View):
 
         return JsonResponse({'status': 'success', 'result_url': reverse('quiz:quiz_result', kwargs={'pk': attempt.quiz.pk})})
 
-class QuizResultView(LoginRequiredMixin, DetailView):
+class QuizResultView(StudentRequiredMixin, DetailView):
     model = Quiz
     template_name = 'quiz/quiz_result.html'
     context_object_name = 'quiz'

@@ -20,6 +20,7 @@ urlpatterns = [
     path('faculty-attendance/', include('apps.faculty_attendance.urls')),
     path('quiz/', include('apps.quiz.urls')),
     path('3d-library/', include('apps.threed_library.urls')),
+    path("attendance/", include("apps.attendance.urls")),
 
 ]
 

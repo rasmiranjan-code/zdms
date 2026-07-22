@@ -23,6 +23,8 @@ class LandingPageView(TemplateView):
                 return redirect('dashboard:hod_dashboard')
             elif request.user.role == 'STUDENT':
                 return redirect('students:dashboard')
+            elif request.user.role == 'FACULTY':
+                return redirect('dashboard:faculty_dashboard') # Corrected redirect for faculty
             # Add other roles here in the future
         return super().dispatch(request, *args, **kwargs)
 
@@ -128,14 +130,14 @@ class RoleBasedLoginView(LoginView):
 
     def get_success_url(self):
         user = self.request.user
-        if user.role == 'STUDENT':
-            return reverse_lazy('students:dashboard')
-        if user.role == 'FACULTY':
-            return reverse_lazy('dashboard:faculty_dashboard')
-        if user.role == 'HOD':
-            return reverse_lazy('dashboard:hod_dashboard')
-        # Add faculty redirect later
-        return reverse_lazy('admin:index') 
+        if user.is_authenticated:
+            if user.role == 'HOD':
+                return reverse_lazy('dashboard:hod_dashboard')
+            elif user.role == 'FACULTY':
+                return reverse_lazy('dashboard:faculty_dashboard')
+            elif user.role == 'STUDENT':
+                return reverse_lazy('students:dashboard')
+        return reverse_lazy('accounts:landing')
 
 
 class CustomLogoutView(LogoutView):
