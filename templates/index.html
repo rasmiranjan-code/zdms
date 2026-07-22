@@ -5,11 +5,19 @@
 {% block extra_head %}
 <style>
 /* Background image ko poore page par apply karne ke liye */
-body {
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
   background-image: url("{% static 'images/logo/page-bg.jpg' %}");
   background-size: cover;
   background-position: center;
-  background-attachment: fixed;
+  filter: blur(1px); /* Aap is value ko kam ya zyada kar sakte hain */
+  z-index: -1;
+}
+body {
   background-color: var(--white); /* Fallback color */
 }
 
@@ -60,6 +68,7 @@ body {
   align-items: center;
   gap: 16px;
   overflow: hidden;
+  border-radius: var(--radius-lg); /* Added for curved corners */
 }
 
 .zd-page .zd-hero-text { flex: 1 1 60%; }
@@ -80,15 +89,6 @@ body {
   color: var(--white);
   margin: 0;
   text-shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
-
-.zd-page .zd-hero-image {
-  flex: 1 1 40%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 64px;
-  line-height: 1;
 }
 .zd-page .hero-slider {
     position: absolute;
@@ -125,7 +125,7 @@ body {
 .zd-page .zd-section-title {
   font-size: 18px;
   font-weight: 800;
-  color: var(--dark-green);
+  color: rgba(255, 255, 255, 0.81);
   margin-top: 0;
   margin-bottom: 16px;
   padding: 0 20px;
@@ -291,13 +291,13 @@ body {
 }
 
 .zd-page .zd-about-icon-box {
-  flex: 0 0 100px;
-  width: 100px;
-  height: 100px;
-  background: var(--light-white-bg);
+  flex: 0 0 120px;
+  width: 120px;
+  height: 120px;
+  background: rgba(184, 166, 166, 0);
   border-radius: var(--radius-lg);
   display: flex;
-  padding: 20px;
+  padding: 0;
   align-items: center;
   justify-content: center;
   font-size: 42px;
@@ -307,10 +307,27 @@ body {
 
 .zd-page .zd-about-desc {
   font-size: 15px;
-  color: var(--text-dark);
+  color: var(--white);
   line-height: 1.65;
   margin: 0 0 12px;
   font-weight: 500;
+  background: rgba(52, 139, 74, 0.67);
+  padding: 12px;
+  border-radius: 10px;
+  height: 150px; /* Fixed height for scrolling */
+  overflow: hidden; /* Hide overflowing text */
+  position: relative;
+}
+
+.zd-page .zd-about-desc-scroll {
+    position: absolute;
+    width: calc(100% - 24px); /* Adjust for padding */
+    animation: scroll-up 20s linear -5s infinite;
+}
+
+@keyframes scroll-up {
+    from { transform: translateY(100%); }
+    to { transform: translateY(-100%); }
 }
 .zd-page .zd-about-icon-box img {
   font-size: 13.5px;
@@ -320,10 +337,14 @@ body {
 }
 
 .zd-page .zd-text-link {
-  color: var(--accent-green);
+  color: var(--white);
   font-weight: 600;
   font-size: 13.5px;
   display: inline-block;
+  background: rgba(50, 165, 75, 0.71);
+  padding: 8px 14px;
+  border-radius: 8px;
+  margin-top: 8px;
 }
 
 .zd-page .zd-about-list {
@@ -522,7 +543,7 @@ body {
   .zd-page .zd-stat-label { font-size: 12px; }
 
   .zd-page .zd-about-section { padding: 40px 30px; }
-  .zd-page .zd-about-icon-box { flex: 0 0 130px; width: 130px; height: 130px; font-size: 56px; }
+  .zd-page .zd-about-icon-box { flex: 0 0 150px; width: 150px; height: 150px; font-size: 56px; }
   .zd-page .zd-about-desc { font-size: 15px; }
   
   .zd-page .zd-alumni-grid,
@@ -628,15 +649,17 @@ body {
     <h2 class="zd-section-title" style="padding:0; margin-bottom:16px;">About the Department</h2>
     <div class="zd-about-inner">
         <div class="zd-about-icon-box">
-            <img src="{% static 'images/logo/microscope.png' %}" alt="Microscope Icon" style="width: 300%; height: 200%; object-fit: contain;">
+            <img src="{% static 'images/logo/microscope.png' %}" alt="Microscope Icon" style="width: 100%; height: 100%; object-fit: contain;">
         </div>
         <div class="zd-about-text">
             <p class="zd-about-desc">
-                Established to advance the study of animal biology, the Department of Zoology
-                runs undergraduate and postgraduate programmes covering taxonomy, physiology,
-                ecology, and conservation. This system supports day-to-day academic
-                administration, from batch-wise attendance to semester results and
-                departmental approvals.
+                <span class="zd-about-desc-scroll">
+                    Established to advance the study of animal biology, the Department of Zoology
+                    runs undergraduate and postgraduate programmes covering taxonomy, physiology,
+                    ecology, and conservation. This system supports day-to-day academic
+                    administration, from batch-wise attendance to semester results and
+                    departmental approvals.
+                </span>
             </p>
             <a href="#" class="zd-text-link">Read the department handbook &rarr;</a>
         </div>
